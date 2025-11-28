@@ -1,0 +1,41 @@
+/**
+ * Front Page Styles
+ *
+ * Additional styles specific to the front page layout.
+ * This file contains styles for sections and layouts unique to front-page.php.
+ *
+ * @package theme-abcontact
+ */
+
+/* ========================= Front Page Layout ========================= */
+.front-page-content {
+    padding-top: 0;
+}
+
+/* Remove top margin from first section after hero */
+.front-page-content > section:first-child,
+.front-page-content > .container:first-child {
+    margin-top: 0;
+}
+
+/* ========================= Section Spacing ========================= */
+.front-page-section {
+    padding: var(--space-lg, 2rem) 0;
+}
+
+.front-page-section + .front-page-section {
+    padding-top: calc(var(--space-lg, 2rem) / 2);
+}
+
+/* ========================= Featured Section ========================= */
+.front-page-content .featured-grid {
+    padding-top: var(--space-lg, 2rem);
+    padding-bottom: var(--space-lg, 2rem);
+}
+
+/* ========================= Responsive ========================= */
+@media (max-width: 799px) {
+    .front-page-section {
+        padding: var(--space-md, 1.25rem) 0;
+    }
+}

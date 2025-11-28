@@ -1,0 +1,143 @@
+/**
+ * Common Styles
+ *
+ * Contains common utility classes and reusable styles
+ * used throughout the theme.
+ *
+ * @package theme-abcontact
+ */
+
+/* ========================= Button Styles ========================= */
+
+/**
+ * .btn class with hover behavior
+ * Changes from white to blue on hover
+ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    border: none;
+    background: #ffffff;
+    color: var(--color-primary, #2050f2);
+}
+
+.btn:hover {
+    background: var(--color-primary, #2050f2);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(32, 80, 242, 0.15);
+}
+
+.btn:focus {
+    outline: 3px solid rgba(32, 80, 242, 0.3);
+    outline-offset: 2px;
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* ========================= Image Zoom Effect ========================= */
+
+/**
+ * .img-zoom class for image hover zoom effect
+ * Scales image to 1.05 on hover
+ */
+.img-zoom {
+    overflow: hidden;
+    display: block;
+}
+
+.img-zoom img,
+.img-zoom > img,
+img.img-zoom {
+    transition: transform 0.3s ease;
+    will-change: transform;
+}
+
+.img-zoom:hover img,
+.img-zoom:hover > img,
+img.img-zoom:hover {
+    transform: scale(1.05);
+}
+
+/* ========================= Common Utilities ========================= */
+
+/**
+ * Screen reader only - visually hidden but accessible
+ */
+.sr-only,
+.screen-reader-text {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+}
+
+/**
+ * Clearfix utility
+ */
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/**
+ * Text alignment utilities
+ */
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/**
+ * Flex utilities
+ */
+.flex {
+    display: flex;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/**
+ * Spacing utilities
+ */
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.mt-1 { margin-top: 0.5rem; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+.mb-4 { margin-bottom: 2rem; }
