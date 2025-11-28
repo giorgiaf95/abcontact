@@ -1,0 +1,252 @@
+/* ========================== Contaider tweaks ========================== */
+.sedi-map-hero {
+  margin: 36px 0 56px;
+  text-align: center;
+}
+
+/* Map placeholder tweaks */
+.sedi-map-placeholder {
+  background: #f7f9fc;
+  border-radius: 16px;
+  padding: 48px 28px;
+  display: inline-block;
+  width: 100%;
+  max-width: 980px;
+  box-shadow: 0 10px 30px rgba(16,24,40,0.04);
+  margin-bottom: 20px;
+}
+.sedi-map-placeholder .map-icon {
+  font-size: 44px;
+  display: block;
+  margin: 0 auto 8px;
+  color: #d33b4a;
+  line-height: 1;
+}
+.sedi-map-placeholder .map-title {
+  font-weight: 600;
+  margin: 6px 0 6px;
+  color: #22303b;
+}
+.sedi-map-placeholder .map-count {
+  color: #566374;
+  margin: 6px 0 0;
+}
+
+/* ========================== CTA layout ========================== */
+.sedi-cta {
+  margin: 72px 0;
+  display: flex;
+  justify-content: center;
+  padding: 0 18px;
+}
+.sedi-cta-inner {
+  width: 100%;
+  max-width: 1160px;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 40px;
+  align-items: start;
+  overflow: visible; 
+}
+
+/* Left column */
+.sedi-cta-left {
+  padding: 6px 8px;
+}
+.sedi-cta-left-title {
+  margin: 6px 0 18px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f1724;
+}
+.sedi-cta-left-desc {
+  color: #34414b;
+  margin: 0 0 18px;
+  line-height: 1.6;
+  font-size: 1.02rem;
+  max-width: 680px;
+}
+.sedi-cta-features {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+  color: #34414b;
+}
+.sedi-cta-features li {
+  position: relative;
+  padding-left: 18px;
+  margin: 12px 0;
+  font-size: 1rem;
+}
+.sedi-cta-features li::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #1760f0;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 7px;
+}
+
+/* Right column - gradient card */
+.sedi-cta-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sedi-cta-card {
+  width: 100%;
+  border-radius: 14px;
+  padding: 24px;
+  color: #fff;
+  box-shadow: 0 30px 60px rgba(16,24,40,0.07);
+  background: linear-gradient(180deg, #61b3ff 0%, #1b57d6 100%);
+  display: flex;
+  align-items: stretch;
+  transform: translateX(80px);
+  transition: transform 240ms ease;
+}
+
+/* inner layout */
+.sedi-cta-card-inner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Titles & text inside card */
+.sedi-cta-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+.sedi-cta-card-text--summary {
+  margin: 0;
+  color: rgba(255,255,255,0.96);
+  line-height: 1.6;
+  font-size: .97rem;
+}
+
+/* White pill button centered */
+.sedi-cta-card-action {
+  margin-top: 6px;
+}
+.sedi-cta-button {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  padding: 12px 18px;
+  background: #ffffff;
+  color: #1760f0;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(16,24,40,0.08);
+}
+
+/* separator & contacts */
+.sedi-cta-sep {
+  border: 0;
+  height: 1px;
+  background: rgba(255,255,255,0.12);
+  margin: 6px 0 0;
+}
+.sedi-cta-contact {
+  color: rgba(255,255,255,0.95);
+  font-size: .98rem;
+  margin: 8px 0 0;
+  line-height: 1.6;
+}
+.sedi-cta-contact strong {
+  color: rgba(255,255,255,0.95);
+  display: inline-block;
+  width: 110px;
+  font-weight: 700;
+}
+.sedi-cta-contact a {
+  color: rgba(255,255,255,0.95);
+  text-decoration: underline;
+}
+
+/* ======================= Section under Hero (title + subtitle) ======================= */
+.sedi-section-title .container {
+  display: block;
+  text-align: center;
+  padding: 0 18px;
+}
+
+/* Constrain & center the section subtitle */
+.sedi-section-title .section-subtitle {
+  max-width: 920px;
+  margin: 8px auto 0;
+  text-align: center;
+  color: #566374;
+  line-height: 1.6;
+  font-size: 1.02rem;
+}
+
+/* =============================== Greed sedi cards =============================== */
+.sedi-grid-inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  align-items: start;
+  margin: 64px 0 100px;
+}
+.sede-card {
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 18px 40px rgba(16,24,40,0.05);
+  background: #fff;
+}
+
+/* Media Responsive */
+@media (max-width:1100px) {
+  .sedi-cta-inner {
+    grid-template-columns: 1fr;
+  }
+  .sedi-cta-right {
+    order: -1;
+  }
+
+  .sedi-cta-card {
+    transform: none;
+    padding: 20px;
+    border-radius: 12px;
+  }
+  .sedi-cta-contact strong {
+    width: 95px;
+  }
+
+  .sedi-map-hero {
+    margin-bottom: 40px;
+  }
+  .sedi-cta {
+    margin: 48px 0;
+  }
+  .sedi-grid-inner {
+    margin: 40px 0 64px;
+  }
+
+  .sedi-section-title .section-subtitle {
+    padding: 0 18px;
+    max-width: 100%;
+  }
+}
+@media (max-width:700px) {
+  .sedi-grid-inner {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  .sedi-cta {
+    margin: 32px 0;
+  }
+  .sedi-map-placeholder {
+    padding: 32px 18px;
+  }
+  .sedi-map-hero {
+    margin-bottom: 28px;
+  }
+}

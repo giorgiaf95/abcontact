@@ -1,0 +1,123 @@
+:root {
+  --hero-overlay-top: rgba(23, 80, 177, 0.22);
+  --hero-overlay-mid: rgba(23, 80, 177, 0.12);
+  --hero-overlay-bottom: rgba(255,255,255,0.00);
+}
+
+.hero,
+.service-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+/* background image element (absolute, covers whole hero) */
+.hero__bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+}
+
+/* overlay sits above the image */
+.hero::before,
+.service-hero::before,
+.hero .service-hero-overlay,
+.service-hero .service-hero-overlay {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    var(--hero-overlay-top) 0%,
+    var(--hero-overlay-mid) 30%,
+    rgba(255,255,255,0.12) 65%,
+    var(--hero-overlay-bottom) 100%);
+}
+
+/* repeat specific selectors for higher specificity */
+section.hero.news-hero::before,
+section.hero.home-hero::before,
+section.hero.service-hero::before,
+section.hero .service-hero-overlay,
+section.service-hero .service-hero-overlay {
+  background: linear-gradient(180deg,
+    var(--hero-overlay-top) 0%,
+    var(--hero-overlay-mid) 30%,
+    rgba(255,255,255,0.12) 65%,
+    var(--hero-overlay-bottom) 100%);
+}
+
+/* ensure hero content sits above overlay */
+.hero-inner,
+.hero-content,
+.service-hero-inner,
+.service-hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* =================== Centering & typography tweaks for hero content =================== */
+.hero.news-hero .hero-inner .hero-content,
+.news-hero .hero-inner .hero-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 18px;
+  min-height: 220px;
+}
+
+/* main title */
+.hero-title {
+  margin: 0 0 12px;
+  font-weight: 700;
+  line-height: 1.05;
+  color: #ffffff;
+}
+
+/* constrained subtitle for better readability and centered alignment */
+.news-hero .hero-subtitle,
+.hero.news-hero .hero-subtitle {
+  max-width: 920px;
+  margin: 0 auto;
+  text-align: center;
+  color: #f2f6fb;
+  line-height: 1.6;
+  font-size: 1.03rem;
+}
+
+/* eyebrow centered and subtle */
+.news-hero .hero__eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(255,255,255,0.92);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* Media */
+@media (max-width: 880px) {
+  .hero::before,
+  .service-hero::before,
+  .service-hero .service-hero-overlay {
+    background: linear-gradient(180deg,
+      rgba(23, 80, 177, 0.18) 0%,
+      rgba(255,255,255,0.92) 80%);
+  }
+  .hero.news-hero .hero-inner .hero-content,
+  .news-hero .hero-inner .hero-content {
+    padding: 36px 12px;
+    min-height: 180px;
+  }
+  .news-hero .hero-subtitle {
+    font-size: 0.98rem;
+    padding: 0 10px;
+  }
+}

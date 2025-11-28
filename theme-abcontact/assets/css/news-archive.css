@@ -1,0 +1,293 @@
+/* ================================== Hero ================================== */
+.news-hero {
+  min-height: 200px;
+}
+.news-hero .hero-inner {
+  padding: 18px;
+}
+.news-hero .hero-title {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  margin: 10px 0 18px;
+}
+.breadcrumb a { color: var(--color-primary); }
+
+/* ========================== Featured Article ========================== */
+.featured-article {
+  margin-bottom: 36px;
+  border-radius: 12px;
+  overflow: visible;
+}
+
+/* container: left image + right content columns */
+.featured-inner {
+  display: flex;
+  gap: 28px;
+  align-items: stretch;
+  min-height: 360px;
+  box-sizing: border-box;
+}
+
+/* LEFT: featured image container */
+.featured-thumb {
+  position: relative;
+  overflow: hidden;
+  min-height: 360px;
+  flex: 0 0 48%;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  background: #f6f8fa;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.featured-thumb > img,
+.featured-thumb img.featured-thumb__img,
+.featured-thumb img.card__thumb-img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block !important;
+  transform-origin: center center;
+  transition: transform 360ms cubic-bezier(.2,.8,.2,1);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* HOVER: subtle scale up (same as home) */
+.featured-article:hover .featured-thumb__img,
+.card.news-card-grid:hover .card__thumb-img {
+  transform: scale(1.06);
+}
+
+/* RIGHT: featured content */
+.featured-body {
+  flex: 1 1 52%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 22px 28px;
+  box-sizing: border-box;
+}
+
+/* Title & excerpt */
+.featured-body .entry-title { font-size: 1.2rem; margin: 6px 0 12px; }
+.featured-body .entry-content { color: var(--color-muted); margin-bottom: 12px; }
+
+/* Meta (date + reading time) */
+.featured-body .entry-meta {
+  margin-top: 12px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+.featured-body .meta-icon { width: 16px; height: 16px; vertical-align: middle; margin-right: 8px; opacity: 0.9; }
+
+/* Featured category pill */
+.news-label.news-label--featured {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Featured CTA: wider */
+.featured-body .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 220px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.featured-body .button.button--ghost:hover,
+.featured-body .button.button--ghost:focus {
+  background: #0b5fff;
+  color: #fff;
+  box-shadow: 0 10px 28px rgba(11,95,255,0.12);
+  transform: translateY(-2px);
+}
+
+/* ========================== Grid (cards) ========================== */
+.news-archive__grid {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: repeat(1, 1fr);
+}
+@media (min-width: 700px) { .news-archive__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .news-archive__grid { grid-template-columns: repeat(3, 1fr); } }
+
+.card.news-card-grid {
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 8px 30px rgba(16,24,40,0.06);
+  overflow: hidden;
+  background: #fff;
+}
+.card.news-card-grid .card__link { display: block; color: inherit; text-decoration: none; }
+
+/* card thumbnail: applies only to grid cards */
+.news-card-grid .card__thumb-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  transition: transform 360ms cubic-bezier(.2,.8,.2,1);
+  will-change: transform;
+}
+
+/* card body */
+.card__body { padding: 18px; }
+.news-label--small {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  margin-bottom: 10px;
+  max-width: 110px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card__title { font-size: 1.05rem; margin: 8px 0; }
+.card__excerpt { color: var(--color-muted); margin-bottom: 12px; }
+
+/* card meta */
+.card__meta { color: var(--color-muted); font-size: 0.85rem; display:flex; gap:8px; align-items:center; }
+.card__meta .meta-icon { width:14px; height:14px; margin-right:6px; opacity:0.9; }
+
+.news-archive__more { margin-top: 28px; margin-bottom: 80px; text-align: center; }
+.news-archive__more .button { padding: 10px 18px; border-radius: 10px; }
+
+/* Filters */
+.news-filter-list { display:inline-flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+.news-filter-button {
+  background: transparent;
+  border: 1px solid rgba(11,95,255,0.12);
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--color-primary);
+  transition: background 160ms ease, color 160ms ease, transform 120ms ease;
+}
+.news-filter-button:hover { transform: translateY(-2px); }
+.news-filter-button.active { background: var(--color-primary); color:#fff; border-color:transparent; }
+
+/* Media Responsive */
+@media (max-width: 520px) {
+  .news-card-grid .card__thumb-img { height: 140px; }
+  .card__body { padding: 14px; }
+
+  /* featured: stack columns vertically on small screens */
+  .featured-inner {
+    min-height: auto;
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  /* featured image container */
+  .featured-thumb {
+    position: relative;
+    border-radius: 12px;
+    min-height: 220px;
+    flex-basis: auto;
+    overflow: hidden;
+  }
+
+  .featured-thumb > img,
+  .featured-thumb img.featured-thumb__img,
+  .featured-thumb img.card__thumb-img.featured-thumb__img {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    display: block !important;
+    transition: transform 360ms cubic-bezier(.2,.8,.2,1);
+    will-change: transform;
+  }
+
+  .featured-body { padding: 12px; box-sizing: border-box; min-height: auto; }
+}
+
+/* safety */
+html, body { overflow-x: hidden; }
+
+/* featured row genera colonne con stessa altezza */
+.featured-inner.container {
+  display: flex !important;
+  align-items: stretch !important;
+}
+
+/* elimina padding accidentali e forza overflow/box-sizing */
+.featured-inner.container > .featured-thumb {
+  position: relative !important; /* ancestor per img assoluta */
+  overflow: hidden !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  border-top-left-radius: 12px !important;
+  border-bottom-left-radius: 12px !important;
+}
+
+.featured-inner.container > .featured-thumb > img.wp-post-image.featured-thumb__img,
+.featured-inner.container > .featured-thumb > img.card__thumb-img.featured-thumb__img {
+  position: absolute !important;
+  inset: 0 !important; 
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  transform-origin: center center !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
+  transition: transform 360ms cubic-bezier(.2,.8,.2,1) !important;
+  will-change: transform !important;
+}
+
+/* hover/scale identico a home */
+.featured-article:hover .featured-thumb__img,
+.featured-inner.container:hover > .featured-thumb > img.wp-post-image.featured-thumb__img {
+  transform: scale(1.06) !important;
+}
+
+/* Media */
+@media (max-width: 520px) {
+  .featured-inner.container {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .featured-inner.container > .featured-thumb {
+    min-height: 220px !important;
+    border-radius: 12px !important;
+  }
+  .featured-inner.container > .featured-thumb > img.wp-post-image.featured-thumb__img {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+}

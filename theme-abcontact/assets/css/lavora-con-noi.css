@@ -1,0 +1,53 @@
+/* Styles specifici per la pagina "Lavora con noi"
+   Posiziona questo file in: wp-content/themes/abcontact-theme/assets/css/lavora-con-noi.css
+   Questo file è intentionally minimal: struttura la pagina e mantiene coerenza con il tema.
+*/
+
+/* Root variables per questa pagina (modificabili) */
+:root {
+  --lavora-content-max-width: 1100px;
+  --lavora-section-gap: 36px;
+  --lavora-intro-padding: 48px 0;
+}
+
+/* Container per la pagina */
+.lavora-main {
+  padding-top: 18px;
+  padding-bottom: 32px;
+  box-sizing: border-box;
+}
+
+/* Inner wrapper */
+.lavora-content-inner {
+  max-width: var(--lavora-content-max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Intro section (vuota per ora) */
+.lavora-intro {
+  padding: var(--lavora-intro-padding);
+  margin-bottom: var(--lavora-section-gap);
+  min-height: 120px; /* piccolo hint visivo per layout, rimuovibile se vuoi */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+/* Se in futuro aggiungerai testo dentro .lavora-intro .content, rendilo leggibile */
+.lavora-intro .content {
+  max-width: 900px;
+  text-align: center;
+  color: var(--color-text);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  :root {
+    --lavora-section-gap: 22px;
+    --lavora-intro-padding: 28px 0;
+  }
+  .lavora-content-inner { padding: 0 16px; }
+  .lavora-intro { min-height: 80px; }
+}
