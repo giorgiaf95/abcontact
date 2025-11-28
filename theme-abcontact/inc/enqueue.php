@@ -196,35 +196,35 @@ function abcontact_enqueue_conditional_hero_css() {
 
     if ( is_front_page() ) {
         // Load hero-home.css for front page
-        $hero_home_css = $theme_dir . '/assets/css/hero-home.css';
-        if ( file_exists( $hero_home_css ) ) {
+        $hero_home_css_path = $theme_dir . '/assets/css/hero-home.css';
+        if ( file_exists( $hero_home_css_path ) ) {
             wp_enqueue_style(
                 'abcontact-hero-home',
                 $theme_uri . '/assets/css/hero-home.css',
                 array( 'abcontact-main' ),
-                filemtime( $hero_home_css )
+                filemtime( $hero_home_css_path )
             );
         }
 
         // Load front-page.css for front page specific styles
-        $front_page_css = $theme_dir . '/assets/css/front-page.css';
-        if ( file_exists( $front_page_css ) ) {
+        $front_page_css_path = $theme_dir . '/assets/css/front-page.css';
+        if ( file_exists( $front_page_css_path ) ) {
             wp_enqueue_style(
                 'abcontact-front-page',
                 $theme_uri . '/assets/css/front-page.css',
                 array( 'abcontact-main' ),
-                filemtime( $front_page_css )
+                filemtime( $front_page_css_path )
             );
         }
     } else {
         // Load hero.css for all other pages
-        $hero_css = $theme_dir . '/assets/css/hero.css';
-        if ( file_exists( $hero_css ) ) {
+        $hero_css_path = $theme_dir . '/assets/css/hero.css';
+        if ( file_exists( $hero_css_path ) ) {
             wp_enqueue_style(
                 'abcontact-hero',
                 $theme_uri . '/assets/css/hero.css',
                 array( 'abcontact-main' ),
-                filemtime( $hero_css )
+                filemtime( $hero_css_path )
             );
         }
     }

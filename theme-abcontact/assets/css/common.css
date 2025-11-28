@@ -31,14 +31,14 @@
 }
 
 .btn:hover {
-    background: blue;
+    background: var(--color-primary, #2050f2);
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 255, 0.15);
+    box-shadow: 0 8px 24px rgba(32, 80, 242, 0.15);
 }
 
 .btn:focus {
-    outline: 3px solid rgba(0, 0, 255, 0.3);
+    outline: 3px solid rgba(32, 80, 242, 0.3);
     outline-offset: 2px;
 }
 

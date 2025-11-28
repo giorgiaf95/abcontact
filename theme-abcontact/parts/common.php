@@ -28,23 +28,3 @@ function abcontact_get_asset_url( $path ) {
     
     return $file_uri;
 }
-
-/**
- * Helper function to safely output escaped attribute
- *
- * @param string $value Value to escape.
- * @return string Escaped value.
- */
-function abcontact_esc_attr( $value ) {
-    return esc_attr( $value );
-}
-
-/**
- * Helper function to safely output escaped HTML
- *
- * @param string $value Value to escape.
- * @return string Escaped value.
- */
-function abcontact_esc_html( $value ) {
-    return esc_html( $value );
-}

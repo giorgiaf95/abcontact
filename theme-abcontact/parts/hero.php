@@ -32,16 +32,33 @@ $defaults = array(
 
 $hero_args = wp_parse_args( $args, $defaults );
 
+/**
+ * Sanitize CSS color value to prevent injection
+ * Accepts rgba(), rgb(), hex colors, and CSS color names
+ *
+ * @param string $color The color value to sanitize.
+ * @return string Sanitized color value or default.
+ */
+$sanitize_css_color = function( $color ) {
+    $color = wp_strip_all_tags( $color );
+    // Allow rgba/rgb, hex colors, and basic color names
+    if ( preg_match( '/^(rgba?\([^)]+\)|#[a-fA-F0-9]{3,8}|[a-zA-Z]+)$/', $color ) ) {
+        return $color;
+    }
+    return 'rgba(23, 80, 177, 0.36)'; // Return default if invalid
+};
+
 // Build style attribute for background image
 $style_attr = '';
 if ( ! empty( $hero_args['image'] ) ) {
-    $style_attr = "background-image: url('" . esc_url( $hero_args['image'] ) . "'); --hero-overlay: " . esc_attr( $hero_args['overlay'] ) . ";";
+    $sanitized_overlay = $sanitize_css_color( $hero_args['overlay'] );
+    $style_attr = "background-image: url('" . esc_url( $hero_args['image'] ) . "'); --hero-overlay: " . esc_attr( $sanitized_overlay ) . ";";
 }
 
 // Build class attribute
 $hero_classes = array( 'hero', 'hero-page' );
 if ( ! empty( $hero_args['class'] ) ) {
-    $hero_classes[] = $hero_args['class'];
+    $hero_classes[] = sanitize_html_class( $hero_args['class'] );
 }
 ?>
 <section class="<?php echo esc_attr( implode( ' ', $hero_classes ) ); ?>" aria-label="<?php esc_attr_e( 'Hero', 'theme-abcontact' ); ?>" <?php if ( $style_attr ) : ?>style="<?php echo $style_attr; ?>"<?php endif; ?>>
