@@ -1,0 +1,115 @@
+/**
+ * Hero Styles (Non-Front Page)
+ *
+ * Styles for the hero section on regular pages (page.php, single.php, archive.php).
+ * This file contains styles specific to the generic hero template part.
+ *
+ * @package theme-abcontact
+ */
+
+/* ========================= Hero Page Base ========================= */
+.hero.hero-page {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    margin-left: -50vw;
+    box-sizing: border-box;
+    background-color: rgba(23, 80, 177, 0.08);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Overlay gradient */
+.hero.hero-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+        rgba(23, 80, 177, 0.18) 0%,
+        rgba(23, 80, 177, 0.10) 40%,
+        rgba(255, 255, 255, 0.05) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Hero inner container */
+.hero.hero-page .hero-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: var(--max-width, 1200px);
+    padding: 48px 20px;
+    box-sizing: border-box;
+}
+
+/* Hero content */
+.hero.hero-page .hero-content {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Hero title */
+.hero.hero-page .hero-title {
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 0 12px;
+    color: var(--color-text, #111827);
+}
+
+/* Hero subtitle */
+.hero.hero-page .hero-subtitle {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-muted, #6b7280);
+    margin: 0;
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Hero eyebrow */
+.hero.hero-page .hero__eyebrow {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-primary, #2050f2);
+    margin-bottom: 8px;
+}
+
+/* ========================= Responsive ========================= */
+@media (max-width: 799px) {
+    .hero.hero-page {
+        min-height: 200px;
+    }
+
+    .hero.hero-page .hero-inner {
+        padding: 32px 16px;
+    }
+
+    .hero.hero-page .hero-title {
+        font-size: 1.35rem;
+    }
+
+    .hero.hero-page .hero-subtitle {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero.hero-page {
+        min-height: 160px;
+    }
+
+    .hero.hero-page .hero-inner {
+        padding: 24px 12px;
+    }
+}

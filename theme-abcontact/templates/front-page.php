@@ -1,7 +1,8 @@
 <?php
 /**
- * Front Page Template
+ * Template Name: Front Page Template
  *
+ * Alternative front page template that can be selected from page attributes.
  * This template uses modular parts for hero, services, and CTA sections.
  *
  * @package theme-abcontact
@@ -22,9 +23,6 @@ if ( function_exists( 'render_why_us_cards' ) ) {
         'columns' => 4,
         'class'   => 'why-us--home',
     ) );
-} else {
-    // fallback: niente (opzionalmente puoi includere un template statico)
-    // echo '<!-- Perché Noi: plugin non attivo o funzione non disponibile -->';
 }
 
 /* ============================= Sezione Servizi ============================= */
@@ -39,7 +37,7 @@ if ( empty( $services_output ) ) {
         ob_start();
         get_template_part( 'template-parts/services' );
         $services_output = ob_get_clean();
-    } else {
+    } elseif ( defined( 'ABCONTACT_DIR' ) ) {
         $plugin_template = ABCONTACT_DIR . 'templates/template-parts/services.php';
         if ( file_exists( $plugin_template ) ) {
             ob_start();
