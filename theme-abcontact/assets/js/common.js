@@ -30,8 +30,7 @@
      */
     function throttle(func, limit) {
         let inThrottle;
-        return function () {
-            const args = arguments;
+        return function (...args) {
             const context = this;
             if (!inThrottle) {
                 func.apply(context, args);
@@ -51,9 +50,8 @@
      */
     function debounce(func, wait) {
         let timeout;
-        return function () {
+        return function (...args) {
             const context = this;
-            const args = arguments;
             clearTimeout(timeout);
             timeout = setTimeout(function () {
                 func.apply(context, args);

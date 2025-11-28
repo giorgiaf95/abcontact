@@ -74,8 +74,8 @@ if ( ! defined( 'ABSPATH' ) ) {
                         if ( is_numeric( $img_val ) && (int) $img_val ) {
                             $src = wp_get_attachment_image_url( (int) $img_val, 'thumbnail' );
                         } else {
-                            // sanitize URL
-                            $src = esc_url_raw( $img_val );
+                            // sanitize URL for output
+                            $src = esc_url( $img_val );
                         }
 
                         if ( $src ) {

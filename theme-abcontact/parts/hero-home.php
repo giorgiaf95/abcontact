@@ -25,7 +25,7 @@ if ( $hero_img ) {
     $style_attr = "background-image: url('" . esc_url( $hero_img ) . "'); --hero-overlay: " . esc_attr( $overlay ) . ";";
 }
 ?>
-<section class="hero hero--home" aria-label="<?php esc_attr_e( 'Hero', 'theme-abcontact' ); ?>" <?php if ( $style_attr ) : ?>style="<?php echo $style_attr; ?>"<?php endif; ?>>
+<section class="hero hero--home" aria-label="<?php esc_attr_e( 'Hero', 'theme-abcontact' ); ?>" <?php if ( $style_attr ) : ?>style="<?php echo esc_attr( $style_attr ); ?>"<?php endif; ?>>
     <div class="hero__inner container">
         <div class="hero__content">
             <p class="hero__eyebrow"><?php echo esc_html__( "Il Tuo Partner per l'Energia del Futuro", 'theme-abcontact' ); ?></p>
