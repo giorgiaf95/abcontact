@@ -161,3 +161,83 @@ function abcontact_enqueue_hero_shared_css() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'abcontact_enqueue_hero_shared_css', 16 );
+
+/* ========================== Common CSS (all pages) ========================== */
+function abcontact_enqueue_common_css() {
+    $common_css = get_stylesheet_directory() . '/assets/css/common.css';
+    if ( file_exists( $common_css ) ) {
+        wp_enqueue_style(
+            'abcontact-common',
+            get_stylesheet_directory_uri() . '/assets/css/common.css',
+            array( 'abcontact-main' ),
+            filemtime( $common_css )
+        );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'abcontact_enqueue_common_css', 12 );
+
+/* ========================== Common JS (all pages) ========================== */
+function abcontact_enqueue_common_js() {
+    $common_js = get_stylesheet_directory() . '/assets/js/common.js';
+    if ( file_exists( $common_js ) ) {
+        wp_enqueue_script(
+            'abcontact-common',
+            get_stylesheet_directory_uri() . '/assets/js/common.js',
+            array(),
+            filemtime( $common_js ),
+            true
+        );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'abcontact_enqueue_common_js', 12 );
+
+/* ========================== Hero Home CSS (front-page only) ========================== */
+function abcontact_enqueue_hero_home_css() {
+    if ( ! is_front_page() ) {
+        return;
+    }
+    $hero_home_css = get_stylesheet_directory() . '/assets/css/hero-home.css';
+    if ( file_exists( $hero_home_css ) ) {
+        wp_enqueue_style(
+            'abcontact-hero-home',
+            get_stylesheet_directory_uri() . '/assets/css/hero-home.css',
+            array( 'abcontact-main' ),
+            filemtime( $hero_home_css )
+        );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'abcontact_enqueue_hero_home_css', 17 );
+
+/* ========================== Hero CSS (non-front-page pages) ========================== */
+function abcontact_enqueue_hero_css() {
+    if ( is_front_page() ) {
+        return;
+    }
+    $hero_css = get_stylesheet_directory() . '/assets/css/hero.css';
+    if ( file_exists( $hero_css ) ) {
+        wp_enqueue_style(
+            'abcontact-hero',
+            get_stylesheet_directory_uri() . '/assets/css/hero.css',
+            array( 'abcontact-main' ),
+            filemtime( $hero_css )
+        );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'abcontact_enqueue_hero_css', 17 );
+
+/* ========================== Front Page CSS (front-page only) ========================== */
+function abcontact_enqueue_front_page_css() {
+    if ( ! is_front_page() ) {
+        return;
+    }
+    $front_page_css = get_stylesheet_directory() . '/assets/css/front-page.css';
+    if ( file_exists( $front_page_css ) ) {
+        wp_enqueue_style(
+            'abcontact-front-page',
+            get_stylesheet_directory_uri() . '/assets/css/front-page.css',
+            array( 'abcontact-main' ),
+            filemtime( $front_page_css )
+        );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'abcontact_enqueue_front_page_css', 18 );

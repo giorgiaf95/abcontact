@@ -1,0 +1,211 @@
+/**
+ * Hero Home CSS - Styles for the front-page hero section.
+ *
+ * This file contains styles specific to the homepage hero,
+ * including eyebrow text, CTA buttons, and larger dimensions.
+ *
+ * @package theme-abcontact
+ */
+
+/* ========================= Hero Home Variables ========================= */
+:root {
+    --hero-home-height-desktop: 720px;
+    --hero-home-height-tablet: 560px;
+    --hero-home-height-mobile: 420px;
+    --hero-home-overlay-default: rgba(23, 80, 177, 0.607);
+}
+
+/* ========================= Front-Page Hero ========================= */
+.hero--home {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    margin-left: -50vw;
+    box-sizing: border-box;
+
+    /* Fallback background if no image */
+    background-color: rgba(0, 0, 0, 0.03);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: scroll;
+
+    height: var(--hero-home-height-desktop);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Overlay gradient */
+.hero--home::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, 
+        var(--hero-overlay, var(--hero-home-overlay-default)), 
+        rgba(0, 0, 0, 0));
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Content container */
+.hero--home .hero__inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1100px;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero--home .hero__content {
+    text-align: center;
+    max-width: 720px;
+    color: #ffffff;
+}
+
+/* Eyebrow text */
+.hero--home .hero__eyebrow {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 12px;
+    opacity: 0.95;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+/* Title styling */
+.hero--home .hero__title {
+    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+    line-height: 1.12;
+    font-weight: 700;
+}
+
+/* Lead / subtitle text */
+.hero--home .hero__lead {
+    margin-bottom: 1.25rem;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.05rem;
+    max-width: 780px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ========================= CTA Actions ========================= */
+.hero--home .hero__actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 22px;
+    z-index: 2;
+}
+
+.hero--home .hero__actions .btn,
+.hero--home .hero__actions a.button,
+.hero--home .hero__actions .button {
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1;
+    padding: 10px 18px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+    border: none;
+}
+
+/* Primary button (white with blue text) */
+.hero--home .hero__actions .btn.btn-primary,
+.hero--home .hero__actions a.button.btn-primary {
+    background: #ffffff;
+    color: #0b5fff;
+    box-shadow: 0 6px 20px rgba(11, 95, 255, 0.12);
+    font-weight: 600;
+}
+
+/* Arrow after primary button */
+.hero--home .hero__actions .btn.btn-primary::after {
+    content: "➜";
+    margin-left: 6px;
+    font-size: 1rem;
+    opacity: 0.95;
+}
+
+/* Ghost / secondary button */
+.hero--home .hero__actions .btn.btn-ghost,
+.hero--home .hero__actions a.button.btn-ghost {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(4px);
+}
+
+/* Hover states */
+.hero--home .hero__actions .btn.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 34px rgba(11, 95, 255, 0.16);
+}
+
+.hero--home .hero__actions .btn.btn-ghost:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.06);
+}
+
+/* ========================= Responsive Styles ========================= */
+@media (max-width: 1024px) {
+    .hero--home {
+        height: var(--hero-home-height-tablet);
+    }
+
+    .hero--home .hero__title {
+        font-size: 1.6rem;
+    }
+
+    .hero--home .hero__lead {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 799px) {
+    .hero--home {
+        height: var(--hero-home-height-mobile);
+    }
+
+    .hero--home .hero__title {
+        font-size: 1.35rem;
+    }
+
+    .hero--home .hero__lead {
+        font-size: 0.95rem;
+    }
+
+    .hero--home .hero__inner {
+        padding: 20px;
+    }
+
+    .hero--home .hero__actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .hero--home .hero__actions .btn {
+        width: auto;
+        padding: 10px 16px;
+    }
+}
+
+/* ========================= Reduced Motion ========================= */
+@media (prefers-reduced-motion: reduce) {
+    .hero--home {
+        background-attachment: scroll;
+    }
+}
