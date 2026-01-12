@@ -7,22 +7,40 @@ $featured_post = get_query_var( 'abcontact_featured_post' );
 if ( ! $featured_post ) {
     return;
 }
+
 $post = $featured_post;
 setup_postdata( $post );
 ?>
 <article class="featured-article card" aria-labelledby="featured-title">
-  <div class="featured-inner container" style="display:flex; gap:28px; align-items:stretch; box-sizing:border-box;">
-    <div class="featured-thumb" style="flex: 1 1 50%; overflow:hidden; border-top-left-radius:12px; border-bottom-left-radius:12px;">
+  <div class="featured-inner container">
+    <?php
+    // Thumbnail (render as <img> so we keep srcset/responsive)
+    $thumb_id  = get_post_thumbnail_id( $post );
+    $thumb_alt = '';
+    if ( $thumb_id ) {
+        $thumb_alt = get_post_meta( $thumb_id, '_wp_attachment_image_alt', true );
+        if ( ! $thumb_alt ) {
+            $thumb_alt = get_the_title( $post );
+        }
+    }
+    ?>
+    <div class="featured-thumb<?php echo $thumb_id ? ' has-thumb' : ' no-thumb'; ?>">
       <?php
-      if ( has_post_thumbnail( $post ) ) {
-          echo get_the_post_thumbnail( $post, 'news-large', array( 'class' => 'card__thumb-img featured-thumb__img', 'loading' => 'lazy', 'alt' => esc_attr( get_the_title( $post ) ) ) );
+      if ( $thumb_id ) {
+          // Use wp_get_attachment_image to preserve srcset and sizes
+          echo wp_get_attachment_image( $thumb_id, 'news-large', false, array(
+              'class'    => 'card__thumb-img featured-thumb__img wp-post-image',
+              'alt'      => esc_attr( $thumb_alt ),
+              'loading'  => 'lazy',
+              'decoding' => 'async',
+          ) );
       } else {
-          echo '<div class="card__thumb-img featured-thumb__img" aria-hidden="true"></div>';
+          echo '<div class="featured-thumb__placeholder" aria-hidden="true"></div>';
       }
       ?>
     </div>
 
-    <div class="featured-body" style="flex:1 1 50%; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding: 28px 32px 28px 24px; box-sizing:border-box;">
+    <div class="featured-body">
       <?php
       $cats = get_the_category( $post->ID );
       if ( ! empty( $cats ) ) {
@@ -33,37 +51,36 @@ setup_postdata( $post );
           echo '<span class="news-label news-label--featured" ' . $style . '>' . esc_html( $cat->name ) . '</span>';
       }
       ?>
-      <h2 id="featured-title" class="entry-title" style="margin:8px 0 12px;"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
+      <h2 id="featured-title" class="entry-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
 
-      <div class="entry-content" style="color:var(--color-muted);">
-        <?php the_excerpt(); ?>
+      <div class="entry-content">
+        <?php
+        // Use a trimmed excerpt (force 15 words). If an explicit manual excerpt exists it will be trimmed too.
+        $manual_excerpt = get_the_excerpt();
+        $trimmed = wp_trim_words( wp_strip_all_tags( $manual_excerpt ), 18, '...' );
+        echo wp_kses_post( wpautop( $trimmed ) );
+        ?>
       </div>
 
-      <div class="entry-meta" style="margin-top:18px; display:flex; gap:14px; align-items:center; color:var(--color-muted);">
-        <span class="meta-author" aria-hidden="true">
-          <!-- optional author icon (hidden if you don't want author shown) -->
-        </span>
-
+      <div class="entry-meta">
         <time class="meta-date" datetime="<?php echo esc_attr( get_the_date( 'c', $post ) ); ?>">
-          <!-- calendar icon -->
-          <svg class="meta-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="vertical-align:middle; margin-right:8px;"><path fill="currentColor" d="M7 10h5v5H7z" opacity="0.9"></path><path fill="currentColor" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 15H5V9h14v10z"></path></svg>
           <?php echo esc_html( get_the_date( '', $post ) ); ?>
         </time>
 
         <span class="news-meta__separator" aria-hidden="true">•</span>
 
         <span class="meta-reading">
-          <!-- clock icon -->
-          <svg class="meta-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="vertical-align:middle; margin-right:8px;"><path fill="currentColor" d="M12 1a11 11 0 1011 11A11.013 11.013 0 0012 1zm0 20a9 9 0 119-9 9.01 9.01 0 01-9 9zm.5-13H13v6l5 2-.5.87L12.5 13V8z"></path></svg>
           <?php echo esc_html( abcontact_get_reading_time( $post->ID ) ); ?> <?php esc_html_e( 'min', 'theme-abcontact' ); ?>
         </span>
       </div>
 
-      <div style="margin-top:22px;">
+      <div class="featured-cta">
         <a class="button button--ghost" href="<?php the_permalink(); ?>"><?php esc_html_e( "Leggi l'Articolo", 'theme-abcontact' ); ?></a>
       </div>
     </div>
   </div>
 </article>
+
 <?php
 wp_reset_postdata();
+?>

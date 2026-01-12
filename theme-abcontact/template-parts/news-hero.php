@@ -1,5 +1,4 @@
 <?php
-/* Partial news-hero.php */
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
@@ -95,7 +94,6 @@ if ( empty( $bg_url ) && is_singular() ) {
     }
 }
 
-/* sanitize for attributes */
 $title_attr = wp_strip_all_tags( $title );
 ?>
 <section class="hero news-hero" role="banner" aria-label="<?php echo esc_attr( $title_attr ); ?>">

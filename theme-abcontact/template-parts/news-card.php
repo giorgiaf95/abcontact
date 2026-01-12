@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-/* Single card (used in news grid). Expects global $post to be set */
+/* Single card (used in news grid) */
 global $post;
 if ( ! $post ) return;
 ?>
@@ -36,7 +36,7 @@ if ( ! $post ) return;
         <?php
         $excerpt = get_post_field( 'post_excerpt', $post );
         if ( empty( $excerpt ) ) {
-            $excerpt = wp_trim_words( wp_strip_all_tags( $post->post_content ), 24 );
+            $excerpt = wp_trim_words( wp_strip_all_tags( $post->post_content ), 18 );
         }
         echo wp_kses_post( wpautop( $excerpt ) );
         ?>

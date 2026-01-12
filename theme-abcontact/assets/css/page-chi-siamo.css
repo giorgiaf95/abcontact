@@ -39,8 +39,8 @@
 .cs-values {
   padding: 88px 0;
 }
-.values-eyebrow { text-align: center; font-size: 0.95rem; color: var(--color-muted); margin-bottom: 8px; font-weight: 600; }
-.values-sub { text-align: center; max-width: 860px; margin: 0 auto 28px; color: var(--color-muted); }
+.values-eyebrow { text-align: center; font-size: 1.05rem; color: var(--color-primary); margin-bottom: 8px; font-weight: 700; } /* Title: blue, slightly larger */
+.values-sub { text-align: center; max-width: 860px; margin: 0 auto 28px; color: var(--color-text); } /* Subtitle: black */
 .values-grid { display: grid; gap: 28px; grid-template-columns: repeat(1, 1fr); }
 @media (min-width: 760px) { .values-grid { grid-template-columns: repeat(4, 1fr); } }
 .values-item { text-align: center; padding: 8px 12px; }
@@ -59,12 +59,12 @@
 .values-icon img { width: 45px; height: 45px; object-fit: contain; transition: transform 320ms cubic-bezier(.2,.85,.2,1); }
 .values-item:hover .values-icon, .values-item:focus-within .values-icon { transform: translateY(-4px) scale(1.02); box-shadow: 0 18px 40px rgba(16,24,40,0.08); }
 .values-item:hover .values-icon img, .values-item:focus-within .values-icon img { transform: scale(1.05); }
-.values-item-title { font-weight: 700; margin-bottom: 8px; color: var(--color-text); }
+.values-item-title { font-weight: 700; margin-bottom: 8px; color: var(--color-primary); } /* values item title: blue */
 .values-item-text { color: var(--color-muted); }
 
 /* Section C spacing (img+text above stats) */
 .cs-section-c { margin-bottom: 80px; }
-@media (min-width: 1200px) { .cs-section-c { margin-bottom: 120px; } }
+@media (min-width: 1200px) { .cs-section_c { margin-bottom: 120px; } }
 
 /* ============== Statistics ============== */
 .cs-stats {
@@ -185,4 +185,54 @@
 }
 
 /* Small refinements */
-.cs-title, .values-item-title, .cs-cta-title { color: var(--color-text); }
+
+/* Make main section titles blue */
+.cs-title { color: var(--color-primary); }
+
+/* Values section title (eyebrow) already set above to blue and slightly larger.
+   Ensure values subtitle is black for better contrast. */
+.values-sub { color: var(--color-text); }
+
+/* Values item title set to blue above (.values-item-title) */
+
+/* CTA and other titles still inherit as appropriate */
+.cs-cta-title { color: var(--color-text); }
+
+/* ========================= New: hide fake placeholders and style reviews area ========================= */
+
+/* Hide possible placeholder/fake boxes injected by third-party or legacy markup */
+.cs-image-placeholder,
+.cs-preview-placeholder,
+.cs-empty-box,
+.cs-fake-rijad {
+  display: none !important;
+}
+
+/* If a small count or helper is printed directly after the reviews container, hide it */
+.cs-reviews + small,
+.cs-reviews + .count,
+.sedi-map-shortcode-inner + small {
+  display: none !important;
+}
+
+/* Reviews inner container: neutral reset and spacing */
+.cs-reviews-inner {
+  margin: 0 auto;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* If the reviews shortcode outputs a wrapper we want to constrain, make it responsive */
+.cs-reviews .reviews,
+.cs-reviews .plugin-reviews,
+.cs-reviews .review-list {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Accessibility: ensure reviews area spacing is consistent on mobile */
+@media (max-width: 760px) {
+  .cs-reviews-inner { padding-left: 12px; padding-right: 12px; }
+}
+
+/* End of page-chi-siamo.css */

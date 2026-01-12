@@ -2,6 +2,10 @@
 /**
  * Template Name: Sedi
  * Description: Pagina elenchi sedi
+ *
+ * Aggiornata: rimosso il titolo sotto l'hero e reso il riquadro mappa contenitore
+ * per lo shortcode del plugin. La mappa (shortcode) verrà inserita dentro
+ * il riquadro .sedi-map-placeholder. La scritta "sedi registrate" non viene più stampata.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,7 +14,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $post_id = get_the_ID();
 
-/* Enqueue theme CSS and page-specific CSS */
 $theme_css_path = get_stylesheet_directory() . '/assets/css/service-template.css';
 if ( file_exists( $theme_css_path ) ) {
     wp_enqueue_style( 'ab-service-template', get_stylesheet_directory_uri() . '/assets/css/service-template.css', array(), filemtime( $theme_css_path ) );
@@ -92,49 +95,36 @@ $support_phone = $support_phone_meta ?: get_option( 'abcontact_support_phone', '
 $support_email = $support_email_meta ?: get_option( 'abcontact_support_email', get_option( 'admin_email' ) );
 $map_shortcode = $map_shortcode_meta ?: '';
 
-/* ============================= Section title under hero ============================= */
-$page_title_meta = get_post_meta( $post_id, 'service_box_heading2', true );
-$page_sub_meta   = get_post_meta( $post_id, 'service_box_text2', true );
-
-if ( empty( $page_sub_meta ) ) {
-    $legacy_intro = get_post_meta( $post_id, 'sedi_intro_text', true );
-    if ( $legacy_intro ) {
-        $page_sub_meta = $legacy_intro;
-    }
-}
-
 ?>
 
 <main class="sedi-main container" role="main">
   <div class="sedi-inner">
 
-    <!-- Section under hero: only rendered if at least one meta present -->
-    <?php if ( $page_title_meta || $page_sub_meta ) : ?>
-      <section class="sedi-section-title" aria-labelledby="sedi-section-title">
-        <div class="container">
-          <?php if ( $page_title_meta ) : ?>
-            <h2 id="sedi-section-title" class="section-title"><?php echo esc_html( $page_title_meta ); ?></h2>
-          <?php endif; ?>
-          <?php if ( $page_sub_meta ) : ?>
-            <div class="section-subtitle"><?php echo wp_kses_post( wpautop( $page_sub_meta ) ); ?></div>
-          <?php endif; ?>
-        </div>
-      </section>
-    <?php endif; ?>
+    <!-- NOTE: removed small "section under hero" title per request (metabox still exists but not printed) -->
 
-    <!-- Map area (shortcode or placeholder) -->
+    <!-- Map area (shortcode or placeholder)
+         Always render our styled placeholder (.sedi-map-placeholder).
+         If a shortcode is present, its output is injected inside the placeholder.
+         The small "sedi count" is NOT printed here. -->
     <div class="sedi-map-hero">
-      <?php if ( ! empty( $map_shortcode ) ) : ?>
-        <div class="sedi-map-shortcode" role="region" aria-label="<?php echo esc_attr__( 'Mappa interattiva', 'abcontact' ); ?>">
-          <?php echo do_shortcode( $map_shortcode ); ?>
-        </div>
-      <?php else : ?>
-        <div id="sedi-map" class="sedi-map-placeholder" role="region" aria-label="<?php echo esc_attr__( 'Mappa Sedi (placeholder)', 'abcontact' ); ?>">
-          <span class="map-icon" aria-hidden="true">📍</span>
-          <p class="map-title"><?php esc_html_e( 'Mappa interattiva delle sedi - In arrivo prossimamente', 'abcontact' ); ?></p>
-          <p class="map-count"><?php echo esc_html( $sedi_count . ' ' . _n( 'sede registrata', 'sedi registrate', $sedi_count, 'abcontact' ) ); ?></p>
-        </div>
-      <?php endif; ?>
+      <div id="sedi-map" class="sedi-map-placeholder" role="region" aria-label="<?php echo esc_attr__( 'Mappa Sedi', 'abcontact' ); ?>">
+
+        <!-- Big title kept inside the placeholder (we will style it blue & slightly smaller) -->
+        <h2 class="map-title"><?php esc_html_e( 'Mappa interattiva delle sedi', 'abcontact' ); ?></h2>
+
+        <?php
+        // If a map shortcode is configured, render it inside the placeholder.
+        if ( ! empty( $map_shortcode ) ) {
+            echo '<div class="sedi-map-shortcode-inner">';
+            // do_shortcode can return markup from plugin - we inject it inside our box
+            echo do_shortcode( $map_shortcode );
+            echo '</div>';
+        } else {
+            // If no shortcode, optionally show a small helper message (or leave empty)
+            // echo '<p class="map-placeholder-note">' . esc_html__( 'Mappa non ancora configurata.', 'abcontact' ) . '</p>';
+        }
+        ?>
+      </div>
     </div>
 
     <!-- CTA: left text + bullets, right gradient card -->

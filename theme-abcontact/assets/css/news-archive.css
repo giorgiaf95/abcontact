@@ -19,10 +19,21 @@
 .breadcrumb a { color: var(--color-primary); }
 
 /* ========================== Featured Article ========================== */
+/* Ensure the featured card is a white box with rounded corners and image clipped to edges */
 .featured-article {
   margin-bottom: 36px;
   border-radius: 12px;
-  overflow: visible;
+  overflow: hidden;                 /* clip the image so it touches card edges */
+  background: #ffffff;              /* card white */
+  box-shadow: 0 12px 36px rgba(16,24,40,0.08);
+}
+
+/* Remove side container padding for featured-inner when .container is used
+   so that the image can fill the left column edge-to-edge within the card */
+.featured-inner.container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-sizing: border-box;
 }
 
 /* container: left image + right content columns */
@@ -34,19 +45,20 @@
   box-sizing: border-box;
 }
 
-/* LEFT: featured image container */
+/* LEFT: featured image container: no padding, full height */
 .featured-thumb {
   position: relative;
   overflow: hidden;
   min-height: 360px;
   flex: 0 0 48%;
-  border-top-left-radius: 12px;
-  border-bottom-left-radius: 12px;
-  background: #f6f8fa;
+  background: transparent;
   padding: 0;
+  margin: 0;
   box-sizing: border-box;
+  /* Do not apply border-radius here; the card (.featured-article) handles the rounding */
 }
 
+/* Make image absolutely fill the thumb container */
 .featured-thumb > img,
 .featured-thumb img.featured-thumb__img,
 .featured-thumb img.card__thumb-img {
@@ -57,13 +69,17 @@
   object-fit: cover !important;
   object-position: center center !important;
   display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important; /* card will show rounded corners */
   transform-origin: center center;
   transition: transform 360ms cubic-bezier(.2,.8,.2,1);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  will-change: transform;
 }
 
-/* HOVER: subtle scale up (same as home) */
+/* HOVER: subtle scale up */
 .featured-article:hover .featured-thumb__img,
 .card.news-card-grid:hover .card__thumb-img {
   transform: scale(1.06);
@@ -74,7 +90,7 @@
   flex: 1 1 52%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* do not vertically center, allow CTA to be pushed down */
   align-items: flex-start;
   padding: 22px 28px;
   box-sizing: border-box;
@@ -109,15 +125,16 @@
   text-overflow: ellipsis;
 }
 
-/* Featured CTA: wider */
+/* Featured CTA: style and shrink behavior */
 .featured-body .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 220px;
+  min-width: 0; /* allow it to shrink */
   padding: 12px 20px;
   border-radius: 10px;
   font-weight: 600;
+  box-sizing: border-box;
 }
 .featured-body .button.button--ghost:hover,
 .featured-body .button.button--ghost:focus {
@@ -126,6 +143,9 @@
   box-shadow: 0 10px 28px rgba(11,95,255,0.12);
   transform: translateY(-2px);
 }
+
+/* Ensure CTA is pushed to bottom of the featured-body */
+.featured-cta { margin-top: auto; }
 
 /* ========================== Grid (cards) ========================== */
 .news-archive__grid {
@@ -209,27 +229,37 @@
   /* featured image container */
   .featured-thumb {
     position: relative;
-    border-radius: 12px;
     min-height: 220px;
     flex-basis: auto;
     overflow: hidden;
   }
 
+  /* In mobile stacked layout make image fill and keep rounded corners */
   .featured-thumb > img,
   .featured-thumb img.featured-thumb__img,
   .featured-thumb img.card__thumb-img.featured-thumb__img {
-    position: absolute !important;
-    inset: 0 !important;
+    position: relative !important;
+    inset: auto !important;
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
     object-fit: cover !important;
     object-position: center center !important;
     display: block !important;
-    transition: transform 360ms cubic-bezier(.2,.8,.2,1);
-    will-change: transform;
+    border-radius: 12px;
+    transform: none !important;
   }
 
   .featured-body { padding: 12px; box-sizing: border-box; min-height: auto; }
+
+  /* Mobile CTA: full width and centered inside featured body */
+  .featured-cta .button.button--ghost {
+    display: block;
+    width: 100%;
+    margin: 10px 0 0;
+    padding: 10px 14px;
+    box-sizing: border-box;
+    text-align: center;
+  }
 }
 
 /* safety */
@@ -241,53 +271,126 @@ html, body { overflow-x: hidden; }
   align-items: stretch !important;
 }
 
-/* elimina padding accidentali e forza overflow/box-sizing */
+/* Defensive final override for any remaining padding on the featured-thumb wrapper */
 .featured-inner.container > .featured-thumb {
-  position: relative !important; /* ancestor per img assoluta */
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* === Fix definitivo: featured image flush + rounding + mobile spacing === */
+
+/* 1) Forza rimozione padding/margin ereditati sul featured wrapper */
+.featured-article,
+.featured-inner.container,
+.featured-inner,
+.featured-inner.container > .featured-thumb {
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* 2) Card: bianco, arrotondato e clip dell'overflow (l'immagine verrà ritagliata correttamente) */
+.featured-article {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden; /* importantissimo: taglia l'immagine ai bordi arrotondati */
+  box-shadow: 0 12px 36px rgba(16,24,40,0.08);
+}
+
+/* 3) Thumb container: nessun padding, posizione relative per l'immagine assoluta */
+.featured-thumb {
+  position: relative !important;
   overflow: hidden !important;
   padding: 0 !important;
-  box-sizing: border-box !important;
-  border-top-left-radius: 12px !important;
-  border-bottom-left-radius: 12px !important;
+  margin: 0 !important;
+  flex: 0 0 48%;
+  min-height: 360px;
+  background: transparent !important;
 }
 
-.featured-inner.container > .featured-thumb > img.wp-post-image.featured-thumb__img,
-.featured-inner.container > .featured-thumb > img.card__thumb-img.featured-thumb__img {
+/* 4) Immagine: riempi totalmente il contenitore e non avere gap
+      - desktop: arrotonda solo i bordi sinistri del card (img ritagliata dall'overflow)
+      - mobile (stacked): arrotonda tutto il bordo */
+.featured-thumb > img,
+.featured-thumb img.featured-thumb__img,
+.featured-thumb img.card__thumb-img {
   position: absolute !important;
-  inset: 0 !important; 
+  inset: 0 !important;
   width: 100% !important;
   height: 100% !important;
-  display: block !important;
   object-fit: cover !important;
   object-position: center center !important;
-  transform-origin: center center !important;
-  -webkit-backface-visibility: hidden !important;
-  backface-visibility: hidden !important;
-  transition: transform 360ms cubic-bezier(.2,.8,.2,1) !important;
-  will-change: transform !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important; /* lascia il rounding al card esterno */
+  transform-origin: center center;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: transform 360ms cubic-bezier(.2,.8,.2,1);
 }
 
-/* hover/scale identico a home */
-.featured-article:hover .featured-thumb__img,
-.featured-inner.container:hover > .featured-thumb > img.wp-post-image.featured-thumb__img {
-  transform: scale(1.06) !important;
+/* 5) Per sicurezza: applica la stessa rounding visiva alla sinistra dell'immagine
+   (questo assicura che negli UA che non tagliano subito non si veda il bianco) */
+.featured-article > .featured-thumb > img,
+.featured-article .featured-thumb img.featured-thumb__img {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
 }
 
-/* Media */
+/* 6) Featured body: niente vertical centering, CTA sarà spinta in basso con margin-top:auto */
+.featured-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 22px 28px;
+  box-sizing: border-box;
+}
+
+/* CTA spinta in basso */
+.featured-cta { margin-top: auto; }
+
+/* 7) Mobile stacked behaviour: immagine piena larghezza e arrotondata, meno gap sotto l'immagine */
 @media (max-width: 520px) {
-  .featured-inner.container {
-    flex-direction: column !important;
-    align-items: stretch !important;
+  .featured-inner { flex-direction: column; gap: 10px; align-items: stretch; }
+
+  .featured-thumb {
+    width: 100%;
+    min-height: 220px;
+    flex-basis: auto;
   }
-  .featured-inner.container > .featured-thumb {
-    min-height: 220px !important;
-    border-radius: 12px !important;
-  }
-  .featured-inner.container > .featured-thumb > img.wp-post-image.featured-thumb__img {
-    position: absolute !important;
-    inset: 0 !important;
+
+  /* In stacked mode l'immagine non è assoluta ma deve comunque riempire e mantenere radius */
+  .featured-thumb > img,
+  .featured-thumb img.featured-thumb__img,
+  .featured-thumb img.card__thumb-img {
+    position: relative !important;
+    inset: auto !important;
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
     object-fit: cover !important;
+    border-radius: 12px !important; /* rotondità completa su mobile */
+    transform: none !important;
   }
+
+  /* Riduci lo spazio tra immagine e primo elemento testuale (categoria) */
+  .featured-body { padding: 12px 16px !important; }
+  .news-label.news-label--featured { margin-top: 6px; margin-bottom: 6px; display: inline-block; }
+
+  /* Pulsante mobile: full width all'interno del padding, centrato */
+  .featured-cta .button.button--ghost {
+    display: block;
+    width: 100%;
+    margin: 8px 0 0;
+    padding: 10px 14px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+}
+
+/* 8) Defensive: se la tua .container globale impone gutter, assicurati che non introduca gap nel featured */
+.featured-article .container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }

@@ -1,9 +1,9 @@
 <?php
 /**
- * Template part: Services (alternating layout)
+ * Template part: Services
  * Expects CPT 'ab_service' and meta:
- * - _ab_icon_id (attachment id)
- * - _ab_links (json array of {label,url})
+ * - _ab_icon_id
+ * - _ab_links
  * - featured image for hero
  */
 

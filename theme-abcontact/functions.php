@@ -23,6 +23,9 @@ $inc_files = array(
     get_stylesheet_directory() . '/inc/setup.php',
     get_stylesheet_directory() . '/inc/enqueue.php',
     get_stylesheet_directory() . '/inc/news.php',
+    get_stylesheet_directory() . '/inc/metaboxes-lavora.php',
+    get_stylesheet_directory() . '/inc/metaboxes-chisiamo-team.php',
+    get_stylesheet_directory() . '/inc/metaboxes-services.php',
 );
 
 foreach ( $inc_files as $file ) {
@@ -69,6 +72,16 @@ function abcontact_enqueue_header_assets() {
     if ( file_exists( $header_js_path ) ) {
         wp_enqueue_script( 'theme-header', $theme_uri . '/assets/js/header.js', array(), filemtime( $header_js_path ), true );
     }
+
+    $drawer_css_path = $theme_dir . '/assets/css/drawer-menu.css';
+if ( file_exists( $drawer_css_path ) ) {
+    wp_enqueue_style( 'theme-drawer-menu', $theme_uri . '/assets/css/drawer-menu.css', array(), filemtime( $drawer_css_path ) );
+}
+$drawer_js_path = $theme_dir . '/assets/js/drawer-menu.js';
+if ( file_exists( $drawer_js_path ) ) {
+    wp_enqueue_script( 'theme-drawer-menu', $theme_uri . '/assets/js/drawer-menu.js', array(), filemtime( $drawer_js_path ), true );
+}
+
 }
 add_action( 'wp_enqueue_scripts', 'abcontact_enqueue_header_assets', 20 );
 
@@ -327,240 +340,49 @@ add_action( 'admin_init', function() {
     }
 }, 20 );
 
-/* ============================ Service Page Metabox ============================ */
-function abcontact_register_service_metabox() {
-    add_meta_box( 'ab_service_fields', __( 'Campi Service Page', 'abcontact' ), 'ab_service_fields_render', 'page', 'normal', 'high' );
-}
-add_action( 'add_meta_boxes', 'abcontact_register_service_metabox' );
-
-function ab_service_fields_render( $post ) {
-    wp_nonce_field( 'ab_service_fields_save', 'ab_service_fields_nonce' );
-    $post_id = isset( $post->ID ) ? (int) $post->ID : 0;
-
-    // Prefer new keys, fallback to legacy keys to avoid losing existing content
-    $service_box_heading1 = get_post_meta( $post_id, 'service_box_heading1', true );
-    if ( ! $service_box_heading1 ) {
-        $service_box_heading1 = get_post_meta( $post_id, 'service_group1_title', true );
-    }
-
-    $service_box_text1 = get_post_meta( $post_id, 'service_box_text1', true );
-    if ( ! $service_box_text1 ) {
-        $service_box_text1 = get_post_meta( $post_id, 'service_group1_text', true );
-    }
-
-    $service_box_heading2 = get_post_meta( $post_id, 'service_box_heading2', true );
-    if ( ! $service_box_heading2 ) {
-        $service_box_heading2 = get_post_meta( $post_id, 'service_group2_title', true );
-    }
-
-    $service_box_text2 = get_post_meta( $post_id, 'service_box_text2', true );
-    if ( ! $service_box_text2 ) {
-        $service_box_text2 = get_post_meta( $post_id, 'service_group2_text', true );
-    }
-
-    // New: phases section title/subtitle
-    $service_phases_heading    = get_post_meta( $post_id, 'service_phases_heading', true );
-    $service_phases_subheading = get_post_meta( $post_id, 'service_phases_subheading', true );
-
-    $service_body_image_id         = intval( get_post_meta( $post_id, 'service_body_image_id', true ) );
-    $preview_size                  = ( function_exists( 'wp_get_attachment_image_url' ) ? SERVICE_GROUP_IMG_NAME : 'medium' );
-    $service_body_image_url        = $service_body_image_id ? wp_get_attachment_image_url( $service_body_image_id, $preview_size ) : '';
-    $service_form_link             = get_post_meta( $post_id, 'service_form_link', true );
-    $service_image_max_width       = get_post_meta( $post_id, 'service_image_max_width', true );
-    $service_group_image_max_width = get_post_meta( $post_id, 'service_group_image_max_width', true );
-    ?>
-    <div style="max-width:900px;">
-      <p><strong><?php esc_html_e( 'Gruppo unico (titoli/testi) — nuove chiavi: service_box_*', 'abcontact' ); ?></strong></p>
-
-      <p>
-        <label for="service_box_heading1"><strong><?php esc_html_e( 'Titolo 1 (service_box_heading1)', 'abcontact' ); ?></strong></label><br>
-        <input id="service_box_heading1" style="width:100%" type="text" name="service_box_heading1" value="<?php echo esc_attr( $service_box_heading1 ); ?>">
-      </p>
-
-      <p>
-        <label for="service_box_text1"><strong><?php esc_html_e( 'Testo 1 (service_box_text1)', 'abcontact' ); ?></strong></label><br>
-        <textarea id="service_box_text1" style="width:100%;height:100px" name="service_box_text1"><?php echo esc_textarea( $service_box_text1 ); ?></textarea>
-      </p>
-
-      <p>
-        <label for="service_box_heading2"><strong><?php esc_html_e( 'Titolo 2 (service_box_heading2)', 'abcontact' ); ?></strong></label><br>
-        <input id="service_box_heading2" style="width:100%" type="text" name="service_box_heading2" value="<?php echo esc_attr( $service_box_heading2 ); ?>">
-      </p>
-
-      <p>
-        <label for="service_box_text2"><strong><?php esc_html_e( 'Testo 2 (service_box_text2)', 'abcontact' ); ?></strong></label><br>
-        <textarea id="service_box_text2" style="width:100%;height:100px" name="service_box_text2"><?php echo esc_textarea( $service_box_text2 ); ?></textarea>
-      </p>
-
-      <hr>
-
-      <p><strong><?php esc_html_e( 'Immagine corpo pagina', 'abcontact' ); ?></strong></p>
-      <div id="ab-body-image-preview" style="margin-bottom:8px;">
-        <?php if ( $service_body_image_url ) : ?>
-          <img src="<?php echo esc_url( $service_body_image_url ); ?>" style="max-width:220px;height:auto;border-radius:8px;display:block;margin-bottom:6px;" alt="<?php echo esc_attr__( 'Anteprima immagine corpo pagina', 'abcontact' ); ?>">
-        <?php endif; ?>
-      </div>
-
-      <input type="hidden" id="service_body_image_id" name="service_body_image_id" value="<?php echo esc_attr( $service_body_image_id ); ?>">
-      <button type="button" class="button" id="ab-select-body-image"><?php esc_html_e( 'Seleziona immagine', 'abcontact' ); ?></button>
-      <button type="button" class="button" id="ab-remove-body-image"><?php esc_html_e( 'Rimuovi immagine', 'abcontact' ); ?></button>
-
-      <hr>
-
-      <p>
-        <label for="service_form_link"><strong><?php esc_html_e( 'Link CTA (service_form_link)', 'abcontact' ); ?></strong></label><br>
-        <input id="service_form_link" style="width:100%" type="text" name="service_form_link" value="<?php echo esc_attr( $service_form_link ); ?>">
-      </p>
-
-      <hr>
-
-      <p><strong><?php esc_html_e( 'Sezione Fasi (titolo e sottotitolo)', 'abcontact' ); ?></strong></p>
-
-      <p>
-        <label for="service_phases_heading"><strong><?php esc_html_e( 'Titolo sezione fasi (service_phases_heading)', 'abcontact' ); ?></strong></label><br>
-        <input id="service_phases_heading" style="width:100%" type="text" name="service_phases_heading" value="<?php echo esc_attr( $service_phases_heading ); ?>">
-      </p>
-
-      <p>
-        <label for="service_phases_subheading"><strong><?php esc_html_e( 'Sottotitolo sezione fasi (service_phases_subheading)', 'abcontact' ); ?></strong></label><br>
-        <textarea id="service_phases_subheading" style="width:100%;height:80px" name="service_phases_subheading"><?php echo esc_textarea( $service_phases_subheading ); ?></textarea>
-      </p>
-
-      <hr>
-      <p><strong><?php esc_html_e( 'Fasi (4) — modificabili', 'abcontact' ); ?></strong></p>
-      <?php
-      for ( $i = 1; $i <= 4; $i++ ) {
-          $t = get_post_meta( $post_id, "service_phase_{$i}_title", true );
-          $x = get_post_meta( $post_id, "service_phase_{$i}_text", true );
-          ?>
-          <p>
-            <label for="service_phase_<?php echo esc_attr( $i ); ?>_title"><?php echo sprintf( esc_html__( 'Fase %d titolo', 'abcontact' ), $i ); ?></label><br>
-            <input id="service_phase_<?php echo esc_attr( $i ); ?>_title" style="width:100%" type="text" name="service_phase_<?php echo esc_attr( $i ); ?>_title" value="<?php echo esc_attr( $t ); ?>">
-          </p>
-          <p>
-            <label for="service_phase_<?php echo esc_attr( $i ); ?>_text"><?php echo sprintf( esc_html__( 'Fase %d testo', 'abcontact' ), $i ); ?></label><br>
-            <textarea id="service_phase_<?php echo esc_attr( $i ); ?>_text" style="width:100%;height:60px" name="service_phase_<?php echo esc_attr( $i ); ?>_text"><?php echo esc_textarea( $x ); ?></textarea>
-          </p>
-          <?php
-      }
-      ?>
-
-      <hr>
-
-      <p><strong><?php esc_html_e( 'Dimensioni immagine (opzionali)', 'abcontact' ); ?></strong></p>
-      <p>
-        <label for="service_image_max_width"><?php esc_html_e( 'Hero max width (service_image_max_width) — es. 540px o 75%', 'abcontact' ); ?></label><br>
-        <input id="service_image_max_width" style="width:100%" type="text" name="service_image_max_width" value="<?php echo esc_attr( $service_image_max_width ); ?>">
-      </p>
-      <p>
-        <label for="service_group_image_max_width"><?php esc_html_e( 'Group image max (service_group_image_max_width) — es. 700px', 'abcontact' ); ?></strong></label><br>
-        <input id="service_group_image_max_width" style="width:100%" type="text" name="service_group_image_max_width" value="<?php echo esc_attr( $service_group_image_max_width ); ?>">
-      </p>
-
-    </div>
-    <?php
-}
-
-function abcontact_service_metabox_admin_assets( $hook ) {
-    if ( 'post.php' !== $hook && 'post-new.php' !== $hook ) {
-        return;
-    }
-
-    // determine post_type
-    $post_type = '';
-    if ( isset( $_GET['post_type'] ) ) {
-        $post_type = sanitize_text_field( wp_unslash( $_GET['post_type'] ) );
-    } elseif ( isset( $_GET['post'] ) ) {
-        $post_id = intval( $_GET['post'] );
-        $post_type = get_post_type( $post_id );
-    } elseif ( isset( $_POST['post_ID'] ) ) {
-        $post_type = get_post_type( intval( $_POST['post_ID'] ) );
-    } else {
-        global $post;
-        if ( $post ) {
-            $post_type = get_post_type( $post );
-        }
-    }
-
-    if ( $post_type !== 'page' ) {
-        return;
-    }
-
-    // Ensure media JS/CSS are available
-    wp_enqueue_media();
-
-    $admin_js_path = get_stylesheet_directory() . '/assets/js/chi-siamo-admin.js';
-    $admin_js_uri  = get_stylesheet_directory_uri() . '/assets/js/chi-siamo-admin.js';
-    if ( file_exists( $admin_js_path ) ) {
-        wp_enqueue_script( 'ab-chisiamo-admin', $admin_js_uri, array( 'jquery' ), filemtime( $admin_js_path ), true );
-        wp_localize_script( 'ab-chisiamo-admin', 'abcontactChiSiamo', array(
-            'l10n' => array(
-                'title'  => __( 'Seleziona immagine', 'abcontact' ),
-                'button' => __( 'Usa immagine', 'abcontact' ),
-            ),
-        ) );
-    }
-}
-add_action( 'admin_enqueue_scripts', 'abcontact_service_metabox_admin_assets' );
-
-
-function abcontact_save_service_metabox( $post_id ) {
-    if ( get_post_type( $post_id ) !== 'page' ) {
-        return;
-    }
-    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-        return;
-    }
-    if ( ! isset( $_POST['ab_service_fields_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['ab_service_fields_nonce'] ), 'ab_service_fields_save' ) ) {
-        return;
-    }
-    if ( ! current_user_can( 'edit_post', $post_id ) ) {
-        return;
-    }
-
-    $fields = array(
-        'service_body_image_id',
-        'service_form_link',
-        'service_box_heading1',
-        'service_box_text1',
-        'service_box_heading2',
-        'service_box_text2',
-        'service_phases_heading',
-        'service_phases_subheading',
-        'service_image_max_width',
-        'service_group_image_max_width',
-    );
-    for ( $i = 1; $i <= 4; $i++ ) {
-        $fields[] = "service_phase_{$i}_title";
-        $fields[] = "service_phase_{$i}_text";
-    }
-
-    foreach ( $fields as $f ) {
-        if ( isset( $_POST[ $f ] ) ) {
-            $raw = wp_unslash( $_POST[ $f ] );
-            if ( in_array( $f, array( 'service_box_text1', 'service_box_text2', 'service_phases_subheading' ), true ) ) {
-                $san = sanitize_textarea_field( $raw );
-            } else {
-                $san = sanitize_text_field( $raw );
-            }
-            update_post_meta( $post_id, $f, $san );
-        } else {
-            delete_post_meta( $post_id, $f );
-        }
-    }
-}
-add_action( 'save_post', 'abcontact_save_service_metabox' );
-
 /* ================== Chi Siamo: metabox registration + save handlers ================== */
+
+/**
+ * Metabox for "Chi Siamo" page
+ * - Register + render metabox
+ * - Save handler for all fields
+ * - Admin enqueue for media picker (chi-siamo-admin.js)
+ */
+
+/* ---------- Register metabox ---------- */
+function abcontact_register_chisiamo_metabox() {
+    add_meta_box(
+        'ab_chisiamo_fields',
+        __( 'Chi Siamo — Campi', 'abcontact' ),
+        'abcontact_render_chisiamo_metabox',
+        'page',
+        'normal',
+        'high'
+    );
+}
+add_action( 'add_meta_boxes', 'abcontact_register_chisiamo_metabox' );
+
+/* ---------- Render metabox ---------- */
 function abcontact_render_chisiamo_metabox( $post ) {
-    // show only when the page uses the chi-siamo template
+    // Robust check: allow metabox when template is page-chi-siamo.php OR when page slug is 'chi-siamo'
+    $use_metabox = false;
     $tpl = get_post_meta( $post->ID, '_wp_page_template', true );
     $tpl_base = $tpl ? basename( $tpl ) : '';
-    if ( $tpl_base !== 'page-chi-siamo.php' ) {
-        echo '<p>' . esc_html__( 'Questi campi sono disponibili solo se il template della pagina è impostato su "Chi Siamo".', 'abcontact' ) . '</p>';
+    if ( $tpl_base === 'page-chi-siamo.php' ) {
+        $use_metabox = true;
+    } else {
+        $page = get_post( $post->ID );
+        if ( $page && $page->post_name === 'chi-siamo' ) {
+            $use_metabox = true;
+        }
+    }
+
+    if ( ! $use_metabox ) {
+        echo '<p>' . esc_html__( 'Questi campi sono disponibili solo per la pagina "Chi Siamo".', 'abcontact' ) . '</p>';
         return;
     }
 
+    // nonce
     wp_nonce_field( 'ab_chisiamo_save', 'ab_chisiamo_nonce' );
 
     // Load saved values
@@ -724,45 +546,155 @@ function abcontact_render_chisiamo_metabox( $post ) {
     <?php
 }
 
-if ( ! function_exists( 'abcontact_service_metabox_admin_assets' ) ) {
-    function abcontact_service_metabox_admin_assets( $hook ) {
-        if ( 'post.php' !== $hook && 'post-new.php' !== $hook ) {
-            return;
-        }
+/* ================== Save handler ================== */
 
-        // determine post_type
-        $post_type = '';
-        if ( isset( $_GET['post_type'] ) ) {
-            $post_type = sanitize_text_field( wp_unslash( $_GET['post_type'] ) );
-        } elseif ( isset( $_GET['post'] ) ) {
-            $post_id = intval( $_GET['post'] );
-            $post_type = get_post_type( $post_id );
-        } elseif ( isset( $_POST['post_ID'] ) ) {
-            $post_type = get_post_type( intval( $_POST['post_ID'] ) );
-        } else {
-            global $post;
-            if ( $post ) {
-                $post_type = get_post_type( $post );
+add_action( 'save_post', 'ab_chisiamo_save_fields' );
+function ab_chisiamo_save_fields( $post_id ) {
+    // basic checks
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+    if ( ! isset( $_POST['ab_chisiamo_nonce'] ) || ! wp_verify_nonce( $_POST['ab_chisiamo_nonce'], 'ab_chisiamo_save' ) ) return;
+    if ( ! current_user_can( 'edit_post', $post_id ) ) return;
+
+    // fields to save (same keys used in your metabox render & template)
+    $fields = array(
+        'cs_section_a_title','cs_section_a_text','cs_section_a_image_id',
+        'cs_values_title','cs_values_subtitle',
+        'cs_section_c_title','cs_section_c_text','cs_section_c_image_id',
+        'cs_stats_heading',
+        'cs_stat_1_value','cs_stat_1_label',
+        'cs_stat_2_value','cs_stat_2_label',
+        'cs_stat_3_value','cs_stat_3_label',
+        'cs_stat_4_value','cs_stat_4_label',
+        'cs_cta_title','cs_cta_text','cs_cta_button_label','cs_cta_button_link'
+    );
+    for ( $i = 1; $i <= 4; $i++ ) {
+        $fields[] = "cs_value_{$i}_icon_id";
+        $fields[] = "cs_value_{$i}_title";
+        $fields[] = "cs_value_{$i}_text";
+    }
+
+    foreach ( $fields as $f ) {
+        if ( isset( $_POST[ $f ] ) ) {
+            $val = $_POST[ $f ];
+            if ( strpos( $f, '_image_id' ) !== false || strpos( $f, '_icon_id' ) !== false ) {
+                update_post_meta( $post_id, $f, absint( $val ) );
+            } elseif ( strpos( $f, '_text' ) !== false || stripos( $f, 'subtitle' ) !== false || $f === 'cs_cta_text' ) {
+                update_post_meta( $post_id, $f, wp_kses_post( $val ) );
+            } elseif ( stripos( $f, 'link' ) !== false ) {
+                update_post_meta( $post_id, $f, esc_url_raw( $val ) );
+            } else {
+                update_post_meta( $post_id, $f, sanitize_text_field( $val ) );
             }
-        }
-
-        if ( $post_type !== 'page' ) {
-            return;
-        }
-
-        wp_enqueue_media();
-
-        $admin_js_path = get_stylesheet_directory() . '/assets/js/chi-siamo-admin.js';
-        $admin_js_uri  = get_stylesheet_directory_uri() . '/assets/js/chi-siamo-admin.js';
-        if ( file_exists( $admin_js_path ) ) {
-            wp_enqueue_script( 'ab-chisiamo-admin', $admin_js_uri, array( 'jquery' ), filemtime( $admin_js_path ), true );
-            wp_localize_script( 'ab-chisiamo-admin', 'abcontactChiSiamo', array(
-                'l10n' => array(
-                    'title'  => __( 'Seleziona immagine', 'abcontact' ),
-                    'button' => __( 'Usa immagine', 'abcontact' ),
-                ),
-            ) );
+        } else {
+            // keep existing meta if the field wasn't posted
         }
     }
 }
-add_action( 'admin_enqueue_scripts', 'abcontact_service_metabox_admin_assets' );
+
+/* ================== Admin enqueue (for media picker script) ================== */
+
+add_action( 'admin_enqueue_scripts', 'ab_chisiamo_admin_enqueue' );
+function ab_chisiamo_admin_enqueue( $hook ) {
+    global $post;
+    if ( ( $hook !== 'post.php' && $hook !== 'post-new.php' ) || ! $post || $post->post_type !== 'page' ) {
+        return;
+    }
+
+    // only for the Chi Siamo page or template
+    $tpl = get_post_meta( $post->ID, '_wp_page_template', true );
+    $tpl = $tpl ? basename( $tpl ) : '';
+    if ( $tpl !== 'page-chi-siamo.php' && $post->post_name !== 'chi-siamo' ) {
+        return;
+    }
+
+    // ensure media scripts
+    wp_enqueue_media();
+
+    $theme_dir = get_stylesheet_directory();
+    $theme_uri = get_stylesheet_directory_uri();
+    $rel = '/assets/js/chi-siamo-admin.js';
+    $full = $theme_dir . $rel;
+    if ( file_exists( $full ) ) {
+        wp_enqueue_script( 'ab-chisiamo-admin', $theme_uri . $rel, array( 'jquery' ), filemtime( $full ), true );
+
+        wp_localize_script( 'ab-chisiamo-admin', 'abcontactChiSiamo', array(
+            'l10n' => array(
+                'title'  => esc_html__( 'Seleziona immagine', 'abcontact' ),
+                'button' => esc_html__( 'Usa immagine', 'abcontact' ),
+            ),
+        ) );
+    }
+}
+
+/* ================== NEW: Metabox per Shortcode Recensioni (Chi Siamo) ================== */
+
+/**
+ * Register metabox (only for page template page-chi-siamo.php or page slug 'chi-siamo')
+ */
+function abcontact_register_reviews_metabox() {
+    add_meta_box(
+        'ab_chisiamo_reviews',
+        __( 'Shortcode Recensioni', 'abcontact' ),
+        'abcontact_render_reviews_metabox',
+        'page',
+        'side',
+        'low'
+    );
+}
+add_action( 'add_meta_boxes', 'abcontact_register_reviews_metabox' );
+
+/**
+ * Render the reviews shortcode metabox
+ *
+ * Shown only when the page template is one of the allowed templates,
+ * or when the page slug is 'chi-siamo' (legacy).
+ */
+function abcontact_render_reviews_metabox( $post ) {
+    // Allowed templates where we want the metabox to appear
+    $allowed_templates = array(
+        'page-chi-siamo.php',
+        'page-service-template.php',
+    );
+
+    $tpl = get_post_meta( $post->ID, '_wp_page_template', true );
+    $tpl = $tpl ? basename( $tpl ) : '';
+
+    // Allow when page slug is 'chi-siamo' as backward compatibility
+    $is_chisiamo_slug = ( isset( $post->post_name ) && $post->post_name === 'chi-siamo' );
+
+    if ( ! in_array( $tpl, $allowed_templates, true ) && ! $is_chisiamo_slug ) {
+        echo '<p>' . esc_html__( 'Questo campo è disponibile solo per le pagine "Chi Siamo" o "Servizi".', 'abcontact' ) . '</p>';
+        return;
+    }
+
+    wp_nonce_field( 'ab_chisiamo_reviews_save', 'ab_chisiamo_reviews_nonce' );
+
+    $val = get_post_meta( $post->ID, 'cs_reviews_shortcode', true );
+    ?>
+    <p>
+      <label for="cs_reviews_shortcode"><?php esc_html_e( 'Incolla qui lo shortcode delle recensioni', 'abcontact' ); ?></label>
+      <input type="text" id="cs_reviews_shortcode" name="cs_reviews_shortcode" value="<?php echo esc_attr( $val ); ?>" style="width:100%;" placeholder="[your_reviews_shortcode]">
+      <small class="description"><?php esc_html_e( 'Esempio: [your_reviews id="123"] — il contenuto sarà renderizzato in pagina. Se vuoto, la sezione recensioni non verrà mostrata.', 'abcontact' ); ?></small>
+    </p>
+    <?php
+}
+
+/**
+ * Save the reviews shortcode metabox value
+ */
+function abcontact_save_reviews_metabox( $post_id ) {
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+    if ( ! isset( $_POST['ab_chisiamo_reviews_nonce'] ) || ! wp_verify_nonce( $_POST['ab_chisiamo_reviews_nonce'], 'ab_chisiamo_reviews_save' ) ) return;
+    if ( ! current_user_can( 'edit_post', $post_id ) ) return;
+
+    if ( isset( $_POST['cs_reviews_shortcode'] ) ) {
+        // store as plain text (shortcode), sanitize minimal as it will be run through do_shortcode in frontend
+        update_post_meta( $post_id, 'cs_reviews_shortcode', wp_strip_all_tags( trim( $_POST['cs_reviews_shortcode'] ) ) );
+    } else {
+        // If field removed, delete meta to avoid empty string variants
+        delete_post_meta( $post_id, 'cs_reviews_shortcode' );
+    }
+}
+add_action( 'save_post', 'abcontact_save_reviews_metabox', 20 );
+
+/* ================== End of functions.php ================== */

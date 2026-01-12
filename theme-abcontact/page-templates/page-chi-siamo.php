@@ -33,6 +33,10 @@ set_query_var( 'args', $hero_args );
 get_template_part( 'template-parts/news-hero' );
 set_query_var( 'args', null );
 
+if ( locate_template( 'template-parts/team-carousel.php' ) ) {
+    get_template_part( 'template-parts/team-carousel' );
+}
+
 /* ============================= Metabox ============================= */
 /* Section A */
 $cs_a_title = get_post_meta( $post_id, 'cs_section_a_title', true );
@@ -57,7 +61,7 @@ for ( $i = 1; $i <= 4; $i++ ) {
     }
 }
 
-/* Section C (image left, text right) */
+/* Section C */
 $cs_c_title = get_post_meta( $post_id, 'cs_section_c_title', true );
 $cs_c_text  = get_post_meta( $post_id, 'cs_section_c_text', true );
 $cs_c_image_id = absint( get_post_meta( $post_id, 'cs_section_c_image_id', true ) );
@@ -145,6 +149,20 @@ $cs_cta_button_link  = get_post_meta( $post_id, 'cs_cta_button_link', true );
         </div>
       </div>
     </section>
+
+    <!-- Insert Reviews Shortcode (if provided in metabox) -->
+    <?php
+    $cs_reviews_shortcode = get_post_meta( $post_id, 'cs_reviews_shortcode', true );
+    if ( ! empty( $cs_reviews_shortcode ) ) :
+    ?>
+      <section class="cs-reviews" aria-label="<?php esc_attr_e( 'Recensioni', 'abcontact' ); ?>">
+        <div class="container cs-reviews-inner" style="max-width:var(--max-width); margin:28px auto;">
+          <?php echo do_shortcode( $cs_reviews_shortcode ); ?>
+        </div>
+      </section>
+    <?php
+    endif;
+    ?>
 
     <!-- Statistics: blue box with white text -->
     <section class="cs-stats" aria-label="<?php esc_attr_e( 'Statistiche aziendali', 'abcontact' ); ?>">

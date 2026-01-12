@@ -1,347 +1,223 @@
-/* =========================== Design tokens & easy overrides =========================== */
+
+/* ---------------- VARIABLES ---------------- */
 :root{
-  /* layout */
-  --service-container-max: 1180px;
-  --service-gap: 28px;
+  --site-max: 1180px;
+  --container-pad: 20px;
 
-  /* independent positioning variables */
-  --service-text-translate-x: 0px;
-  --service-text-translate-y: 550px;
+  --primary-blue: #2050f2;
+  --text-color: #0f1724; /* near-black for headings */
+  --muted: #6b7280;
 
-  /* card (box bianco) */
-  --service-card-offset: -150px;
+  /* header offset (fallback; JS may override) */
+  --site-header-offset: 84px;
 
-  /* immagine */
-  --service-img-translate-x: 0px;
-  --service-img-translate-y: -100px;
-
-  /* visual sizes */
-  --service-card-width: 900px;
-  --service-card-height: 900px;
-  --service-card-radius: 16px;
-  --service-card-shadow: 0 18px 42px rgba(16,24,40,0.08);
-  --service-card-shadow-hover: 0 26px 60px rgba(16,24,40,0.10);
-
-  --service-image-width: 600px;
-  --service-image-height: 400px;
-
-  --service-text-width: 560px;
-  --service-text-color: #213040;
-  --service-text-muted: #465569;
-  --service-text-heading-size: 1.6rem;
-  --service-text-subheading-size: 1.05rem;
+  /* Spacing (tweak these for global changes) */
+  --hero-to-intro-gap: 32px;          /* gap between hero and intro */
+  --intro-bottom-desktop: 64px;      /* gap between intro and next block */
+  --intro-bottom-mobile: 36px;
+  --how-subgap-desktop: 32px;         /* gap between how subtitle and grid */
+  --how-grid-top-desktop: 28px;       /* extra top margin for how grid */
+  --reviews-subgap-desktop: 36px;     /* gap between reviews subtitle and cards */
+  --reviews-inner-top: 12px;
+  --content-gap-lg: 48px;
 }
 
-/* ============================== Container base ============================== */
-.container {
-  max-width: var(--service-container-max);
-  margin: 0 auto;
-  padding: 0 20px;
+/* ---------------- BOX-SIZING & CONTAINER ---------------- */
+*, *::before, *::after { box-sizing: border-box; }
+.container { max-width: var(--site-max); margin: 0 auto; padding: 0 var(--container-pad); }
+
+/* ---------------- HERO ---------------- */
+/* Respect fixed header offset; a JS helper may set --site-header-offset dynamically */
+.news-hero,
+.sp-hero,
+.news-hero-block {
+  padding-top: var(--site-header-offset) !important;
+  background-size: cover;
+  background-position: center center;
   box-sizing: border-box;
 }
-
-/* ======================== Floating area: wrapper + positioning ======================== */
-.service-floating {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  margin-top: 0;
-  margin-bottom: 50px;
-  width: 100%;
-  box-sizing: border-box;
-  pointer-events: none;
-}
-
-.service-floating__wrap {
-  width: 100%;
-  max-width: calc(var(--service-card-width) + 240px);
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.news-hero .news-hero-inner,
+.sp-hero .sp-hero-inner {
   position: relative;
-  overflow: visible;
-  pointer-events: auto;
-}
-
-/* =============================== Text group =============================== */
-.service-floating-text {
+  z-index: 3;
   width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 18px;
-  pointer-events: auto;
-  position: relative;
-  z-index: 40;
-  transform: translate(var(--service-text-translate-x, 0px), var(--service-text-translate-y, 0px));
-  will-change: transform;
+  text-align: center;
+  padding: 48px 20px;
 }
 
-.service-floating-text__inner {
-  width: var(--service-text-width);
-  max-width: 100%;
-  text-align: left;
-  color: var(--service-text-color);
-  box-sizing: border-box;
-  padding: 0 8px;
-}
-
-.service-floating-text__heading {
-  margin: 0 0 10px;
-  font-size: var(--service-text-heading-size);
-  line-height: 1.12;
+/* Hero typography */
+.sp-hero-title,
+.news-hero .news-hero-title {
+  font-size: clamp(1.6rem, 2.6vw, 2.8rem);
   font-weight: 700;
-  color: var(--service-text-color);
-}
-
-.service-floating-text__body {
-  margin: 0 0 18px;
-  color: var(--service-text-muted);
-  line-height: 1.7;
-  font-size: 1rem;
-}
-
-.service-floating-text__heading-alt {
-  margin: 8px 0 8px;
-  font-size: var(--service-text-subheading-size);
-  font-weight: 700;
-}
-
-.service-floating-text__body-alt {
-  margin: 0 0 18px;
-  color: var(--service-text-muted);
-  line-height: 1.6;
-  font-size: 0.98rem;
-}
-
-/* ============================= White card (visual box) ============================= */
-.service-floating-card {
-  width: var(--service-card-width);
-  height: var(--service-card-height);
-  background: #ffffff;
-  border-radius: var(--service-card-radius);
-  box-shadow: var(--service-card-shadow);
-  overflow: visible; 
-  position: relative;
-  pointer-events: auto;
-  transition: box-shadow 220ms ease;
-  z-index: 10;
-  display: block;
-  margin-top: var(--service-card-offset, 0px);
-}
-
-/* smaller card inner content padding */
-.service-floating-card .card-inner {
-  padding: 24px;
-}
-
-.service-floating-card:hover {
-  box-shadow: var(--service-card-shadow-hover);
-}
-
-/* =========================== Media (image) container & image =========================== */
-.service-floating-card__media {
-  width: var(--service-image-width);
-  height: var(--service-image-height);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
-  position: absolute;
-  left: 50%;
-  transform: translateX(calc(-50% + var(--service-img-translate-x, 0px))) translateY(var(--service-img-translate-y, 0px));
-  top: 0;
-  z-index: 30;
+  color: #fff;
   margin: 0;
-  pointer-events: auto;
-  display: block;
+  text-shadow: 0 6px 20px rgba(2,10,30,0.18);
+}
+.sp-hero-sub,
+.news-hero .news-hero-sub {
+  color: rgba(255,255,255,0.92);
+  margin-top: 8px;
 }
 
-/* image element (responsive, cover) */
-.service-floating-card__img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  transition: transform 360ms cubic-bezier(.2,.8,.2,1);
-  transform-origin: center center;
-  will-change: transform;
-}
-
-.service-floating-card__media:hover .service-floating-card__img,
-.service-floating-card__media:focus-within .service-floating-card__img {
-  transform: scale(1.06);
-}
-
-.service-floating-card {
-  padding-top: calc(var(--service-image-height) + 40px);
-}
-
-/* ================================== Phases ================================== */
-.service-phases {
-  padding: 48px 0;
-  background: transparent;
-}
-.service-phases-inner {
-  display: flex;
-  gap: var(--service-gap);
-  justify-content: center;
-  align-items: stretch;
-  flex-wrap: wrap;
-}
-.service-phase {
-  flex: 1 1 220px;
-  max-width: 260px;
+/* ---------------- INTRO (title single col, body two cols) ---------------- */
+/* Keep a small gap between hero and intro and a reserved margin under intro */
+.sp-intro {
+  padding: 0 0 0;
+  margin-top: var(--hero-to-intro-gap);
+  margin-bottom: var(--intro-bottom-desktop);
   text-align: center;
-  padding: 12px;
-}
-.service-phase-icon {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: linear-gradient(180deg, var(--service-accent, #3aa3ff), var(--service-primary, #376bff));
-  color: #fff;
-  font-weight: 700;
-  font-size: 20px;
-  box-shadow: 0 8px 16px rgba(55,107,255,0.12);
-}
-.phase-number {
-  display: inline-block;
-  color: #fff;
-  font-weight: 700;
-  font-size: 20px;
-}
-
-/* =========================== Responsive adjustments =========================== */
-@media (max-width: 900px) {
-  :root {
-    --service-card-width: calc(100% - 40px);
-    --service-card-height: auto;
-    --service-image-height: 240px;
-    --service-text-width: calc(100% - 40px);
-    --service-card-offset: 60px;
-    --service-img-translate-y: 0px;
-  }
-
-  .service-floating__wrap { padding: 0 20px; position: static; }
-  .service-floating-card { padding-top: 24px; }
-  .service-floating-card__media {
-    position: relative;
-    left: auto;
-    transform: none;
-    top: auto;
-    width: 100%;
-    height: var(--service-image-height);
-    margin: 0 0 18px;
-    border-radius: 12px;
-  }
-}
-
-/* =========================== CTA Service Page ===========================
-
-/* Variabili */
-:root{
-  --service-cta-translate-x: 0px;    /* spostamento orizzontale del pulsante (negativo = sinistra) */
-  --service-cta-translate-y: -200px;    /* spostamento verticale del pulsante (negativo = su) */
-  --service-cta-margin-top: 20px;    /* spazio tra card e pulsante quando non assoluto */
-  --service-cta-width: auto;         /* 'auto' o una misura (es. 320px) */
-  --service-cta-padding: 16px 44px;  /* padding interno */
-  --service-cta-radius: 12px;        /* raggio bordi */
-  --service-cta-bg: #ffffff;         /* colore sfondo iniziale */
-  --service-cta-border-color: rgba(55,107,255,0.12); /* bordo / outline iniziale */
-  --service-cta-color: var(--service-primary, #376bff); /* colore testo iniziale */
-  --service-cta-hover-bg: var(--service-primary, #376bff); /* sfondo al passaggio del mouse */
-  --service-cta-hover-color: #ffffff; /* colore testo al passaggio del mouse */
-  --service-cta-shadow: 0 12px 30px rgba(55,107,255,0.06);
-  --service-cta-hover-shadow: 0 22px 60px rgba(55,107,255,0.14);
-}
-
-.service-floating-cta {
-  width: 100%;
-  display: flex;
-  justify-content: center; 
-  margin-top: var(--service-cta-margin-top);
-  pointer-events: auto;
   position: relative;
-  z-index: 50;
-  transform: translate(var(--service-cta-translate-x, 0px), var(--service-cta-translate-y, 0px));
-  transition: transform 240ms ease;
+  z-index: 1;
 }
-
-.service-cta-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--service-cta-width);
-  padding: var(--service-cta-padding);
-  border-radius: var(--service-cta-radius);
-  background: var(--service-cta-bg);
-  color: var(--service-cta-color);
-  border: 2px solid var(--service-cta-border-color);
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 1.125rem;
-  line-height: 1;
-  box-shadow: var(--service-cta-shadow);
-  transition: background 220ms ease, color 220ms ease, box-shadow 220ms ease, transform 180ms ease;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-/* hover/focus */
-.service-cta-button:hover,
-.service-cta-button:focus {
-  background: var(--service-cta-hover-bg);
-  color: var(--service-cta-hover-color);
-  text-decoration: underline;
-  box-shadow: var(--service-cta-hover-shadow);
-  transform: translateY(-2px);
-  outline: none;
-}
-
-/* hover accessibile */
-.service-cta-button {
-  text-underline-offset: 6px;
-}
-
-/* Mobile responsive */
-@media (max-width: 900px) {
-  .service-cta-button {
-    width: 100%;
-    padding: 14px 22px;
-    font-size: 1rem;
-  }
-  .service-floating-cta { margin-top: 14px; transform: none; }
-}
-
-/* =============== Styling per titolo/sottotitolo sezione Fasi =============== */
-.service-phases-header {
-  text-align: center;
-  margin: 18px auto 28px;
-  padding: 0 20px;
-}
-
-.service-phases-heading {
-  margin: 0 0 10px;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--service-text-color, #213040);
-}
-
-.service-phases-subheading {
+.sp-intro-inner { max-width: 980px; margin: 0 auto; }
+.sp-intro-title { margin: 0 0 28px; font-size: 1.9rem; font-weight:700; color: var(--text-color); }
+.sp-intro-body {
+  color: var(--muted);
+  line-height: 1.8;
+  column-count: 2;
+  column-gap: var(--content-gap-lg);
+  text-align: left;
+  font-size: 1.02rem;
   margin: 0 auto;
-  color: var(--service-text-muted, #465569);
-  max-width: 920px;
-  font-size: 1.05rem;
-  line-height: 1.6;
+}
+@media (max-width:1100px) {
+  .sp-intro { margin-bottom: calc(var(--intro-bottom-desktop) * 0.85); }
+}
+@media (max-width:900px) {
+  .sp-intro { margin-bottom: var(--intro-bottom-mobile); margin-top: 20px; }
+  .sp-intro-body { column-count: 1; padding: 0 18px; text-align:center; }
 }
 
-/* Mobile responsive */
-@media (max-width: 900px) {
-  .service-phases-heading { font-size: 1rem; }
-  .service-phases-subheading { font-size: 0.98rem; max-width: calc(100% - 40px); }
-  .service-phases-header { margin-bottom: 18px; }
+/* ---------------- FULL-BLEED IMAGE ---------------- */
+.sp-full-image {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  overflow: hidden;
+  margin-top: 24px; /* extra breathing room from intro */
+  margin-bottom: 56px;
 }
+.sp-full-image img {
+  display:block;
+  width:100%;
+  height: 260px;
+  object-fit: cover;
+}
+@media (max-width:1100px) { .sp-full-image img { height: 220px; } }
+@media (max-width:900px)  { .sp-full-image img { height: 180px; } }
+
+/* ---------------- HOW IT WORKS (grid + gradient icons) ---------------- */
+.sp-how {
+  padding: 44px 0 12px;
+  text-align: center;
+}
+.sp-section-header { margin-bottom: 18px; }
+.sp-section-header .sp-section-sub {
+  color: var(--muted);
+  margin-top: 8px;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+  /* extra gap to separate subtitle and items */
+  margin-bottom: var(--how-subgap-desktop);
+}
+
+.sp-how-grid {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: repeat(1,1fr);
+  align-items: start;
+  margin-top: var(--how-grid-top-desktop);
+  max-width: var(--site-max);
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (min-width:760px) { .sp-how-grid { grid-template-columns: repeat(2,1fr); } }
+@media (min-width:1100px) { .sp-how-grid { grid-template-columns: repeat(4,1fr); } }
+
+.sp-how-item {
+  display:flex;
+  gap:18px;
+  align-items:flex-start;
+  text-align:left;
+  padding: 8px 12px;
+}
+.sp-how-icon {
+  width:72px; height:72px; min-width:72px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  background: linear-gradient(180deg,#2aa0e6 0%, #174cbe 100%);
+  box-shadow: 0 18px 40px rgba(16,24,40,0.06);
+  color:#fff;
+}
+.sp-how-icon img { width:36px; height:36px; object-fit:contain; filter: brightness(0) invert(1); display:block; }
+.sp-how-icon svg path, .sp-how-icon svg rect, .sp-how-icon svg circle { fill:#fff !important; stroke:#fff !important; }
+
+.sp-how-title { margin:0 0 8px; font-weight:700; color:var(--text-color); font-size:1rem; }
+.sp-how-text { margin:0; color:var(--muted); line-height:1.6; font-size:.95rem; }
+
+/* Mobile adjustments for how section spacing */
+@media (max-width:900px) {
+  .sp-section-header .sp-section-sub { margin-bottom: 20px; }
+  .sp-how-grid { margin-top: 18px; }
+}
+
+/* ---------------- REVIEWS SECTION ---------------- */
+/* === Corrections: ensure reviews section doesn't create layout gaps when absent === */
+
+/* Hide the reviews section when empty (defensive) */
+.sp-reviews:empty {
+  display: none !important;
+}
+
+/* If the plugin outputs an empty node inside .sp-reviews, hide the container too */
+.sp-reviews .sp-reviews-inner:empty {
+  display: none !important;
+}
+.sp-reviews .sp-reviews-inner:only-child:empty {
+  display: none !important;
+}
+
+/* Ensure overall spacing is preserved if reviews section removed */
+.sp-reviews { margin: 0; padding: 0; }
+
+/* ---------------- FINAL CTA fallback (kept unchanged) ---------------- */
+.sp-final-cta {
+  padding: 48px 0;
+  background: linear-gradient(180deg, rgba(43,123,255,0.04), rgba(43,123,255,0.01));
+  margin-top: 48px;
+}
+.sp-final-cta-inner {
+  max-width: var(--site-max);
+  margin: 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 20px;
+  padding: 0 var(--container-pad);
+  box-sizing: border-box;
+}
+.sp-final-cta-text { font-weight:700; color:var(--text-color); }
+.sp-final-cta-button {
+  background: var(--primary-blue);
+  color:#fff;
+  padding:10px 18px;
+  border-radius:999px;
+  text-decoration:none;
+  font-weight:700;
+  box-shadow: 0 8px 20px rgba(11,95,255,0.12);
+}
+
+/* ---------------- RESPONSIVE TWEAKS ---------------- */
+@media (max-width:1100px) {
+  .sp-intro-title { font-size: 1.6rem; }
+  .sp-full-image img { height: 220px; }
+}
+@media (max-width:900px) {
+  .sp-intro-body { column-gap: 28px; }
+  .sp-full-image img { height: 180px; }
+}
+
+/* ---------------- ACCESSIBILITY / FOCUS ---------------- */
+.sp-final-cta-button:focus { outline: 3px solid rgba(11,95,255,0.14); outline-offset: 2px; }
+

@@ -15,7 +15,7 @@ if ( function_exists( 'render_why_us_cards' ) ) {
         'class'   => 'why-us--home',
     ) );
 } else {
-    // fallback: niente (opzionalmente puoi includere un template statico)
+    // fallback: niente (opzionale)
     // echo '<!-- Perché Noi: plugin non attivo o funzione non disponibile -->';
 }
 

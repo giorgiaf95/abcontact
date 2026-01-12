@@ -121,3 +121,59 @@ section.service-hero .service-hero-overlay {
     padding: 0 10px;
   }
 }
+
+/* ====== Hero (generic) - titoli più grandi, bold e shadow ======
+   Inserire alla fine per sovrascrivere le regole di default.
+   Rendono i titoli degli hero generici (non-home) più grandi, bold e leggibili.
+*/
+.hero .hero-title,
+.service-hero .hero-title,
+.hero .hero-inner .hero-content .hero-title {
+  /* dimensione responsive, più grande del default */
+  font-size: clamp(1.6rem, 4.6vw, 3.2rem) !important;
+  font-weight: 800 !important;
+  line-height: 1.02 !important;
+  color: #ffffff !important; /* assicurati contrasto con overlay */
+  /* ombra evidente per leggibilità su immagini chiare o variabili */
+  text-shadow: 0 10px 28px rgba(0,0,0,0.45) !important;
+  margin-bottom: 8px !important;
+  letter-spacing: -0.02em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtitle / lead sotto il titolo (più grande + shadow) */
+.hero .hero-subtitle,
+.service-hero .hero-subtitle,
+.hero .hero-inner .hero-content .hero-subtitle,
+.hero .hero-inner .hero-content .hero__lead {
+  font-size: clamp(1.0rem, 2.6vw, 1.25rem) !important;
+  font-weight: 700 !important; /* più corposo rispetto al normale */
+  color: #f4f8fb !important;
+  line-height: 1.5 !important;
+  text-shadow: 0 8px 20px rgba(0,0,0,0.28) !important;
+  margin: 0 auto 12px !important;
+  max-width: 920px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Ridurre leggermente l'effetto ombra su desktop molto larghi per non appesantire */
+@media (min-width: 1200px) {
+  .hero .hero-title,
+  .service-hero .hero-title {
+    text-shadow: 0 8px 20px rgba(0,0,0,0.32) !important;
+  }
+  .hero .hero-subtitle,
+  .service-hero .hero-subtitle {
+    text-shadow: 0 6px 16px rgba(0,0,0,0.22) !important;
+  }
+}
+
+/* Piccoli adattamenti su mobile per evitare overflow */
+@media (max-width: 420px) {
+  .hero .hero-title {
+    font-size: clamp(1.4rem, 6.8vw, 2.2rem) !important;
+  }
+  .hero .hero-subtitle {
+    font-size: clamp(0.98rem, 3.5vw, 1.05rem) !important;
+  }
+}
