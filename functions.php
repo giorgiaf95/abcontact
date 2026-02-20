@@ -29,6 +29,7 @@ $inc_files = array(
     get_stylesheet_directory() . '/inc/metaboxes-cta.php',
     get_stylesheet_directory() . '/inc/metaboxes-sedi.php',
     get_stylesheet_directory() . '/inc/chi-siamo-admin.php',
+    get_stylesheet_directory() . '/inc/metaboxes-landing.php',
 );
 
 foreach ( $inc_files as $file ) {

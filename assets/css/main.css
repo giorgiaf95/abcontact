@@ -378,13 +378,20 @@ label { display: block; margin-bottom: var(--space-xs); color: var(--color-text)
   overflow: hidden;
 }
 
+/*
+  MODIFICA NECESSARIA:
+  - ripristino overlay via CSS variable --hero-overlay
+  - compatibile sia con home hero (inline style: --hero-overlay) sia con news-hero (inline style: --hero-overlay)
+*/
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: transparent !important; /* no gradient — transparent overlay */
   pointer-events: none;
   z-index: 1;
+
+  /* overlay controllabile: se non viene settato inline, usa default */
+  background: var(--hero-overlay, var(--hero-overlay-default)) !important;
 }
 
 /* Contenuto interno sopra l'overlay */
@@ -408,31 +415,57 @@ label { display: block; margin-bottom: var(--space-xs); color: var(--color-text)
   color: #fff; /* testo su overlay */
 }
 
-.hero-title,
-.hero__title {
-  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
-  margin-bottom: var(--space-xs);
+/* ---------- HOME: layout prototipo (left aligned) ---------- */
+.hero:not(.news-hero) .hero__inner {
+  justify-content: flex-start;
+}
+.hero:not(.news-hero) .hero__content {
+  text-align: left;
+  max-width: 720px;
+}
+
+/* Eyebrow “pill” */
+.hero:not(.news-hero) .hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.hero:not(.news-hero) .hero__eyebrow::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.92);
+  opacity: 0.95;
+}
+.hero:not(.news-hero) .hero__eyebrow {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.92);
+}
+
+/* Title + highlight word */
+.hero:not(.news-hero) .hero__title {
+  font-size: clamp(2.05rem, 4.2vw, 3.25rem);
+  margin-bottom: 14px;
   color: #ffffff;
-  line-height: 1.12;
-  font-weight: 700;
+  line-height: 1.02;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-shadow: 0 12px 36px rgba(0,0,0,0.35);
+}
+.hero__title-highlight {
+  color: #527cca; /* evidenzia (blu) */
 }
 
-.hero-subtitle,
-.hero__lead {
-  margin-bottom: var(--space-md);
-  color: rgba(255,255,255,0.95);
-  font-size: 1.05rem;
-  max-width: 780px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.hero__eyebrow {
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 12px;
-  opacity: .95;
-  color: rgba(255,255,255,0.95);
+/* Lead */
+.hero:not(.news-hero) .hero__lead {
+  margin-bottom: 18px;
+  color: rgba(255,255,255,0.94);
+  font-size: 1.06rem;
+  max-width: 720px;
+  text-shadow: 0 8px 22px rgba(0,0,0,0.25);
 }
 
 /* layout container CTA */
@@ -441,9 +474,14 @@ label { display: block; margin-bottom: var(--space-xs); color: var(--color-text)
   display: flex;
   gap: 12px;
   align-items: center;
-  justify-content: center; /* centrale per default, modificare per left */
+  justify-content: center; /* centrale per default */
   margin-top: 22px;
   z-index: 2; /* sopra overlay */
+}
+
+/* HOME: CTA allineate a sinistra */
+.hero:not(.news-hero) .hero__actions {
+  justify-content: flex-start;
 }
 
 .hero__actions .btn,
@@ -508,6 +546,62 @@ label { display: block; margin-bottom: var(--space-xs); color: var(--color-text)
   filter: brightness(1.06);
 }
 
+/* ---------- HOME: KPI row (prototipo) ---------- */
+.hero__kpis {
+  margin-top: 26px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  max-width: 760px;
+}
+.hero:not(.news-hero) .hero__kpis {
+  justify-content: flex-start;
+}
+.hero__kpi {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.16);
+  backdrop-filter: blur(6px);
+}
+.hero__kpi-value {
+  font-weight: 800;
+  font-size: 1.35rem;
+  line-height: 1.0;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+.hero__kpi-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.90);
+}
+
+/* ---------- INTERNAL (news-hero): più pulito, sempre centrato ---------- */
+.hero.news-hero .hero__content,
+.news-hero .hero__content {
+  text-align: center;
+}
+.hero.news-hero .hero__actions {
+  justify-content: center;
+}
+
+/* Back link per prototipo interno */
+.hero__back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.92);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  margin-bottom: 14px;
+}
+.hero__back-link:hover,
+.hero__back-link:focus {
+  text-decoration: underline;
+}
+
 /* header sopra l'hero */
 .site-header,
 .header {
@@ -528,6 +622,9 @@ label { display: block; margin-bottom: var(--space-xs); color: var(--color-text)
   .hero-inner, .hero__inner { padding: 20px; }
   .hero__actions { flex-direction: column; gap: 12px; }
   .hero__actions .btn { width: auto; padding: 10px 16px; }
+
+  /* KPI mobile */
+  .hero__kpis { grid-template-columns: 1fr; gap: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1383,4 +1480,497 @@ body.error404 .page-404-inner {
 /* se le card sono in grid a 4 colonne, riduci a 3 colonne su larghezze medie per più spazio */
 @media (min-width:1100px) {
   .related-news .grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ===== INTERNAL HERO (news-hero) — SOLID background like prototype ===== */
+.hero.news-hero.news-hero--solid {
+  /* reduce height vs home */
+  height: auto;
+  min-height: 320px;
+  padding-top: 96px;   /* spazio per header trasparente */
+  padding-bottom: 64px;
+  background-image: none !important;
+  background-color: var(--news-hero-bg, #153473) !important;
+}
+
+/* overlay: keep but default transparent for solid hero */
+.hero.news-hero.news-hero--solid::before {
+  background: var(--hero-overlay, rgba(15, 43, 155, 0.35)) !important;
+}
+
+/* Left aligned content like prototype internal page */
+.hero.news-hero.news-hero--solid .hero-inner,
+.hero.news-hero.news-hero--solid .hero__inner {
+  justify-content: flex-start;
+}
+
+.hero.news-hero.news-hero--solid .hero-content,
+.hero.news-hero.news-hero--solid .hero__content {
+  align-items: flex-start;
+  text-align: left;
+  max-width: 860px;
+}
+
+/* Back link */
+.hero.news-hero.news-hero--solid .hero__back-link {
+  color: rgba(255,255,255,0.72);
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+/* Eyebrow like prototype */
+.hero.news-hero.news-hero--solid .hero__eyebrow {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: rgba(84, 148, 255, 0.95);
+  margin-bottom: 14px;
+}
+
+/* Title like prototype */
+.hero.news-hero.news-hero--solid .hero-title {
+  font-size: clamp(2.2rem, 5.2vw, 3.2rem);
+  line-height: 1.02;
+  text-shadow: none;
+  margin-bottom: 16px;
+}
+
+/* Subtitle more muted, not huge */
+.hero.news-hero.news-hero--solid .hero-subtitle {
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.70);
+  text-shadow: none;
+  max-width: 720px;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Responsive */
+@media (max-width: 880px) {
+  .hero.news-hero.news-hero--solid {
+    min-height: 260px;
+    padding-top: 88px;
+    padding-bottom: 52px;
+  }
+}
+@media (max-width: 520px) {
+  .hero.news-hero.news-hero--solid {
+    padding-top: 76px;
+    padding-bottom: 44px;
+  }
+}
+
+/* ===== FIX ALIGNMENT: match prototype for solid internal hero ===== */
+.hero.news-hero.news-hero--solid .hero-inner {
+  /* The container already centers the block; we want content aligned like prototype */
+  justify-content: flex-start;
+}
+
+/* Create a "text column" with a left offset similar to prototype */
+.hero.news-hero.news-hero--solid .hero-content.hero-content--internal {
+  width: 100%;
+  max-width: 980px;      /* allow a wider text column like prototype */
+  margin-left: 0;        /* prevent centering via auto margins */
+  margin-right: 0;
+  padding-left: 64px;    /* key: left offset */
+  padding-right: 24px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+/* Spacing rhythm like prototype */
+.hero.news-hero.news-hero--solid .hero__back-link {
+  margin-bottom: 28px;
+}
+
+.hero.news-hero.news-hero--solid .hero__eyebrow {
+  margin-bottom: 18px;
+}
+
+.hero.news-hero.news-hero--solid .hero-title {
+  margin-bottom: 18px;
+}
+
+.hero.news-hero.news-hero--solid .hero-subtitle {
+  margin-top: 0;
+  margin-bottom: 0;
+  max-width: 720px;
+}
+
+/* Responsive: reduce left offset on smaller screens */
+@media (max-width: 1024px) {
+  .hero.news-hero.news-hero--solid .hero-content.hero-content--internal {
+    padding-left: 40px;
+  }
+}
+@media (max-width: 680px) {
+  .hero.news-hero.news-hero--solid .hero-content.hero-content--internal {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+}
+
+/* ===== Mobile fix: solid internal hero should feel like prototype ===== */
+@media (max-width: 680px) {
+
+  .hero.news-hero.news-hero--solid {
+    min-height: 220px;       /* less tall */
+    padding-top: 92px;       /* enough space for header */
+    padding-bottom: 44px;
+  }
+
+  /* Strongly force left alignment on mobile */
+  .hero.news-hero.news-hero--solid .hero-inner {
+    justify-content: flex-start;
+  }
+
+  .hero.news-hero.news-hero--solid .hero-content.hero-content--internal {
+    padding-left: 14px;      /* small gutter like prototype */
+    padding-right: 14px;
+    max-width: 100%;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  /* Back link smaller and less heavy */
+  .hero.news-hero.news-hero--solid .hero__back-link {
+    font-size: 0.92rem;
+    margin-bottom: 18px;
+    color: rgba(255,255,255,0.70);
+  }
+
+  /* Eyebrow: compact */
+  .hero.news-hero.news-hero--solid .hero__eyebrow {
+    font-size: 0.72rem;
+    margin-bottom: 12px;
+    letter-spacing: 0.10em;
+  }
+
+  /* Title: reduce size + tighter line height */
+  .hero.news-hero.news-hero--solid .hero-title {
+    font-size: clamp(1.7rem, 7vw, 2.25rem);
+    line-height: 1.05;
+    margin-bottom: 14px;
+  }
+
+  /* Subtitle: smaller, avoid big centered block feeling */
+  .hero.news-hero.news-hero--solid .hero-subtitle {
+    font-size: 0.98rem;
+    line-height: 1.5;
+    max-width: 28ch;         /* keeps it visually like prototype */
+    color: rgba(255,255,255,0.68);
+  }
+}
+
+/* Extra-small devices */
+@media (max-width: 420px) {
+  .hero.news-hero.news-hero--solid {
+    padding-top: 84px;
+    padding-bottom: 40px;
+  }
+  .hero.news-hero.news-hero--solid .hero-title {
+    font-size: 1.9rem;
+  }
+}
+
+/* ================= HOME HERO: fix mobile overlap with transparent header ================= */
+
+/* The header is absolute/transparent at top; make hero content start lower */
+.hero:not(.news-hero) {
+  /* keep current heights but ensure content isn't hidden behind header */
+  padding-top: 96px; /* desktop/tablet baseline; overridden below */
+  box-sizing: border-box;
+}
+
+/* Ensure inner block aligns like prototype and doesn't sit under header */
+.hero:not(.news-hero) .hero__inner {
+  align-items: flex-start;       /* not vertical centered */
+  justify-content: flex-start;
+  padding-top: 0;                /* hero padding handles top space */
+}
+
+/* Prevent title from sliding under header due to large font sizes */
+.hero:not(.news-hero) .hero__content {
+  width: 100%;
+}
+
+/* Mobile specific tuning */
+@media (max-width: 799px) {
+
+  .hero:not(.news-hero) {
+    height: auto;                /* instead of fixed 420px: allow content */
+    min-height: 520px;           /* keeps hero presence but avoids overlap */
+    padding-top: 104px;          /* critical: pushes content below header */
+    padding-bottom: 44px;
+  }
+
+  /* left aligned like prototype */
+  .hero:not(.news-hero) .hero__content {
+    text-align: left;
+    align-items: flex-start;
+    max-width: 520px;
+  }
+
+  /* Title scale + spacing so it doesn't collide */
+  .hero:not(.news-hero) .hero__title {
+    font-size: clamp(1.75rem, 8vw, 2.35rem);
+    line-height: 1.05;
+    margin-bottom: 12px;
+  }
+
+  .hero:not(.news-hero) .hero__lead {
+    font-size: 0.98rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  /* Actions: keep stacked but align left */
+  .hero:not(.news-hero) .hero__actions {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  /* KPI cards: full width and tighter spacing */
+  .hero:not(.news-hero) .hero__kpis {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    width: 100%;
+    max-width: 520px;
+    margin-top: 18px;
+  }
+}
+
+/* Extra small devices: slightly less padding-top */
+@media (max-width: 420px) {
+  .hero:not(.news-hero) {
+    padding-top: 96px;
+    min-height: 500px;
+  }
+}
+
+/* ===== HOME HERO KPI: match prototype (no cards, 3 columns) ===== */
+@media (max-width: 799px) {
+
+  .hero:not(.news-hero) .hero__kpis {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    width: 100%;
+    max-width: 560px;
+    margin-top: 26px;
+    padding-top: 8px;
+  }
+
+  /* remove "card" look completely */
+  .hero:not(.news-hero) .hero__kpi {
+    background: transparent !important;
+    border: 0 !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* value style (blue, big) */
+  .hero:not(.news-hero) .hero__kpi-value {
+    color: #0b5fff; /* prototype-like blue */
+    font-weight: 800;
+    font-size: 2.05rem;
+    line-height: 1;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.02em;
+  }
+
+  /* label style (muted gray) */
+  .hero:not(.news-hero) .hero__kpi-label {
+    color: rgba(255,255,255,0.62);
+    font-weight: 500;
+    font-size: 0.98rem;
+    line-height: 1.35;
+    margin: 0;
+  }
+}
+
+/* Very small phones: keep 3 columns but reduce gap/font a bit */
+@media (max-width: 420px) {
+  .hero:not(.news-hero) .hero__kpis {
+    gap: 12px;
+  }
+  .hero:not(.news-hero) .hero__kpi-value {
+    font-size: 1.75rem;
+  }
+  .hero:not(.news-hero) .hero__kpi-label {
+    font-size: 0.92rem;
+  }
+}
+
+/* ===== HOME HERO buttons: match prototype (mobile) ===== */
+@media (max-width: 799px) {
+
+  /* stack + full width like prototype */
+  .hero:not(.news-hero) .hero__actions {
+    width: 100%;
+    max-width: 560px;     /* similar to prototype content width */
+    margin-top: 22px;
+    gap: 14px;
+  }
+
+  .hero:not(.news-hero) .hero__actions .btn,
+  .hero:not(.news-hero) .hero__actions a.button,
+  .hero:not(.news-hero) .hero__actions .button {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+
+    /* big size */
+    padding: 18px 22px;
+    min-height: 64px;
+
+    border-radius: 18px;  /* pill-ish */
+    font-size: 1.15rem;
+    font-weight: 700;
+
+    /* smoother */
+    box-shadow: none;
+  }
+
+  /* Primary (solid blue) */
+  .hero:not(.news-hero) .hero__actions .btn--primary,
+  .hero:not(.news-hero) .hero__actions .btn.btn--primary {
+    background: #0b5fff;
+    color: #ffffff;
+    border: none;
+  }
+
+  /* Ensure arrow on primary (prototype) */
+  .hero:not(.news-hero) .hero__actions .btn--primary::after {
+    content: "→";
+    margin-left: 14px;
+    font-size: 1.2em;
+    line-height: 1;
+    opacity: 0.95;
+  }
+
+  /* Secondary (ghost) */
+  .hero:not(.news-hero) .hero__actions .btn--ghost,
+  .hero:not(.news-hero) .hero__actions .btn.btn--ghost {
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.92);
+    border: 2px solid rgba(255,255,255,0.22);
+    backdrop-filter: blur(6px);
+  }
+
+  /* Hover/active small lift */
+  .hero:not(.news-hero) .hero__actions .btn:active {
+    transform: translateY(1px);
+  }
+}
+
+/* Extra-small tuning */
+@media (max-width: 420px) {
+  .hero:not(.news-hero) .hero__actions .btn,
+  .hero:not(.news-hero) .hero__actions a.button,
+  .hero:not(.news-hero) .hero__actions .button {
+    font-size: 1.05rem;
+    min-height: 60px;
+    padding: 16px 18px;
+    border-radius: 16px;
+  }
+}
+/* ===== HOME HERO buttons: match prototype (desktop + tablet + mobile) ===== */
+
+/* Base (desktop/tablet): bigger buttons and left aligned */
+.hero:not(.news-hero) .hero__actions {
+  justify-content: flex-start; /* prototype: left aligned */
+  gap: 16px;
+  margin-top: 26px;
+}
+
+/* Make both buttons larger */
+.hero:not(.news-hero) .hero__actions .btn,
+.hero:not(.news-hero) .hero__actions a.button,
+.hero:not(.news-hero) .hero__actions .button {
+  padding: 16px 24px;
+  min-height: 56px;
+  border-radius: 16px;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* Primary: solid blue with arrow */
+.hero:not(.news-hero) .hero__actions .btn--primary,
+.hero:not(.news-hero) .hero__actions .btn.btn--primary {
+  background: #0b5fff;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 14px 34px rgba(11,95,255,0.18);
+}
+
+.hero:not(.news-hero) .hero__actions .btn--primary::after {
+  content: "→";
+  margin-left: 14px;
+  font-size: 1.15em;
+  line-height: 1;
+  opacity: 0.95;
+}
+
+/* Secondary: ghost */
+.hero:not(.news-hero) .hero__actions .btn--ghost,
+.hero:not(.news-hero) .hero__actions .btn.btn--ghost {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.92);
+  border: 2px solid rgba(255,255,255,0.22);
+  backdrop-filter: blur(6px);
+}
+
+/* Hover states */
+@media (hover:hover) {
+  .hero:not(.news-hero) .hero__actions .btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 44px rgba(11,95,255,0.22);
+  }
+  .hero:not(.news-hero) .hero__actions .btn--ghost:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.06);
+  }
+}
+
+/* Mobile: full width like prototype */
+@media (max-width: 799px) {
+  .hero:not(.news-hero) .hero__actions {
+    width: 100%;
+    max-width: 560px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .hero:not(.news-hero) .hero__actions .btn,
+  .hero:not(.news-hero) .hero__actions a.button,
+  .hero:not(.news-hero) .hero__actions .button {
+    width: 100%;
+    justify-content: center;
+    padding: 18px 22px;
+    min-height: 64px;
+    border-radius: 18px;
+    font-size: 1.15rem;
+  }
+}
+
+/* Extra small */
+@media (max-width: 420px) {
+  .hero:not(.news-hero) .hero__actions .btn,
+  .hero:not(.news-hero) .hero__actions a.button,
+  .hero:not(.news-hero) .hero__actions .button {
+    font-size: 1.05rem;
+    min-height: 60px;
+    padding: 16px 18px;
+    border-radius: 16px;
+  }
 }

@@ -1,7 +1,7 @@
 :root {
-  --hero-overlay-top: rgba(23, 80, 177, 0.22);
-  --hero-overlay-mid: rgba(23, 80, 177, 0.12);
-  --hero-overlay-bottom: rgba(255,255,255,0.00);
+  --hero-overlay-top: rgba(26, 89, 197, 0.33);
+  --hero-overlay-mid: rgba(24, 89, 200, 0.28);
+  --hero-overlay-bottom: rgba(30, 71, 194, 0.249);
 }
 
 .hero,
@@ -23,8 +23,13 @@
   display: block;
 }
 
+/*
+  MODIFICA NECESSARIA:
+  - rimuovo .hero::before da qui per evitare conflitto con l'overlay "piatto" in main.css
+  - mantengo overlay/gradient per service-hero (e per il vecchio overlay element)
+*/
+
 /* overlay sits above the image */
-.hero::before,
 .service-hero::before,
 .hero .service-hero-overlay,
 .service-hero .service-hero-overlay {
@@ -102,11 +107,10 @@
 
 /* Media adjustments */
 @media (max-width: 880px) {
-  .hero::before,
   .service-hero::before,
   .service-hero .service-hero-overlay {
     background: linear-gradient(180deg,
-      rgba(23, 80, 177, 0.18) 0%,
+      rgba(23, 79, 177, 0.451) 0%,
       rgba(255,255,255,0.92) 80%);
   }
   .hero.news-hero .hero-inner .hero-content,
@@ -130,4 +134,12 @@
 @media (max-width: 420px) {
   .hero .hero-title { font-size: clamp(1.4rem, 6.8vw, 2.2rem); }
   .hero .hero-subtitle { font-size: clamp(0.98rem, 3.5vw, 1.05rem); }
+}
+
+/* ===== Solid internal hero: neutralize heavy shadows/sizes from shared hero ===== */
+.hero.news-hero.news-hero--solid .hero-title {
+  text-shadow: none;
+}
+.hero.news-hero.news-hero--solid .hero-subtitle {
+  text-shadow: none;
 }

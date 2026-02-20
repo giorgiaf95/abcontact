@@ -1,0 +1,321 @@
+/* ================= Landing template (scoped) ================= */
+
+/* Hide global header/menu/footer just for landing template */
+.page-template-page-landing .site-header,
+.page-template-page-landing .header,
+.page-template-page-landing #site-navigation,
+.page-template-page-landing .site-footer {
+  display: none !important;
+}
+
+/* Full-bleed + remove theme boxed wrappers (landing only) */
+.page-template-page-landing html,
+.page-template-page-landing body {
+  width: 100%;
+  height: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.page-template-page-landing #page,
+.page-template-page-landing .site,
+.page-template-page-landing .wrap,
+.page-template-page-landing #content,
+.page-template-page-landing .content-area,
+.page-template-page-landing .site-main {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* Disable site bg (SVG / pseudo) */
+.page-template-page-landing body {
+  background: transparent !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+}
+
+.page-template-page-landing body::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* Main background */
+.page-template-page-landing .landing {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--landing-bg, #3650b7);
+}
+
+/* Header zone background (logo + image) */
+.landing__header-zone {
+  background: var(--landing-header-bg, #2740a5);
+  padding: 28px 0 18px;
+}
+
+/* Content zone spacing */
+.landing__content-zone {
+  padding: 18px 0 0;
+}
+
+/* Footer zone background */
+.landing__footer-zone {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
+
+  background: var(--landing-footer-bg, #0f1b33);
+  padding: 26px 0 30px;
+  margin-top: 26px;
+}
+
+/* Keep content centered but with internal gutters */
+.page-template-page-landing .landing__container.container,
+.page-template-page-landing .landing__footer-inner.container {
+  max-width: 920px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+@media (max-width: 680px) {
+  .page-template-page-landing .landing__container.container,
+  .page-template-page-landing .landing__footer-inner.container {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+/* Logo */
+.landing__top {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.landing__brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.landing__logo,
+.page-template-page-landing .custom-logo,
+.page-template-page-landing .custom-logo-link img {
+  height: 84px;
+  width: auto;
+}
+
+@media (max-width: 680px) {
+  .landing__logo,
+  .page-template-page-landing .custom-logo,
+  .page-template-page-landing .custom-logo-link img {
+    height: 68px;
+  }
+}
+
+/* Image */
+.landing__media {
+  margin: 14px 0 18px;
+}
+
+.landing__image {
+  width: 100%;
+  border-radius: 22px;
+  box-shadow: 0 18px 40px rgba(16, 24, 40, 0.14);
+  overflow: hidden;
+  display: block;
+}
+
+/* Intro (Gutenberg) */
+.landing__intro {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin-bottom: 18px;
+}
+
+/* Blocks grid */
+.landing__blocks {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0;
+}
+
+/* Cards */
+:root {
+  --landing-card-bg: #ffffff;
+  --landing-card-border: rgba(16, 24, 40, 0.08);
+  --landing-card-shadow: 0 18px 48px rgba(16, 24, 40, 0.14);
+}
+
+.landing-block {
+  background: var(--landing-card-bg);
+  border: 1px solid var(--landing-card-border);
+  border-radius: 18px;
+  padding: 26px;
+  box-shadow: var(--landing-card-shadow);
+}
+
+@media (max-width: 680px) {
+  .landing-block {
+    padding: 20px;
+    border-radius: 16px;
+  }
+}
+
+/* Editor content rhythm */
+.landing-block__body > *:first-child { margin-top: 0; }
+.landing-block__body > *:last-child  { margin-bottom: 0; }
+
+.landing-block__body p {
+  margin: 0 0 1rem;
+  color: #475569;
+  line-height: 1.65;
+}
+
+.landing-block__body h1,
+.landing-block__body h2,
+.landing-block__body h3 {
+  margin: 0 0 12px;
+  line-height: 1.15;
+}
+
+.landing-block__body img,
+.landing-block__body figure {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 16px auto;
+  border-radius: 12px;
+}
+
+/* Buttons */
+.page-template-page-landing .landing .btn,
+.page-template-page-landing .landing a.btn,
+.page-template-page-landing .landing button.btn {
+  display: inline-flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  padding: 14px 20px;
+  min-height: 52px;
+
+  border-radius: 16px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.page-template-page-landing .landing .btn--primary {
+  background: #0b5fff !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 14px 34px rgba(11, 95, 255, 0.18);
+}
+
+.page-template-page-landing .landing .btn--ghost {
+  background: transparent !important;
+  color: #0b5fff !important;
+  border: 2px solid rgba(11, 95, 255, 0.22) !important;
+}
+
+.landing-block__actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 22px;
+}
+
+.page-template-page-landing .landing .landing-block__actions .btn {
+  min-width: 240px;
+}
+
+@media (max-width: 520px) {
+  .page-template-page-landing .landing .landing-block__actions .btn {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Form card */
+.landing__form {
+  margin-top: 18px;
+  background: var(--landing-card-bg);
+  border: 1px solid var(--landing-card-border);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: var(--landing-card-shadow);
+}
+
+@media (max-width: 680px) {
+  .landing__form {
+    border-radius: 16px;
+    padding: 16px;
+  }
+}
+
+/* Center inner plugin form content better */
+.landing__form .wpforms-container,
+.landing__form .wpforms-container-full,
+.landing__form form {
+  max-width: 780px;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Footer social + contact */
+.landing__social {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.landing__social-link {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.landing__social-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.landing__social-fallback {
+  font-weight: 800;
+}
+
+/* IMPORTANT FIX: force footer text color on ALL descendants */
+.landing__footer-zone,
+.landing__footer-zone * {
+  color: var(--landing-footer-text, #ffffff) !important;
+}
+
+.landing__contact {
+  text-align: center;
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+.landing__contact p {
+  margin: 6px 0;
+}
+
+.landing__contact a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
