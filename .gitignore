@@ -1,0 +1,33 @@
+# Node, build artifacts
+node_modules/
+dist/
+build/
+.sass-cache/
+.cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.idea/
+.vscode/*
+!/.vscode/extensions.json
+*.swp
+
+# Composer / vendor
+vendor/
+
+# Environment / credentials
+.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Generated images or screenshots (opzionale)
+screenshot.png
+
+# Ignore everything outside the theme when repo is inside WP root (optional)
+# If your repo root is inside wp-content/themes, remove/comment this

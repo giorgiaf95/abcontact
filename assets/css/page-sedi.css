@@ -1,0 +1,616 @@
+/* page-sedi.css
+   Versione: ripristino mappa + CTA centrata e elenco sedi in colonna mobile
+   Nota: non toccare la mappa (nessun override aggressivo su map container).
+*/
+
+:root{
+  --news-gap: 28px;
+  --news-bg: #ffffff;
+  --news-text: #0f1724;
+  --news-muted: #6b7280;
+  --news-primary: #0b5fff;
+  --news-label-bg: #e7f3ff;
+  --news-label-color: var(--news-primary);
+  --news-thumb-large-h: 420px;
+  --news-thumb-large-h-sm: 260px;
+  --news-thumb-small-w: 140px;
+  --news-thumb-small-h: 98px;
+  --news-radius: 12px;
+  --news-shadow: 0 8px 30px rgba(16,24,40,0.06);
+  --news-shadow-hover: 0 18px 40px rgba(16,24,40,0.08);
+}
+
+/* -------------------- Hide the small "section under hero" title -------------------- */
+.sedi-section-title,
+.sedi-section-title .section-title,
+.sedi-section-title .section-subtitle {
+  display: none !important;
+}
+
+/* -------------------- Map placeholder (visual box) -------------------- */
+
+.sedi-map-hero {
+  margin: 56px 0 28px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Map container styling: kept minimal so plugin controls the map rendering */
+.sedi-map-placeholder {
+  display: block;
+  width: 100%;
+  max-width: 1180px;
+  margin: 28px auto 32px;
+  padding: 28px 22px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(16,24,40,0.04);
+  box-sizing: border-box;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.sedi-map-placeholder .map-title,
+.sedi-map-shortcode-inner .map-title {
+  font-size: clamp(1.2rem, 3.2vw, 1.6rem) !important;
+  font-weight: 700 !important;
+  color: #1760f0 !important;
+  margin: 6px 0 14px !important;
+  line-height: 1.12 !important;
+  text-align: center !important;
+}
+
+/* Shortcode container */
+.sedi-map-shortcode-inner {
+  width: 100%;
+  margin: 0 auto 0;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* Make embedded map elements responsive (no layout-forcing) */
+.sedi-map-shortcode-inner iframe,
+.sedi-map-shortcode-inner .gm-style,
+.sedi-map-shortcode-inner .leaflet-container,
+.sedi-map-shortcode-inner .map-embed,
+.sedi-map-shortcode-inner .map-wrapper {
+  width: 100% !important;
+  height: 420px !important;
+  max-height: 70vh !important;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;
+  box-sizing: border-box;
+  border: none !important;
+}
+
+/* Defensive: hide plugin-inserted small helper elements */
+.sedi-map-shortcode-inner p.map-count,
+.sedi-map-shortcode-inner .count,
+.sedi-map-shortcode-inner .small,
+.sedi-map-shortcode-inner .sedi-count {
+  display: none !important;
+}
+
+/* -------------------- CTA area (left text + right card) -------------------- */
+.sedi-cta {
+  margin: 64px 0;
+  padding: 0 12px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.sedi-cta-inner {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 40px;
+  align-items: start;
+  box-sizing: border-box;
+}
+
+/* Left column */
+.sedi-cta-left {
+  padding: 6px 8px;
+}
+.sedi-cta-left-title {
+  margin: 6px 0 18px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0f1724;
+  line-height: 1.08;
+}
+.sedi-cta-left-desc {
+  color: #34414b;
+  margin: 0 0 18px;
+  line-height: 1.6;
+  font-size: 1.02rem;
+  max-width: 680px;
+}
+
+/* Feature list bullets */
+.sedi-cta-features {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+  color: #34414b;
+}
+.sedi-cta-features li {
+  position: relative;
+  padding-left: 18px;
+  margin: 12px 0;
+  font-size: 1rem;
+}
+.sedi-cta-features li::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #1760f0;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 7px;
+}
+
+/* Right column card */
+.sedi-cta-right {
+  display: flex;
+  justify-content: flex-end;
+  box-sizing: border-box;
+}
+
+.sedi-cta-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 14px;
+  padding: 24px;
+  color: #fff;
+  background: linear-gradient(180deg, #61b3ff 0%, #1b57d6 100%);
+  box-shadow: 0 30px 60px rgba(16,24,40,0.07);
+  display: flex;
+  box-sizing: border-box;
+}
+
+/* Inner card content */
+.sedi-cta-card-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+.sedi-cta-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+.sedi-cta-card-text--summary {
+  margin: 0;
+  color: rgba(255,255,255,0.96);
+  line-height: 1.6;
+  font-size: .98rem;
+}
+
+/* Button */
+.sedi-cta-card-action {
+  margin-top: 6px;
+  text-align: center;
+}
+.sedi-cta-button {
+  display: inline-block;
+  padding: 12px 18px;
+  background: #ffffff;
+  color: #1760f0;
+  border-radius: 10px;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(16,24,40,0.08);
+  text-decoration: none;
+  max-width: 88%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* contacts */
+.sedi-cta-contact {
+  color: rgba(255,255,255,0.95);
+  font-size: .98rem;
+  line-height: 1.6;
+}
+.sedi-cta-contact strong {
+  display: inline-block;
+  width: 110px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+}
+
+/* -------------------- Grid of sedi cards -------------------- */
+.sedi-grid-inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  align-items: start;
+  margin: 64px 0 100px;
+  box-sizing: border-box;
+}
+.sede-card {
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 18px 40px rgba(16,24,40,0.05);
+  background: #fff;
+  box-sizing: border-box;
+}
+
+/* -------------------- Responsive: mobile-first adjustments -------------------- */
+@media (max-width: 900px) {
+
+  /* Stack columns and center right card above left content */
+  .sedi-cta-inner { grid-template-columns: 1fr !important; gap: 20px; padding-left: 12px; padding-right: 12px; }
+  .sedi-cta-right { order: -1; /* we'll center the CTA card below */ }
+
+  /* Make CTA card almost full viewport width with comfortable margins */
+  .sedi-cta-card {
+    max-width: calc(100vw - 24px) !important;
+    width: auto !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding: 18px !important;
+    border-radius: 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  .sedi-cta-card-action .sedi-cta-button {
+    max-width: 92% !important;
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    font-size: 1rem !important;
+  }
+
+  .sedi-cta-left { padding-left: 6px !important; padding-right: 6px !important; }
+
+  /* Map height modest on mobile - plugin will still manage rendering */
+  .sedi-map-shortcode-inner iframe,
+  .sedi-map-shortcode-inner .gm-style,
+  .sedi-map-shortcode-inner .leaflet-container {
+    height: 360px !important;
+  }
+
+  .sedi-map-placeholder {
+    margin-left: calc(-1 * var(--site-gutter)) !important;
+    margin-right: calc(-1 * var(--site-gutter)) !important;
+    width: calc(100% + (var(--site-gutter) * 2)) !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+    padding: 14px 12px !important;
+  }
+
+  .sedi-map-placeholder .map-title {
+    font-size: clamp(1.4rem, 6.5vw, 2.0rem) !important;
+    margin-bottom: 12px !important;
+  }
+
+  .sedi-map-shortcode-inner iframe,
+  .sedi-map-shortcode-inner .leaflet-container {
+    border-radius: 8px !important;
+    overflow: hidden !important;
+  }
+
+  /* ----------- NEW: force all sedi to a single centered column on mobile ----------- */
+  .sedi-grid-inner {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    margin: 36px 12px !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+  .sedi-grid-inner .sede-card {
+    width: 100% !important;
+    max-width: 720px;
+    margin: 0 auto !important;
+    display: block !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Center the CTA card visually below the map */
+  .sedi-cta-right {
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .sedi-cta-card {
+    margin: 18px auto !important;
+    left: auto !important;
+    transform: none !important;
+    max-width: calc(100% - 32px) !important;
+    width: auto !important;
+  }
+}
+
+/* Very narrow phones */
+@media (max-width: 420px) {
+  .sedi-cta-card { max-width: calc(100vw - 18px) !important; padding: 14px !important; }
+  .sedi-map-shortcode-inner iframe,
+  .sedi-map-shortcode-inner .leaflet-container { height: 300px !important; }
+  .sedi-map-placeholder { padding: 12px 10px !important; }
+  .sedi-map-placeholder .map-title { font-size: 1.3rem !important; }
+}
+
+/* Desktop safety: ensure alignment within main container */
+@media (min-width: 1100px) {
+  .sedi-cta-inner { grid-template-columns: 1fr 420px; }
+  .sedi-map-placeholder { padding: 48px 36px; }
+}
+
+/* -------------------- Final safety & overrides -------------------- */
+.sedi-map-placeholder,
+.sedi-cta-inner {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box;
+}
+
+/* Accessibility: focus style for CTA button */
+.sedi-cta-button:focus {
+  outline: 3px solid rgba(255,255,255,0.12);
+  outline-offset: 4px;
+}
+
+/* ---------- Contact formatting & CTA width rules (kept) ---------- */
+.sedi-cta-contact a,
+.sedi-cta-contact a:link,
+.sedi-cta-contact a:visited {
+  color: #ffffff !important;
+  text-decoration: underline !important;
+}
+
+/* Ensure contact lines remain on one row */
+.sedi-cta-contact .contact-line {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin: 6px 0;
+  flex-wrap: nowrap;
+}
+.sedi-cta-contact .contact-line strong {
+  display: inline-block;
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+}
+.sedi-cta-contact .contact-val {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #ffffff;
+}
+
+/* ---------- Additional CTA sizing overrides ---------- */
+@media (max-width: 900px) {
+  .sedi-cta { padding-left: 0 !important; padding-right: 0 !important; }
+  .sedi-cta-inner { padding-left: 8px !important; padding-right: 8px !important; gap: 18px !important; }
+
+  .sedi-cta-card {
+    width: calc(100vw - 14px) !important;
+    max-width: calc(100vw - 14px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    left: auto !important;
+    transform: none !important;
+    position: relative !important;
+    padding: 20px !important;
+    border-radius: 12px !important;
+    box-sizing: border-box !important;
+    min-width: 280px !important;
+  }
+
+  .sedi-cta-card-action .sedi-cta-button {
+    max-width: 92% !important;
+    width: auto !important;
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    font-size: 1rem !important;
+    padding: 12px 20px !important;
+  }
+}
+
+/* Defensive: ensure no odd transforms or offsets */
+.sedi-cta-inner, .sedi-cta-right, .sedi-cta-left {
+  transform: none !important;
+  left: auto !important;
+}
+
+/* Ensure embedded plugin containers can't limit width */
+.sedi-map-shortcode-inner,
+.sedi-map-shortcode-inner * {
+  max-width: none !important;
+}
+
+/* Small tweak: ensure the CTA visual doesn't get clipped by bottom fixed items */
+.sedi-cta-card { z-index: 20 !important; }
+
+
+/* === Fix definitivo per plugin WP Google Maps / MapLibre: centro e larghezza mappa su mobile === */
+
+@media (max-width: 900px) {
+
+  /* 1) centra il placeholder rispetto alla viewport con left:50% + translateX (robusto) */
+  #sedi-map.sedi-map-placeholder,
+  .sedi-map-placeholder {
+    position: relative !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(100vw - 24px) !important; /* lascia 12px gutter ai lati */
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+    box-sizing: border-box !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+  }
+
+  /* 2) forziamo il container del plugin ad usare tutta la larghezza interna
+     e annulliamo eventuali variabili che limitano il viewport */
+  #wpgmza_map_1,
+  .wpgmza_map {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    /* prova a sovrascrivere le variabili inline del plugin */
+    --wpgmza--viewport-container-width: 100% !important;
+    --wpgmza--viewport-overlays-max-width: 100% !important;
+    --wpgmza--viewport-panels-max-width: 100% !important;
+  }
+
+  /* 3) annulla le translate3d e offset applicati ai layer interni che causano shift */
+  #wpgmza_map_1 .leaflet-pane.leaflet-map-pane,
+  #wpgmza_map_1 .leaflet-gl-layer,
+  #wpgmza_map_1 .maplibregl-map,
+  #wpgmza_map_1 .maplibregl-canvas-container {
+    transform: translate3d(0,0,0) !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 4) canvas / layer immagine: riempi il contenitore */
+  #wpgmza_map_1 canvas.maplibregl-canvas,
+  #wpgmza_map_1 .leaflet-image-layer,
+  #wpgmza_map_1 .leaflet-pane,
+  #wpgmza_map_1 .leaflet-container {
+    width: 100% !important;
+    max-width: none !important;
+    height: 360px !important; /* regola altezza mobile se necessario */
+    display: block !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 5) reset wrapper shortcode-inner */
+  .sedi-map-shortcode-inner,
+  .sedi-map-shortcode-inner > * {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 6) evita trasformazioni residue (defensive) */
+  .sedi-map-placeholder,
+  .sedi-map-shortcode-inner {
+    left: auto !important;
+    transform: none !important;
+  }
+}
+
+/* Desktop: assicurati che i wrapper non limitino la larghezza interna */
+#wpgmza_map_1,
+.wpgmza_map,
+.sedi-map-shortcode-inner,
+.sedi-map-shortcode-inner * {
+  max-width: none !important;
+}
+
+/* Fix definitivo: mantieni CTA centrata, testi left-aligned, card non toccano il bordo */
+@media (max-width: 900px) {
+
+  /* Reset di posizionamenti precedenti e contenitori centrati con max-width + padding */
+  .sedi-cta-inner,
+  .sedi-grid-inner {
+    position: static !important;      /* rimuove left:50% / translateX se presenti */
+    left: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 720px !important;      /* evita che i contenitori diventino troppo larghi */
+    margin: 0 auto !important;        /* centrate nella viewport */
+    padding-left: 16px !important;    /* piccoli gutter interni ai lati */
+    padding-right: 16px !important;
+    box-sizing: border-box !important;
+    justify-items: stretch !important; /* i figli occupano l'intera larghezza utile */
+  }
+
+  /* Assicuriamo che il left column resti left-aligned (titolo, bullets, testo) */
+  .sedi-cta-left {
+    text-align: left !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .sedi-cta-left * { text-align: left !important; }
+
+  /* Lista bullets: padding adeguato e allineamento a sinistra */
+  .sedi-cta-features {
+    padding-left: 18px !important;
+    margin-left: 0 !important;
+    text-align: left !important;
+    list-style-position: outside !important;
+  }
+  .sedi-cta-features li { text-align: left !important; }
+
+  /* CTA: manteniamo il blocco centrato e con larghezza estetica */
+  .sedi-cta-right {
+    justify-self: center !important;
+    align-self: start !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+    position: relative !important;
+    left: auto !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+  }
+
+  .sedi-cta-card {
+    display: inline-block !important;      /* si centra come elemento inline-block */
+    margin: 18px auto !important;
+    max-width: 520px !important;           /* tieni la card stretta rispetto al viewport */
+    width: 100% !important;                /* ma non oltre il max-width */
+    box-sizing: border-box !important;
+  }
+
+  .sedi-cta-card-inner { padding-left: 16px !important; padding-right: 16px !important; }
+
+  /* Grid delle sedi: una colonna, card centrate e con gutter interni */
+  .sedi-grid-inner {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    margin: 36px 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .sedi-grid-inner .sede-card {
+    width: 100% !important;
+    max-width: 680px !important;   /* limitiamo la larghezza dei singoli card */
+    margin: 0 auto !important;     /* centrati */
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* pulizia difensiva di trasform/left/float residui */
+  .sedi-cta, .sedi-cta-inner, .sedi-cta-left, .sedi-cta-right, .sedi-grid-inner {
+    transform: none !important;
+    left: auto !important;
+    float: none !important;
+  }
+}

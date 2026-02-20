@@ -1,0 +1,111 @@
+/* Simplified, deterministic CTA styles.
+   - Uses --cta-btn-color provided inline by the partial (metabox).
+   - Default: outline style (bianco con bordo/colore del metabox).
+   - Hover/focus: pulsante diventa pieno (colorato) usando --cta-btn-color.
+   - Minimal !important usage, solo per forza dove necessario per sovrascrivere regole che potrebbero provenire da plugin esterni.
+*/
+
+/* Container / layout */
+.front-cta,
+.cs-cta,
+.sp-final-cta {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  padding: var(--cta-padding-vertical, 30px) 0;
+  margin-top: 32px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(11,95,255,0.08) 12%, rgba(255,255,255,0) 70%);
+}
+
+.front-cta .container { max-width: var(--cta-max-width, 1200px); margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
+
+.front-cta .cta-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  padding: 6px 0;
+  width: 100%;
+}
+
+/* Title/subtitle */
+.front-cta .cta-title { margin: 0; font-weight: 700; color: var(--cta-title-color, var(--text-color, #0f1724)); font-size: clamp(1.05rem, 2.4vw, 1.6rem); }
+.front-cta .cta-sub { margin: 0; color: var(--cta-sub-color, var(--muted, #6b7280)); max-width: 760px; }
+
+/* Button base: outline visual by default (white background, colored border/text) */
+.front-cta .cta-button,
+.sp-final-cta .sp-final-cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  min-width: 160px;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1;
+  transition: background-color 180ms ease, color 180ms ease, transform 140ms ease, box-shadow 180ms ease;
+  background-color: #ffffff; /* default white */
+  color: var(--cta-btn-color, #0b5fff);
+  border: 1.5px solid var(--cta-btn-color, #0b5fff);
+  text-decoration: none;
+  -webkit-appearance: none; /* avoid native styles on some UAs */
+}
+
+/* If a stricter filled intent is explicitly used (server can set class), render slightly different base
+   but we still prefer the outline visual for consistency. Keep this rule low-key; the hover behavior below drives the colored state. */
+.front-cta .cta-button.cta-button--filled {
+  /* keep white in base state to match desired UX; designers can change to filled explicitly if wanted */
+  background-color: #ffffff;
+  color: var(--cta-btn-color, #0b5fff);
+  border-color: var(--cta-btn-color, #0b5fff);
+}
+
+/* Hover / focus: become fully colored using the metabox color */
+.front-cta .cta-button:hover,
+.front-cta .cta-button:focus,
+.sp-final-cta .sp-final-cta-button:hover,
+.sp-final-cta .sp-final-cta-button:focus {
+  background-color: var(--cta-btn-color, #0b5fff) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 34px rgba(11,95,255,0.12);
+  outline: none;
+}
+
+/* Small accessible focus style */
+.front-cta .cta-button:focus-visible {
+  box-shadow: 0 12px 34px rgba(11,95,255,0.10);
+  outline: 3px solid rgba(255,255,255,0.12);
+  outline-offset: 2px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 900px) {
+  .front-cta .cta-title { font-size: 1.15rem; }
+  .front-cta .cta-button { min-width: 140px; padding: 10px 14px; }
+}
+
+/* Defensive: keep internal elements inline */
+.front-cta .cta-button .cta-icon,
+.front-cta .cta-button .cta-text { display: inline-block; vertical-align: middle; }
+
+/* Nasconde eventuali vecchie CTA "hard-coded" che NON hanno data-abcontact-cta.
+   La nuova partial ha data-abcontact-cta="1" quindi non verrà nascosta. */
+.front-cta:not([data-abcontact-cta]) {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
