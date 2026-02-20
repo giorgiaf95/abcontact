@@ -1,0 +1,231 @@
+/**
+ * Common CSS - Global styles loaded on all pages.
+ *
+ * This file contains shared CSS variables, utility classes, and common styles
+ * that are used across all pages of the theme.
+ *
+ * @package theme-abcontact
+ */
+
+/* ========================= Common Variables ========================= */
+:root {
+    /* Color palette */
+    --common-color-primary: #2050f2;
+    --common-color-primary-hover: #0b5fff;
+    --common-color-text: #111827;
+    --common-color-muted: #6b7280;
+    --common-color-bg: #fafafa;
+    --common-color-border: #e6e9ee;
+    --common-color-white: #ffffff;
+
+    /* Spacing */
+    --common-space-xs: 0.5rem;
+    --common-space-sm: 0.75rem;
+    --common-space-md: 1.25rem;
+    --common-space-lg: 2rem;
+    --common-space-xl: 3rem;
+
+    /* Typography */
+    --common-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --common-font-size-base: 1rem;
+    --common-font-size-sm: 0.875rem;
+    --common-font-size-lg: 1.125rem;
+    --common-line-height: 1.5;
+
+    /* Layout */
+    --common-max-width: 1200px;
+    --common-site-gutter: 1rem;
+    --common-radius: 8px;
+
+    /* Shadows */
+    --common-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+    --common-shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08);
+    --common-shadow-lg: 0 10px 28px rgba(11, 95, 255, 0.12);
+
+    /* Transitions */
+    --common-transition-fast: 120ms ease;
+    --common-transition-normal: 200ms ease;
+    --common-transition-slow: 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ========================= Common Utility Classes ========================= */
+
+/* Screen reader only */
+.sr-only {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+}
+
+/* Text alignment */
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Margin utilities */
+.mt-0 {
+    margin-top: 0;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.mt-sm {
+    margin-top: var(--common-space-sm);
+}
+
+.mb-sm {
+    margin-bottom: var(--common-space-sm);
+}
+
+.mt-md {
+    margin-top: var(--common-space-md);
+}
+
+.mb-md {
+    margin-bottom: var(--common-space-md);
+}
+
+.mt-lg {
+    margin-top: var(--common-space-lg);
+}
+
+.mb-lg {
+    margin-bottom: var(--common-space-lg);
+}
+
+/* Display utilities */
+.d-none {
+    display: none;
+}
+
+.d-block {
+    display: block;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.d-inline-flex {
+    display: inline-flex;
+}
+
+/* Flex utilities */
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.gap-sm {
+    gap: var(--common-space-sm);
+}
+
+.gap-md {
+    gap: var(--common-space-md);
+}
+
+/* ========================= Common Focus States ========================= */
+:focus {
+    outline: 3px solid rgba(11, 95, 255, 0.18);
+    outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+:focus-visible {
+    outline: 3px solid rgba(11, 95, 255, 0.18);
+    outline-offset: 2px;
+}
+
+/* ========================= Common Link Styles ========================= */
+a.common-link {
+    color: var(--common-color-primary);
+    text-decoration: none;
+    transition: color var(--common-transition-fast);
+}
+
+a.common-link:hover,
+a.common-link:focus {
+    color: var(--common-color-primary-hover);
+    text-decoration: underline;
+}
+
+/* ========================= Common Button Base ========================= */
+.common-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: var(--common-radius);
+    font-family: var(--common-font-family);
+    font-size: var(--common-font-size-base);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform var(--common-transition-fast), 
+                box-shadow var(--common-transition-fast), 
+                background var(--common-transition-fast);
+    border: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.common-btn:hover {
+    transform: translateY(-2px);
+}
+
+.common-btn:focus-visible {
+    box-shadow: var(--common-shadow-lg), 0 0 0 4px rgba(11, 95, 255, 0.1);
+}
+
+/* ========================= Responsive Helpers ========================= */
+@media (max-width: 799px) {
+    .hide-mobile {
+        display: none !important;
+    }
+}
+
+@media (min-width: 800px) {
+    .hide-desktop {
+        display: none !important;
+    }
+}
+
+/* ========================= Reduced Motion ========================= */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
