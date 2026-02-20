@@ -1,7 +1,6 @@
 <?php
 /**
  * Template Name: Chi Siamo
- * Description: Pagina "Chi Siamo"
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $post_id = get_the_ID();
 
+/* Enqueue CSS for this template */
 $css_path = get_stylesheet_directory() . '/assets/css/page-chi-siamo.css';
 if ( file_exists( $css_path ) ) {
     wp_enqueue_style( 'ab-page-chi-siamo', get_stylesheet_directory_uri() . '/assets/css/page-chi-siamo.css', array(), filemtime( $css_path ) );
@@ -24,7 +24,7 @@ $hero_image_url = $hero_id ? wp_get_attachment_image_url( $hero_id, 'full' ) : '
 $hero_args = array(
     'eyebrow'   => '',
     'title'     => get_the_title( $post_id ),
-    'subtitle'  => '', 
+    'subtitle'  => '',
     'bg_url'    => $hero_image_url,
     'cta'       => '',
     'cta_label' => '',
@@ -33,12 +33,13 @@ set_query_var( 'args', $hero_args );
 get_template_part( 'template-parts/news-hero' );
 set_query_var( 'args', null );
 
+/* Team carousel (if available) */
 if ( locate_template( 'template-parts/team-carousel.php' ) ) {
     get_template_part( 'template-parts/team-carousel' );
 }
 
-/* ============================= Metabox ============================= */
-/* Section A */
+/* ============================= Metabox data ============================= */
+/* Section A (left image, right content originally) - we'll render stacked (image, title, 2-column body) */
 $cs_a_title = get_post_meta( $post_id, 'cs_section_a_title', true );
 $cs_a_text  = get_post_meta( $post_id, 'cs_section_a_text', true );
 $cs_a_image_id = absint( get_post_meta( $post_id, 'cs_section_a_image_id', true ) );
@@ -77,31 +78,64 @@ for ( $i=1; $i<=4; $i++ ) {
     );
 }
 
-/* CTA final */
-$cs_cta_title = get_post_meta( $post_id, 'cs_cta_title', true ) ?: __( 'Vuoi lavorare con noi?', 'abcontact' );
-$cs_cta_text  = get_post_meta( $post_id, 'cs_cta_text', true );
-$cs_cta_button_label = get_post_meta( $post_id, 'cs_cta_button_label', true ) ?: __( 'Candidati ora', 'abcontact' );
-$cs_cta_button_link  = get_post_meta( $post_id, 'cs_cta_button_link', true );
+/* ===================== CTA: read central cta_* meta (preferred) with legacy fallbacks (read-only) ===================== */
+
+// Preferred (central) meta keys
+$cta_title        = get_post_meta( $post_id, 'cta_title', true );
+$cta_subtitle     = get_post_meta( $post_id, 'cta_subtitle', true );
+$cta_button_label = get_post_meta( $post_id, 'cta_button_label', true );
+$cta_button_link  = get_post_meta( $post_id, 'cta_button_link', true );
+$cta_button_color = get_post_meta( $post_id, 'cta_button_color', true );
+$cta_modal_raw    = get_post_meta( $post_id, 'cta_modal', true );
+$cta_modal        = $cta_modal_raw ? true : false;
+
+if ( empty( $cta_title ) ) {
+    $cta_title = get_post_meta( $post_id, 'cs_cta_title', true ) ?: get_post_meta( $post_id, 'service_final_cta_title', true );
+}
+if ( empty( $cta_subtitle ) ) {
+    $cta_subtitle = get_post_meta( $post_id, 'cs_cta_text', true ) ?: get_post_meta( $post_id, 'service_final_cta_text', true );
+}
+if ( empty( $cta_button_label ) ) {
+    $cta_button_label = get_post_meta( $post_id, 'cs_cta_button_label', true ) ?: get_post_meta( $post_id, 'service_final_cta_button_label', true );
+}
+if ( empty( $cta_button_link ) ) {
+    $cta_button_link = get_post_meta( $post_id, 'cs_cta_button_link', true ) ?: get_post_meta( $post_id, 'service_final_cta_link', true );
+}
+if ( empty( $cta_button_color ) ) {
+    $cta_button_color = get_post_meta( $post_id, 'cs_cta_button_color', true ) ?: get_post_meta( $post_id, 'service_final_cta_button_color', true );
+}
+
+// Normalize link: accept absolute URL or path
+if ( ! empty( $cta_button_link ) ) {
+    $raw_link = trim( $cta_button_link );
+    if ( ! preg_match( '#^https?://#i', $raw_link ) ) {
+        $cta_button_link = home_url( '/' . ltrim( $raw_link, '/' ) );
+    } else {
+        $cta_button_link = $raw_link;
+    }
+}
 
 ?>
 
 <main class="chi-siamo-main container" role="main">
   <div class="chi-siamo-inner">
 
-    <!-- Section A: testo a sinistra, foto a destra -->
-    <section class="cs-section cs-section-a">
-      <div class="cs-row container">
+    <!-- ===== Section A: stacked (image centered, title centered, text 2-columns) ===== -->
+    <section class="cs-section cs-section-a cs-section--stacked">
+      <div class="container">
+        <?php if ( $cs_a_image_url ) : ?>
+          <div class="cs-col cs-col--media">
+            <img class="cs-image" src="<?php echo esc_url( $cs_a_image_url ); ?>" alt="<?php echo esc_attr( $cs_a_title ?: get_the_title() ); ?>">
+          </div>
+        <?php endif; ?>
+
         <div class="cs-col cs-col--text">
           <?php if ( $cs_a_title ) : ?>
             <h2 class="cs-title"><?php echo esc_html( $cs_a_title ); ?></h2>
           <?php endif; ?>
+
           <?php if ( $cs_a_text ) : ?>
             <div class="cs-text"><?php echo wp_kses_post( wpautop( $cs_a_text ) ); ?></div>
-          <?php endif; ?>
-        </div>
-        <div class="cs-col cs-col--media">
-          <?php if ( $cs_a_image_url ) : ?>
-            <img class="cs-image" src="<?php echo esc_url( $cs_a_image_url ); ?>" alt="<?php echo esc_attr( $cs_a_title ?: get_the_title() ); ?>">
           <?php endif; ?>
         </div>
       </div>
@@ -131,18 +165,20 @@ $cs_cta_button_link  = get_post_meta( $post_id, 'cs_cta_button_link', true );
       </div>
     </section>
 
-    <!-- Section C: foto a sinistra, testo a destra -->
-    <section class="cs-section cs-section-c">
-      <div class="cs-row container reverse-on-desktop">
-        <div class="cs-col cs-col--media">
-          <?php if ( $cs_c_image_url ) : ?>
+    <!-- ===== Section C: stacked (image centered, title centered, text 2-columns) ===== -->
+    <section class="cs-section cs-section-c cs-section--stacked">
+      <div class="container">
+        <?php if ( $cs_c_image_url ) : ?>
+          <div class="cs-col cs-col--media">
             <img class="cs-image" src="<?php echo esc_url( $cs_c_image_url ); ?>" alt="<?php echo esc_attr( $cs_c_title ?: get_the_title() ); ?>">
-          <?php endif; ?>
-        </div>
+          </div>
+        <?php endif; ?>
+
         <div class="cs-col cs-col--text">
           <?php if ( $cs_c_title ) : ?>
             <h3 class="cs-title"><?php echo esc_html( $cs_c_title ); ?></h3>
           <?php endif; ?>
+
           <?php if ( $cs_c_text ) : ?>
             <div class="cs-text"><?php echo wp_kses_post( wpautop( $cs_c_text ) ); ?></div>
           <?php endif; ?>
@@ -183,25 +219,22 @@ $cs_cta_button_link  = get_post_meta( $post_id, 'cs_cta_button_link', true );
       </div>
     </section>
 
-    <!-- CTA finale -->
-<section class="cs-cta">
-  <div class="container">
-    <div class="cs-cta-inner">
-      <div class="cs-cta-text">
-        <?php if ( $cs_cta_title ) : ?><h3 class="cs-cta-title"><?php echo esc_html( $cs_cta_title ); ?></h3><?php endif; ?>
-        <?php if ( $cs_cta_text ) : ?><div class="cs-cta-sub"><?php echo wp_kses_post( wpautop( $cs_cta_text ) ); ?></div><?php endif; ?>
-      </div>
+    <!-- CTA finale (use centralized partial that reads cta_* meta) -->
+    <?php
+    $cta_args = array(
+      'title'        => $cta_title,
+      'subtitle'     => $cta_subtitle,
+      'button_label' => $cta_button_label,
+      'button_link'  => $cta_button_link,
+      'button_color' => $cta_button_color,
+      'modal'        => $cta_modal,
+    );
 
-      <div class="cs-cta-action">
-        <?php if ( $cs_cta_button_link ) : ?>
-          <a class="cta-button" href="<?php echo esc_url( $cs_cta_button_link ); ?>" rel="noopener"><?php echo esc_html( $cs_cta_button_label ); ?></a>
-        <?php else : ?>
-          <button class="cta-button" type="button"><?php echo esc_html( $cs_cta_button_label ); ?></button>
-        <?php endif; ?>
-      </div>
-    </div>
-  </div>
-</section>
+    // Render the central CTA partial — it will output only if there are meaningful values.
+    set_query_var( 'args', $cta_args );
+    get_template_part( 'template-parts/cta', null, $cta_args );
+    set_query_var( 'args', null );
+    ?>
 
   </div>
 </main>
@@ -247,3 +280,4 @@ $cs_cta_button_link  = get_post_meta( $post_id, 'cs_cta_button_link', true );
 
 <?php
 get_footer();
+?>

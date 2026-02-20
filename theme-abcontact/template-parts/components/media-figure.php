@@ -1,7 +1,4 @@
 <?php
-// Template part: template-parts/components/media-figure.php
-// Usage:
-// get_template_part( 'template-parts/components/media-figure', null, array( 'attachment_id' => 123, 'src' => '', 'size' => 'full', 'class' => '', 'alt' => '' ) );
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
@@ -15,7 +12,7 @@ $defaults = array(
     'size'          => 'full',
     'class'         => '',
     'alt'           => '',
-    'link'          => '', // optional link around image
+    'link'          => '', 
 );
 
 $data = wp_parse_args( $args, $defaults );

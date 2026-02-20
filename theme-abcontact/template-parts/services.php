@@ -1,12 +1,4 @@
 <?php
-/**
- * Template part: Services
- * Expects CPT 'ab_service' and meta:
- * - _ab_icon_id
- * - _ab_links
- * - featured image for hero
- */
-
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }

@@ -86,7 +86,6 @@ if ( empty( $bg_url ) ) {
     }
 }
 
-// As extra fallback for singular if still empty
 if ( empty( $bg_url ) && is_singular() ) {
     $hid = get_post_thumbnail_id( get_the_ID() );
     if ( $hid ) {

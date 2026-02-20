@@ -12,31 +12,43 @@
     },
     bindUI: function () {
       var self = this;
-      document.getElementById('news-load-more').addEventListener('click', function (e) {
-        e.preventDefault();
-        self.loadMore(this);
-      });
+
+      // Guard: attach load-more handler only if the button exists
+      var loadMoreBtn = document.getElementById('news-load-more');
+      if ( loadMoreBtn ) {
+        loadMoreBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          self.loadMore(this);
+        });
+      }
 
       // Filters
       var filterBtns = document.querySelectorAll('.news-filter-button');
-      filterBtns.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          self.applyFilter(this.getAttribute('data-cat'));
-          filterBtns.forEach(function (b) { b.classList.remove('active'); });
-          this.classList.add('active');
+      if ( filterBtns && filterBtns.length ) {
+        filterBtns.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            self.applyFilter(this.getAttribute('data-cat'));
+            filterBtns.forEach(function (b) { b.classList.remove('active'); });
+            this.classList.add('active');
+          });
         });
-      });
+      }
     },
 
     applyFilter: function (catId) {
       var grid = document.getElementById('news-archive-grid');
       var loadMoreBtn = document.getElementById('news-load-more');
-      loadMoreBtn.setAttribute('data-page', 1);
-      loadMoreBtn.disabled = false;
-      loadMoreBtn.textContent = abcontactNews.load_more_label || 'Carica altri articoli';
+
+      if ( loadMoreBtn ) {
+        loadMoreBtn.setAttribute('data-page', 1);
+        loadMoreBtn.disabled = false;
+        loadMoreBtn.textContent = (window.abcontactNews && window.abcontactNews.load_more_label) || 'Carica altri articoli';
+      }
 
       this.fetchPosts(1, catId, function (res) {
-        grid.innerHTML = res.html;
+        if ( grid ) {
+          grid.innerHTML = res.html;
+        }
       });
     },
 
@@ -52,6 +64,12 @@
 
       this.fetchPosts(next, cat, function (res) {
         var grid = document.getElementById('news-archive-grid');
+        if (!grid) {
+          // nothing to append to
+          btn.disabled = false;
+          btn.textContent = (window.abcontactNews && window.abcontactNews.load_more_label) || 'Carica altri articoli';
+          return;
+        }
         var tmp = document.createElement('div');
         tmp.innerHTML = res.html;
         while (tmp.firstChild) {
@@ -62,7 +80,7 @@
         if ( res.max_pages && next >= res.max_pages ) {
           btn.style.display = 'none';
         } else {
-          btn.textContent = abcontactNews.load_more_label || 'Carica altri articoli';
+          btn.textContent = (window.abcontactNews && window.abcontactNews.load_more_label) || 'Carica altri articoli';
         }
       });
     },
@@ -85,7 +103,7 @@
       } ).then(function (resp) {
         return resp.json();
       }).then(function (json) {
-        if ( json.success ) {
+        if ( json && json.success ) {
           callback( json.data );
         } else {
           console.error('abcontact: load more error', json);

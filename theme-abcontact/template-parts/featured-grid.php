@@ -3,13 +3,6 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-/**
- * Featured grid (News preview) - home
- * Layout:
- *  - left column: latest post (large)
- *  - right column: next 3 posts (stacked)
- */
-
 $limit = 4; // default (1 + 3)
 $args = array(
     'post_type'           => 'post',
@@ -78,7 +71,6 @@ $posts = $query->posts;
           }
           echo '<div class="news-card__excerpt">' . wp_kses_post( wpautop( $excerpt ) ) . '</div>';
 
-          // meta: date + reading time
           $date = get_the_date( '', $post );
           $rt = abcontact_get_reading_time( $post->ID );
           ?>
@@ -109,7 +101,6 @@ $posts = $query->posts;
 
     <div class="news-grid__right">
       <?php
-      // remaining up to 3 posts (small cards)
       if ( ! empty( $posts ) ) {
           foreach ( $posts as $p ) {
               $post = $p;

@@ -1,0 +1,330 @@
+/* Carica Bolletta — estetica aggiornata per rispecchiare gli screenshot */
+
+/* Page hero (titolo + sottotitolo sotto l'hero) */
+.page-carica-bolletta .carica-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  /* Più spazio sopra e sotto il blocco titolo */
+  padding: 64px 18px 28px; /* top | horizontal | bottom */
+  box-sizing: border-box;
+  margin-bottom: 12px; /* separazione tra hero e titolo area */
+}
+
+.carica-title {
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  margin: 0 0 10px;
+  font-weight: 800;
+  color: var(--text-color, #0f1724);
+  line-height: 1.05;
+  max-width: 1100px;
+}
+
+/* Sottotitolo centrato, con più spazio sotto per staccarlo dal form */
+.carica-sub {
+  color: var(--muted, #6b7280);
+  margin: 0 0 28px;
+  font-size: 1.02rem;
+  max-width: 920px;
+  text-align: center;
+}
+
+/* Card wrapper: meno stondato rispetto a prima, leggermente più separato dal sottotitolo */
+.carica-inner {
+  max-width: 980px;
+  margin: 28px auto 80px; /* distanza superiore aumentata per separarlo dal sottotitolo */
+  background: #ffffff;
+  padding: 24px 28px; /* leggermente meno padding per compensare maggiore spazio esterno */
+  border-radius: 12px; /* meno stondato (era 18px) */
+  box-shadow: 0 30px 80px rgba(16,24,40,0.08);
+  border: 1px solid rgba(16,24,40,0.03);
+  box-sizing: border-box;
+}
+
+/* Grid two columns */
+.grid.two-cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 6px;
+}
+
+/* Fields */
+.field { margin-bottom: 16px; }
+label { display:block; font-weight:700; margin-bottom:8px; color:var(--text-color,#0f1724); }
+
+/* Inputs / selects / textarea
+   Riduzione arrotondamento e leggera diminuzione altezza per look più "squadrato"
+*/
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+select,
+textarea {
+  width:100%;
+  padding:12px 14px;
+  border-radius: 8px; /* meno stondato (era 12px) */
+  border: 2px solid rgba(11,95,255,0.12);
+  background: #fff;
+  box-sizing: border-box;
+  font-size: 1rem;
+  color: var(--text-color,#0f1724);
+  transition: box-shadow 160ms ease, border-color 160ms ease, transform 120ms ease;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--cta-btn-color, #0b5fff);
+  box-shadow: 0 8px 30px rgba(11,95,255,0.06);
+  transform: translateY(-1px);
+}
+
+/* Height for inputs for visual match (slightly reduced) */
+input[type="text"], input[type="email"], input[type="tel"], select {
+  height: 52px; /* era 56px */
+}
+
+/* Select: custom arrow on the right */
+select {
+  background-image: linear-gradient(45deg, transparent 50%, rgba(0,0,0,0.12) 50%), linear-gradient(135deg, rgba(0,0,0,0.12) 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 44px;
+}
+
+/* Section headings inside card (blue link style in screenshots) */
+.carica-inner h3 {
+  color: var(--color-primary, #0b5fff);
+  font-weight:700;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+/* Upload drop area: meno stondato */
+.upload-drop {
+  display:block;
+  cursor:pointer;
+  position: relative;
+  border-radius: 10px; /* era 14px */
+  padding: 24px 16px;
+  background: linear-gradient(180deg, #f3f9ff, #ffffff);
+  border: 1.5px solid rgba(11,95,255,0.08);
+  text-align:center;
+  min-height: 100px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  overflow: hidden;
+}
+
+/* Make the hidden file input cover the whole label so clicks always reach it */
+.upload-drop input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.upload-instructions { padding: 6px 10px; color: var(--text-color,#0f1724); }
+.upload-icon { font-size:30px; margin-bottom:8px; color:var(--color-primary,#0b5fff); }
+.upload-text { color: rgba(15,23,36,0.8); font-weight:600; }
+.upload-filename { margin-top:10px; font-size:.95rem; color:var(--muted,#6b7280); }
+
+/* Checkbox */
+.checkbox { display:flex; align-items:flex-start; gap:12px; }
+.checkbox input[type="checkbox"] { width:18px; height:18px; margin-top:4px; }
+.small { color: var(--muted,#6b7280); font-size:.95rem; margin-top:6px; }
+
+/* Form action buttons: ridotto arrotondamento */
+.form-actions {
+  display:flex;
+  gap:16px;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:22px;
+}
+.form-actions .btn {
+  padding:12px 22px;
+  border-radius: 10px; /* era 12px */
+  font-weight:700;
+  min-width:160px;
+  box-sizing:border-box;
+}
+.btn-ghost {
+  background:#ffffff;
+  color:var(--text-color,#0f1724);
+  border:1px solid rgba(0,0,0,0.08);
+  box-shadow:none;
+}
+.btn-primary {
+  background: linear-gradient(180deg,#0b5fff,#174cff);
+  color:#fff;
+  border: none;
+  box-shadow: 0 10px 30px rgba(11,95,255,0.14);
+}
+
+/* On small screens stack and full width buttons */
+@media (max-width:900px) {
+  .grid.two-cols { grid-template-columns: 1fr; }
+  .form-actions { flex-direction:column-reverse; gap:12px; }
+  .form-actions .btn { width:100%; }
+  input[type="text"], select { height:48px; }
+  .carica-inner { padding:18px; margin-bottom:40px; }
+}
+
+/* Errors / success */
+.carica-errors { background:#fff5f6; color:#a01919; padding:12px; border-radius:10px; margin-bottom:14px; border:1px solid rgba(160,25,25,0.08); }
+.carica-success { background:#f3fff7; color:#065; padding:18px; border-radius:10px; margin-bottom:12px; border:1px solid rgba(6,100,80,0.06); }
+
+/* ===== Uniforma styling per entrambe le pagine: Carica bolletta + Unisciti a noi ===== */
+
+/* Applica le stesse regole del blocco .carica-hero anche alla pagina "Unisciti a noi" */
+.carica-hero,
+.page-carica-bolletta .carica-hero,
+.page-unisciti .carica-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 64px 18px 28px;
+  box-sizing: border-box;
+  margin: 0 auto 12px;
+  width: 100%;
+}
+
+/* Titolo e sottotitolo: centrati e con più spazio fra loro e rispetto alla card */
+.carica-hero .carica-title,
+.page-carica-bolletta .carica-hero .carica-title,
+.page-unisciti .carica-hero .carica-title {
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  margin: 0 0 10px;
+  line-height: 1.05;
+  max-width: 1100px;
+  text-align: center;
+}
+
+.carica-hero .carica-sub,
+.page-carica-bolletta .carica-hero .carica-sub,
+.page-unisciti .carica-hero .carica-sub {
+  margin: 0 0 28px;
+  max-width: 920px;
+  text-align: center;
+  color: var(--muted,#6b7280);
+}
+
+/* Card alignment: centra sempre la card e mantieni stessa larghezza su entrambe le pagine */
+.carica-inner,
+.page-carica-bolletta .carica-inner,
+.page-unisciti .carica-inner {
+  max-width: 980px;
+  margin: 28px auto 80px;
+  padding: 24px 28px;
+  box-sizing: border-box;
+  border-radius: 12px;
+}
+
+/* Riduce eventuali differenze dovute al container principale del tema */
+.page-unisciti .carica-inner,
+.page-carica-bolletta .carica-inner {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Se il tema applica padding lato container (es. .container), assicurati che la card occupi lo stesso spazio */
+.page-unisciti .container, .page-carica-bolletta .container {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* Mobile: comportamenti coerenti */
+@media (max-width:900px) {
+  .carica-hero,
+  .page-unisciti .carica-hero,
+  .page-carica-bolletta .carica-hero {
+    padding-top: 36px;
+    padding-bottom: 36px;
+  }
+  .carica-inner { padding: 18px; margin-bottom: 40px; }
+}
+
+/* ---------- Aggiunte: stato file (success / error) ---------- */
+
+/* Contenitore filename */
+.upload-filename {
+  margin-top:10px;
+  font-size:.95rem;
+  color:var(--muted,#6b7280);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* Icone (tonalità e dimensione) */
+.upload-filename__icon {
+  width:18px;
+  height:18px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  border-radius:50%;
+  flex:0 0 18px;
+  font-size:12px;
+  line-height:1;
+}
+
+/* success */
+.upload-filename--success .upload-filename__icon {
+  background: #e6f9ef;
+  color: #0f8a3f;
+  box-shadow: 0 2px 6px rgba(15,138,63,0.08);
+  border: 1px solid rgba(15,138,63,0.12);
+}
+
+/* error */
+.upload-filename--error .upload-filename__icon {
+  background: #fff3f2;
+  color: #c0392b;
+  box-shadow: 0 2px 6px rgba(192,57,43,0.06);
+  border: 1px solid rgba(192,57,43,0.08);
+}
+
+/* testo associato */
+.upload-filename--success { color: #0b5fff; } /* keep muted but distinct */
+.upload-filename--error { color: #c0392b; }
+
+/* small helper: error text under file name (if needed) */
+.upload-filename .upload-filename__note {
+  display:block;
+  font-size:0.875rem;
+  color: #6b7280;
+  margin-left: 28px;
+}
+
+/* Ensure input overlay remains clickable */
+.upload-drop {
+  position: relative;
+  overflow: hidden;
+}
+.upload-drop input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: none;
+  margin: 0;
+  padding: 0;
+}

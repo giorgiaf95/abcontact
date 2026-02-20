@@ -14,7 +14,6 @@ setup_postdata( $post );
 <article class="featured-article card" aria-labelledby="featured-title">
   <div class="featured-inner container">
     <?php
-    // Thumbnail (render as <img> so we keep srcset/responsive)
     $thumb_id  = get_post_thumbnail_id( $post );
     $thumb_alt = '';
     if ( $thumb_id ) {
@@ -27,7 +26,6 @@ setup_postdata( $post );
     <div class="featured-thumb<?php echo $thumb_id ? ' has-thumb' : ' no-thumb'; ?>">
       <?php
       if ( $thumb_id ) {
-          // Use wp_get_attachment_image to preserve srcset and sizes
           echo wp_get_attachment_image( $thumb_id, 'news-large', false, array(
               'class'    => 'card__thumb-img featured-thumb__img wp-post-image',
               'alt'      => esc_attr( $thumb_alt ),
@@ -55,7 +53,6 @@ setup_postdata( $post );
 
       <div class="entry-content">
         <?php
-        // Use a trimmed excerpt (force 15 words). If an explicit manual excerpt exists it will be trimmed too.
         $manual_excerpt = get_the_excerpt();
         $trimmed = wp_trim_words( wp_strip_all_tags( $manual_excerpt ), 18, '...' );
         echo wp_kses_post( wpautop( $trimmed ) );

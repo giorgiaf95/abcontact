@@ -29,7 +29,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 					if ( function_exists( 'the_custom_logo' ) && has_custom_logo() ) {
 						the_custom_logo();
 					} else {
-						// show site title/description only on non-home pages
 						if ( ! is_front_page() ) : ?>
 							<a id="site-title" class="site-title" href="<?php echo esc_url( home_url( '/' ) ); ?>">
 								<?php bloginfo( 'name' ); ?>
@@ -59,10 +58,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<div class="header-cta">
 					<?php
-					// Use component button - white when at-top, becomes blue when header scrolled
+					$header_cta_label = get_theme_mod( 'header_cta_label', __( 'Contattaci', 'theme-abcontact' ) );
+					$header_cta_link  = get_theme_mod( 'header_cta_link', home_url( '/contatti' ) );
+
 					get_template_part( 'template-parts/components/button', null, array(
-						'label'   => __( 'Contattaci', 'theme-abcontact' ),
-						'href'    => home_url( '/contatti' ),
+						'label'   => $header_cta_label,
+						'href'    => $header_cta_link,
 						'variant' => 'white',
 						'size'    => 'md',
 						'class'   => 'header-contact',

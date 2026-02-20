@@ -1,6 +1,3 @@
-/* Lavora con noi - layout styles */
-
-/* Root spacing */
 .lavora-content { padding: 60px 0; box-sizing: border-box; }
 
 /* Section wrapper */
@@ -9,13 +6,13 @@
   display: flex;
   gap: 40px;
   box-sizing: border-box;
-  align-items: stretch; /* ensure equal-height columns */
+  align-items: stretch; 
 }
 .lc-row--reverse { flex-direction: row-reverse; }
 
 /* Columns */
 .lc-col { box-sizing: border-box; }
-.lc-col--img { flex: 0 0 46%; }     /* image column slightly narrower */
+.lc-col--img { flex: 0 0 46%; }     
 .lc-col--content { flex: 1 1 54%; }
 
 /* Image style */
@@ -88,7 +85,7 @@
   .lc-thumb { transition: none !important; transform: none !important; }
 }
 
-/* ====== "Perché scegliere Abcontact" - full-bleed band ====== */
+/* ====== "Perché scegliere Abcontact" ====== */
 .lc-why {
   width: 100vw;
   position: relative;
@@ -184,7 +181,6 @@
 
 /* body */
 .lc-position-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; flex: 1 1 auto; }
-/* removed icon container; head now only contains title */
 .lc-position-head { display:flex; align-items:flex-start; gap:12px; margin-bottom: 6px; }
 .lc-position-title { font-size: 1.05rem; margin: 0; }
 .lc-position-title a { color: var(--color-primary); text-decoration: none; font-weight: 700; }

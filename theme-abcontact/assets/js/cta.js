@@ -1,18 +1,17 @@
 (function () {
   'use strict';
 
-  // Utilities
   function qs(sel, ctx) { return (ctx || document).querySelector(sel); }
   function qsa(sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); }
 
   function initCtaModal() {
-    var openBtn = document.getElementById('open-cta-modal');
     var modal = document.getElementById('abcontact-cta-modal');
-    if (!openBtn || !modal) return;
+    if (!modal) return;
 
     var panel = qs('.abcontact-modal__panel', modal);
     var overlay = qs('.abcontact-modal__overlay', modal);
     var closeBtns = qsa('[data-abcontact-modal-close]', modal);
+    var triggers = qsa('[data-abcontact-modal-open]');
 
     var lastFocused = null;
 
@@ -26,7 +25,7 @@
       if (window.dataLayer && Array.isArray(window.dataLayer)) {
         window.dataLayer.push({ event: 'abcontact_cta_open', label: 'Richiedi un preventivo' });
       }
-      window.dispatchEvent(new CustomEvent('abcontact:cta_open', { detail: { label: 'Richiedi un preventivo' } }));
+      window.dispatchEvent(new CustomEvent('abcontact:cta_open', { detail: { } }));
       trapFocus(modal);
     }
 
@@ -39,9 +38,11 @@
       window.dispatchEvent(new CustomEvent('abcontact:cta_close'));
     }
 
-    openBtn.addEventListener('click', function (e) {
-      e.preventDefault();
-      openModal();
+    triggers.forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        openModal();
+      });
     });
 
     if (overlay) overlay.addEventListener('click', closeModal);

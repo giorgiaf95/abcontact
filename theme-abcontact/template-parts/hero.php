@@ -30,20 +30,17 @@ if ( $hero_img ) {
         <p class="hero__lead"><?php echo esc_html( get_bloginfo( 'description' ) ); ?></p>
       <?php endif; ?>
 
-      <div class="hero__actions">
-        <?php
-        get_template_part( 'template-parts/components/button', null, array(
-            'label'   => __( 'Richiedi Consulenza', 'theme-abcontact' ),
-            'href'    => home_url( '/contatti' ),
-            'variant' => 'primary',
-            'size'    => 'lg',
-        ) );
-        get_template_part( 'template-parts/components/button', null, array(
-            'label'   => __( 'Contattaci', 'theme-abcontact' ),
-            'href'    => home_url( '/contatti' ),
-            'variant' => 'ghost',
-            'size'    => 'md',
-        ) );
+<div class="hero__actions">
+    <?php
+$primary_label = get_theme_mod( 'hero_primary_label', __( 'Richiedi Consulenza', 'theme-abcontact' ) );
+$primary_link  = get_theme_mod( 'hero_primary_link', home_url( '/contatti' ) );;
+
+    get_template_part( 'template-parts/components/button', null, array(
+        'label'   => $primary_label,
+        'href'    => $primary_link,
+        'variant' => 'primary',
+        'size'    => 'lg',
+    ) );
         ?>
       </div>
     </div>

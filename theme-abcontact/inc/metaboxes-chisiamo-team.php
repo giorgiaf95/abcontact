@@ -3,15 +3,33 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-/**
- * Metabox: "Il nostro team" per la pagina Chi Siamo
- * - salva meta _cs_team (JSON array)
- * - enqueues admin script for repeater/media
- */
+/* Ensure helper exists */
+if ( ! function_exists( 'abcontact_is_chisiamo_post' ) ) {
+    function abcontact_is_chisiamo_post( $post = null ) {
+        if ( ! $post ) {
+            if ( isset( $GLOBALS['post'] ) ) $post = $GLOBALS['post'];
+            else return false;
+        }
+        if ( ! $post || $post->post_type !== 'page' ) return false;
+        $tpl = get_post_meta( $post->ID, '_wp_page_template', true );
+        $tpl = $tpl ? basename( $tpl ) : '';
+        if ( $tpl === 'page-chi-siamo.php' ) return true;
+        if ( isset( $post->post_name ) && $post->post_name === 'chi-siamo' ) return true;
+        return false;
+    }
+}
 
-/* Register metabox */
+/* Register metabox only for Chi Siamo page/template */
 add_action( 'add_meta_boxes', 'ab_chisiamo_team_register_metabox' );
 function ab_chisiamo_team_register_metabox() {
+    $post = null;
+    if ( isset( $_GET['post'] ) ) $post = get_post( (int) $_GET['post'] );
+    elseif ( isset( $GLOBALS['post'] ) ) $post = $GLOBALS['post'];
+
+    if ( ! abcontact_is_chisiamo_post( $post ) ) {
+        return;
+    }
+
     add_meta_box(
         'ab_chisiamo_team',
         __( 'Chi Siamo — Il nostro team', 'abcontact' ),
@@ -22,19 +40,15 @@ function ab_chisiamo_team_register_metabox() {
     );
 }
 
+/* Render and save logic: keep as your existing implementation */
 function ab_chisiamo_team_render( $post ) {
-    // show only for page-chi-siamo template or slug 'chi-siamo'
-    $tpl = get_post_meta( $post->ID, '_wp_page_template', true );
-    $tpl_base = $tpl ? basename( $tpl ) : '';
-    $slug = $post->post_name;
-    if ( $tpl_base !== 'page-chi-siamo.php' && $slug !== 'chi-siamo' ) {
+    if ( ! abcontact_is_chisiamo_post( $post ) ) {
         echo '<p>' . esc_html__( 'Questo metabox è disponibile solo per la pagina "Chi Siamo".', 'abcontact' ) . '</p>';
         return;
     }
 
     wp_nonce_field( 'ab_chisiamo_team_save', 'ab_chisiamo_team_nonce' );
 
-    // load existing data
     $raw = get_post_meta( $post->ID, '_cs_team', true );
     $items = array();
     if ( $raw ) {
@@ -42,7 +56,6 @@ function ab_chisiamo_team_render( $post ) {
         if ( is_array( $decoded ) ) $items = $decoded;
     }
 
-    // minimal inline styles for admin readability
     ?>
     <style>
       .ab-team-item{ border:1px solid #eee; padding:10px; margin-bottom:10px; border-radius:6px; background:#fff; }
@@ -115,7 +128,7 @@ function ab_chisiamo_team_render( $post ) {
     <?php
 }
 
-/* Save handler */
+/* Save and admin enqueue remain the same as your implementation (they already call wp_enqueue_media) */
 add_action( 'save_post', 'ab_chisiamo_team_save' );
 function ab_chisiamo_team_save( $post_id ) {
     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
@@ -141,9 +154,6 @@ function ab_chisiamo_team_save( $post_id ) {
             );
         }
         update_post_meta( $post_id, '_cs_team', wp_json_encode( $clean ) );
-    } else {
-        // If no team posted, leave existing data untouched OR delete depending on preference
-        // delete_post_meta( $post_id, '_cs_team' );
     }
 }
 
@@ -154,10 +164,8 @@ function ab_chisiamo_team_admin_assets( $hook ) {
     if ( ( $hook !== 'post.php' && $hook !== 'post-new.php' ) || ! $post || $post->post_type !== 'page' ) {
         return;
     }
-    // limit to Chi Siamo page/template
-    $tpl = get_post_meta( $post->ID, '_wp_page_template', true );
-    $tpl_base = $tpl ? basename( $tpl ) : '';
-    if ( $tpl_base !== 'page-chi-siamo.php' && $post->post_name !== 'chi-siamo' ) {
+
+    if ( ! abcontact_is_chisiamo_post( $post ) ) {
         return;
     }
 
@@ -172,7 +180,7 @@ function ab_chisiamo_team_admin_assets( $hook ) {
     ));
 }
 
-/* Enqueue front-end assets (only on Chi Siamo page) */
+/* Enqueue front-end assets (unchanged) */
 add_action( 'wp_enqueue_scripts', 'ab_chisiamo_team_front_assets' );
 function ab_chisiamo_team_front_assets() {
     if ( is_admin() ) return;

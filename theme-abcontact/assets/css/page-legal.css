@@ -1,0 +1,141 @@
+/* --- Hero news + header fixes for legal pages, with featured image support --- */
+
+.page-legal .hero.news-hero.page-hero--news {
+  padding: 56px 0 40px;
+  position: relative;
+  z-index: 1;
+  background-color: #f7f9fc;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  color: #071233; /* default text color; overlay will improve contrast */
+  min-height: 320px; /* ensure hero area visible even without image */
+  display: flex;
+  align-items: center;
+}
+
+/* when there's a background image, add a subtle overlay for contrast */
+.page-legal .hero.page-hero--news.has-bg::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  background: rgba(6,12,24,0.32); /* darken bg for legibility */
+  z-index: 1;
+}
+
+/* ensure inner content sits above overlay */
+.page-legal .hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+}
+
+.page-legal .hero-content {
+  text-align: left;
+  padding: 8px 0;
+}
+
+/* eyebrow/title/subtitle */
+.page-legal .hero__eyebrow {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #63a1ff;
+}
+
+.page-legal .hero-title {
+  font-size: 2.1rem;
+  margin: 0 0 8px;
+  color: #ffffff; /* white on overlay; fallback is dark when no bg */
+  line-height: 1.02;
+}
+
+/* if no background, show dark text */
+.page-legal .hero.page-hero--news.no-bg .hero-title,
+.page-legal .hero.page-hero--news.no-bg .hero-subtitle {
+  color: var(--color-text, #0b223f);
+}
+
+.page-legal .hero-subtitle {
+  color: rgba(255,255,255,0.9);
+  margin: 0 0 10px;
+}
+
+/* content area: increased bottom margin to separate from footer */
+.page-legal .content-inner {
+  max-width: 980px;
+  margin: 24px auto 120px; /* increased bottom space (was ~80) */
+  padding: 0 20px;
+  color: var(--color-text, #1f2937);
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+/* header overrides on legal pages */
+.page-legal #site-header {
+  position: relative !important;
+  z-index: 10000 !important;
+  background: rgba(255,255,255,0.95) !important;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* ensure menu visible */
+.page-legal #site-header .main-navigation,
+.page-legal #site-header .site-nav,
+.page-legal #site-header .menu {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+/* Responsive tweaks */
+@media (max-width: 820px) {
+  .page-legal .hero-title { font-size: 1.6rem; }
+  .page-legal .content-inner { padding: 0 16px; margin-bottom: 80px; }
+  .page-legal .hero { min-height: 240px; padding: 28px 0; }
+}
+
+/* aumenta lo spazio tra contenuto e footer per le pagine legali */
+.page-legal .content-inner {
+  margin-bottom: 220px; /* valore desktop, aumenta se vuoi più spazio */
+}
+
+/* versione responsive: meno spazio su mobile */
+@media (max-width: 820px) {
+  .page-legal .content-inner {
+    margin-bottom: 120px;
+  }
+}
+
+/* crea uno spazio garantito prima del footer solo su pagine legali */
+.page-legal .content-inner::after {
+  content: "";
+  display: block;
+  height: 160px; /* spazio aggiuntivo */
+  width: 100%;
+}
+@media (max-width: 820px) {
+  .page-legal .content-inner::after { height: 80px; }
+}
+
+/* più spazio tra hero e contenuto per le pagine legali */ 
+
+.page-legal .hero.page-hero--news { 
+ padding-bottom: 72px; 
+ }
+
+/* oppure aggiungi uno spazio in cima al contenuto */ 
+.page-legal .page-content .content-inner { 
+    padding-top: 36px;
+    margin-bottom: 220px; 
+}
+
+/* responsive: meno spazio sui dispositivi stretti */ 
+@media (max-width: 820px) { 
+    .page-legal .hero.page-hero--news { padding-bottom: 40px; } 
+    .page-legal .page-content .content-inner { padding-top: 20px; margin-bottom: 120px; } 
+}

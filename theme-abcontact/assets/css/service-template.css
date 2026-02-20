@@ -221,3 +221,272 @@
 /* ---------------- ACCESSIBILITY / FOCUS ---------------- */
 .sp-final-cta-button:focus { outline: 3px solid rgba(11,95,255,0.14); outline-offset: 2px; }
 
+
+/* ---------------- Service page: boxed features (icons above text, centered) ---------------- */
+
+body.page-template-page-service-template .sp-how {
+  margin-bottom: 96px; /* spazio extra tra "Come funziona" e le recensioni */
+}
+
+/* Spaziatura della griglia */
+body.page-template-page-service-template .sp-how-grid {
+  gap: 32px;
+}
+
+body.page-template-page-service-template .sp-how-item {
+  display: flex;               
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 28px 22px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(16,24,40,0.06);
+  min-height: 320px;          /* ridurre x card più basse */
+  box-sizing: border-box;
+}
+
+/* Icona: cerchio con gradient e dimensione maggiore */
+body.page-template-page-service-template .sp-how-icon {
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  border-radius: 999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin: 0 0 18px;
+  background: linear-gradient(180deg,#61b3ff 0%, #1b57d6 100%);
+  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
+  color: #fff;
+}
+
+body.page-template-page-service-template .sp-how-icon img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  display: block;
+  filter: none; 
+}
+
+/* Titolo e testo dentro la card */
+body.page-template-page-service-template .sp-how-title {
+  margin: 6px 0 10px;
+  font-weight: 700;
+  color: var(--text-color);
+  font-size: 1.05rem;
+  line-height: 1.15;
+}
+
+/* Testo: limitare larghezza per leggibilità */
+body.page-template-page-service-template .sp-how-text {
+  color: var(--muted);
+  margin: 0;
+  max-width: 260px;
+  line-height: 1.6;
+  font-size: 0.98rem;
+}
+
+@media (min-width:1100px) {
+  body.page-template-page-service-template .sp-how-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 980px) {
+  body.page-template-page-service-template .sp-how-item {
+    min-height: auto;
+    padding: 18px;
+  }
+  body.page-template-page-service-template .sp-how-icon {
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+    margin-bottom: 12px;
+  }
+  body.page-template-page-service-template .sp-how-text {
+    max-width: 100%;
+    font-size: 0.97rem;
+    padding: 0 6%;
+  }
+  body.page-template-page-service-template .sp-how-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  body.page-template-page-service-template .sp-how {
+    margin-bottom: 56px;
+  }
+}
+
+
+/* Full-bleed figure: estende il contenuto fino ai bordi della finestra */
+.sp-full-image {
+  width: 100vw;
+  box-sizing: border-box;
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  overflow: hidden; /* nasconde l'eccesso dell'immagine */
+  /* opzionale: rimuovi eventuali padding esterni */
+  padding: 0;
+}
+
+/* L'immagine interna: mantiene il centro visibile, ritaglia e non distorce */
+.sp-full-image img.service-full-image {
+  display: block;
+  width: 100%;
+  /* altezza del box: usa la variabile già impostata dal tema, fallback 450px */
+  height: var(--service-group-image-height, 450px);
+  max-width: none; /* evita limiti ereditati dal tema */
+  object-fit: cover;        /* ritaglia senza deformare */
+  object-position: 50% 50%; /* mantiene il centro dell'immagine visibile */
+}
+
+/* Se vuoi usare un'altezza diversa per device small/large, usa media queries */
+@media (min-width: 1200px) {
+  .sp-full-image img.service-full-image {
+    height: calc(var(--service-group-image-height, 450px) * 1.2); /* es. più alto su desktop */
+  }
+}
+@media (max-width: 900px) {
+  .sp-full-image img.service-full-image {
+    height: calc(var(--service-group-image-height, 450px) * 0.8); /* più piccolo su mobile */
+  }
+}
+
+/* Add after existing rules in service-template.css */
+
+/* Centered inner for additional text blocks (match intro layout) */
+.sp-additional {
+  padding: 32px 0;
+}
+.sp-additional-inner {
+  max-width: 920px; /* same max width as intro */
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+.sp-additional-content {
+  max-width: 720px; /* same visual width as intro content */
+  margin: 0 auto;
+  text-align: center; /* center same as intro */
+}
+
+/* Title styling consistent with intro */
+.sp-additional-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: var(--color-text, #1f2937);
+}
+
+/* Body text: ensure wrapping and normal whitespace, match intro body */
+.sp-additional-body {
+  color: var(--color-muted, #6b7280);
+  line-height: 1.6;
+  font-size: 1rem;
+  white-space: normal; /* important to allow wrapping */
+  word-wrap: break-word;
+  text-align: center;
+  margin: 0 auto;
+}
+
+/* Make sure lists and paragraphs inside additional body are displayed normally */
+.sp-additional-body p {
+  margin: 0 0 1.15rem;
+  white-space: normal;
+}
+.sp-additional-body ul,
+.sp-additional-body ol {
+  margin: 0 0 1.15rem 1.25rem;
+  padding-left: 0;
+  text-align: left; /* lists are left-aligned for readability */
+  display: block;
+}
+
+/* Small screens: slightly narrower content */
+@media (max-width: 900px) {
+  .sp-additional-content { max-width: 90%; }
+  .sp-additional-body { font-size: 0.95rem; }
+  .sp-full-image img.service-full-image { height: 220px; } /* optional */
+}
+
+/* Soluzione A: riduce l'altezza mobile e centra il ritaglio dell'immagine full */
+@media (max-width: 900px) {
+  .sp-full-image img.service-full-image {
+    height: 160px !important;           /* prova 140px / 160px / 180px e scegli il valore preferito */
+    object-fit: cover !important;       /* mantiene le proporzioni e ritaglia l'eccesso (non deforma) */
+    object-position: center 35% !important; /* sposta il "focus" verso l'alto (modifica la % se necessario) */
+    max-width: none !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  /* opzionale: leggero overlay per migliorare contrasto/leggibilità (commenta se non serve) */
+  .sp-full-image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 30%, rgba(255,255,255,0.2) 100%);
+  }
+}
+
+/* ===== Fix: make additional block match Intro visual width & alignment ===== */
+/* Place at end of service-template.css */
+
+body.page-template-page-service-template .sp-additional-inner {
+  max-width: 980px !important;                /* match .sp-intro-inner */
+  margin: 0 auto !important;
+  padding-left: var(--container-pad) !important;
+  padding-right: var(--container-pad) !important;
+  box-sizing: border-box !important;
+}
+
+body.page-template-page-service-template .sp-additional-content {
+  max-width: 980px !important;                /* expand same visual width as intro */
+  margin: 0 auto !important;
+  text-align: left !important;                /* same left alignment as intro body */
+  box-sizing: border-box !important;
+}
+
+/* Ensure title & body are left-aligned and use the primary text color */
+body.page-template-page-service-template .sp-additional-title {
+  text-align: left !important;
+  color: var(--text-color) !important;
+  margin-left: 0 !important;
+}
+
+body.page-template-page-service-template .sp-additional-body {
+  color: var(--text-color, #0f1724) !important;
+  text-align: left !important;
+  line-height: 1.7 !important;
+  font-size: 1rem !important;
+}
+
+/* Keep lists left-aligned for readability inside the body */
+body.page-template-page-service-template .sp-additional-body ul,
+body.page-template-page-service-template .sp-additional-body ol {
+  text-align: left !important;
+}
+
+/* On very large screens, keep alignment consistent with intro columns */
+@media (min-width: 1100px) {
+  body.page-template-page-service-template .sp-additional-inner,
+  body.page-template-page-service-template .sp-additional-content {
+    padding-left: calc(var(--container-pad) + 0px) !important;
+    padding-right: calc(var(--container-pad) + 0px) !important;
+  }
+}
+
+/* Mobile: ensure readable padding and full-width feel */
+@media (max-width: 900px) {
+  body.page-template-page-service-template .sp-additional-inner,
+  body.page-template-page-service-template .sp-additional-content {
+    max-width: 100% !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+}

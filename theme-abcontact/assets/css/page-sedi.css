@@ -1,6 +1,6 @@
 /* page-sedi.css
-   Aggiornato: box mappa bianco e comportamento full-bleed su mobile.
-   Mantengo le altre regole esistenti; qui trovi solo il file completo aggiornato.
+   Versione: ripristino mappa + CTA centrata e elenco sedi in colonna mobile
+   Nota: non toccare la mappa (nessun override aggressivo su map container).
 */
 
 :root{
@@ -29,30 +29,28 @@
 
 /* -------------------- Map placeholder (visual box) -------------------- */
 
-/* NOTE: changed background to white and kept rounded corners; map will be clipped by overflow:hidden */
 .sedi-map-hero {
   margin: 56px 0 28px;
   text-align: center;
   box-sizing: border-box;
 }
 
-/* White box for map area on desktop and mobile */
+/* Map container styling: kept minimal so plugin controls the map rendering */
 .sedi-map-placeholder {
   display: block;
   width: 100%;
-  max-width: 1180px;           /* match site's main container */
+  max-width: 1180px;
   margin: 28px auto 32px;
-  padding: 28px 22px;          /* slightly reduced padding to help map fill visually */
-  background: #ffffff;         /* <-- changed to white */
+  padding: 28px 22px;
+  background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(16,24,40,0.04);
   box-sizing: border-box;
   text-align: center;
   position: relative;
-  overflow: hidden;            /* ensure the map is clipped to the card border-radius */
+  overflow: hidden;
 }
 
-/* map title: blue and slightly smaller */
 .sedi-map-placeholder .map-title,
 .sedi-map-shortcode-inner .map-title {
   font-size: clamp(1.2rem, 3.2vw, 1.6rem) !important;
@@ -63,30 +61,15 @@
   text-align: center !important;
 }
 
-/* Hide counts / metadata that plugins sometimes print under the map */
-.sedi-map-placeholder .map-count,
-.sedi-map-placeholder p.map-count,
-.sedi-map-placeholder .sedi-count,
-.sedi-map-shortcode-inner .map-count,
-.sedi-map-shortcode-inner .sedi-count,
-#sedi-map + .sedi-count,
-#sedi-map + .map-count,
-.sedi-map-placeholder + .sedi-count,
-.sedi-map-placeholder + p {
-  display: none !important;
-}
-
-/* -------------------- Shortcode container (plugin map output) -------------------- */
+/* Shortcode container */
 .sedi-map-shortcode-inner {
   width: 100%;
   margin: 0 auto 0;
   box-sizing: border-box;
-  /* remove extra spacing so iframe can touch the inner edges */
   padding: 0;
 }
 
-/* Make embedded map elements responsive and constrained inside the placeholder */
-/* default height; plugin may override - adjust if needed */
+/* Make embedded map elements responsive (no layout-forcing) */
 .sedi-map-shortcode-inner iframe,
 .sedi-map-shortcode-inner .gm-style,
 .sedi-map-shortcode-inner .leaflet-container,
@@ -267,7 +250,7 @@
 
   /* Stack columns and center right card above left content */
   .sedi-cta-inner { grid-template-columns: 1fr !important; gap: 20px; padding-left: 12px; padding-right: 12px; }
-  .sedi-cta-right { order: -1; justify-content: center !important; }
+  .sedi-cta-right { order: -1; /* we'll center the CTA card below */ }
 
   /* Make CTA card almost full viewport width with comfortable margins */
   .sedi-cta-card {
@@ -290,7 +273,7 @@
 
   .sedi-cta-left { padding-left: 6px !important; padding-right: 6px !important; }
 
-  /* Ensure the embedded map fits and the map title remains readable */
+  /* Map height modest on mobile - plugin will still manage rendering */
   .sedi-map-shortcode-inner iframe,
   .sedi-map-shortcode-inner .gm-style,
   .sedi-map-shortcode-inner .leaflet-container {
@@ -298,12 +281,11 @@
   }
 
   .sedi-map-placeholder {
-    /* Make the map box extend to the screen edges on small devices */
     margin-left: calc(-1 * var(--site-gutter)) !important;
     margin-right: calc(-1 * var(--site-gutter)) !important;
     width: calc(100% + (var(--site-gutter) * 2)) !important;
     max-width: none !important;
-    border-radius: 0 !important; /* touch edges */
+    border-radius: 0 !important;
     padding: 14px 12px !important;
   }
 
@@ -312,11 +294,42 @@
     margin-bottom: 12px !important;
   }
 
-  /* Make the inner map fill and stay rounded inside the card area */
   .sedi-map-shortcode-inner iframe,
   .sedi-map-shortcode-inner .leaflet-container {
     border-radius: 8px !important;
     overflow: hidden !important;
+  }
+
+  /* ----------- NEW: force all sedi to a single centered column on mobile ----------- */
+  .sedi-grid-inner {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    margin: 36px 12px !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+  .sedi-grid-inner .sede-card {
+    width: 100% !important;
+    max-width: 720px;
+    margin: 0 auto !important;
+    display: block !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Center the CTA card visually below the map */
+  .sedi-cta-right {
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .sedi-cta-card {
+    margin: 18px auto !important;
+    left: auto !important;
+    transform: none !important;
+    max-width: calc(100% - 32px) !important;
+    width: auto !important;
   }
 }
 
@@ -391,8 +404,8 @@
     max-width: calc(100vw - 14px) !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    left: auto !important;
+    transform: none !important;
     position: relative !important;
     padding: 20px !important;
     border-radius: 12px !important;
@@ -417,106 +430,14 @@
   left: auto !important;
 }
 
-/* ========================= Fix map width and center CTA card (mobile & desktop) ========================= */
-
-/* Make sure embedded map always fills its wrapper and is centered */
+/* Ensure embedded plugin containers can't limit width */
 .sedi-map-shortcode-inner,
-.sedi-map-shortcode-inner iframe,
-.sedi-map-shortcode-inner .leaflet-container,
-.sedi-map-shortcode-inner .map-wrapper {
-  width: 100% !important;
-  box-sizing: border-box !important;
-  margin: 0 auto !important;
+.sedi-map-shortcode-inner * {
+  max-width: none !important;
 }
 
-/* Desktop: ensure the placeholder is centered and uses available max-width */
-.sedi-map-placeholder {
-  margin-left: auto !important;
-  margin-right: auto !important;
-  width: 100% !important;
-  max-width: 1180px !important; /* keep site container width */
-  padding: 32px 28px !important;
-  border-radius: 16px !important;
-}
-
-/* Desktop: ensure iframe fills the placeholder horizontally */
-.sedi-map-shortcode-inner iframe,
-.sedi-map-shortcode-inner .leaflet-container {
-  width: 100% !important;
-  height: 420px !important;
-  display: block !important;
-}
-
-/* MOBILE: center the map box instead of pushing it right; make it wider (nearly edge-to-edge),
-   but keep a small page gutter so it doesn't touch the browser chrome. Also center the CTA card. */
-@media (max-width: 900px) {
-  /* Use full-width with small horizontal gutters */
-  .sedi-map-placeholder {
-    margin-left: 12px !important;
-    margin-right: 12px !important;
-    width: calc(100% - 24px) !important;
-    max-width: none !important;
-    padding: 14px 12px !important;
-    border-radius: 12px !important; /* keep slight rounding */
-    overflow: hidden !important;
-  }
-
-  /* Map element: fill the placeholder */
-  .sedi-map-shortcode-inner iframe,
-  .sedi-map-shortcode-inner .leaflet-container {
-    width: 100% !important;
-    height: 360px !important;
-    border-radius: 8px !important;
-    display: block !important;
-    margin: 0 auto !important;
-  }
-
-  /* Remove any left/right offset that could have been inherited */
-  .sedi-map-placeholder, .sedi-map-shortcode-inner {
-    left: auto !important;
-    transform: none !important;
-  }
-
-  /* Center the blue CTA card below the map (mobile and small tablet) */
-  .sedi-cta-right {
-    justify-content: center !important;
-    align-items: center !important;
-  }
-  .sedi-cta-card {
-    margin: 18px auto !important;     /* center horizontally */
-    left: auto !important;
-    transform: none !important;
-    max-width: calc(100% - 32px) !important; /* slightly smaller than viewport */
-    width: auto !important;
-  }
-
-  /* Ensure CTA button remains centered inside the card */
-  .sedi-cta-card-action {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    width: 100% !important;
-  }
-}
-
-/* Defensive: if some global grid or container still shifts the map, force centering */
-.sedi-map-hero,
-.sedi-map-placeholder,
-.sedi-map-shortcode-inner {
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
-/* Optional: force the "4 sedi registrate" line hidden if you prefer no text there
-   (uncomment if you still see it and want it removed) */
-/*
-.sedi-map-placeholder + .sedi-count,
-#sedi-map + .sedi-count,
-.sedi-map-placeholder .sedi-count,
-.sedi-map-shortcode-inner .sedi-count {
-  display: none !important;
-}
-*/
+/* Small tweak: ensure the CTA visual doesn't get clipped by bottom fixed items */
+.sedi-cta-card { z-index: 20 !important; }
 
 
 /* === Fix definitivo per plugin WP Google Maps / MapLibre: centro e larghezza mappa su mobile === */
@@ -608,4 +529,88 @@
 .sedi-map-shortcode-inner,
 .sedi-map-shortcode-inner * {
   max-width: none !important;
+}
+
+/* Fix definitivo: mantieni CTA centrata, testi left-aligned, card non toccano il bordo */
+@media (max-width: 900px) {
+
+  /* Reset di posizionamenti precedenti e contenitori centrati con max-width + padding */
+  .sedi-cta-inner,
+  .sedi-grid-inner {
+    position: static !important;      /* rimuove left:50% / translateX se presenti */
+    left: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 720px !important;      /* evita che i contenitori diventino troppo larghi */
+    margin: 0 auto !important;        /* centrate nella viewport */
+    padding-left: 16px !important;    /* piccoli gutter interni ai lati */
+    padding-right: 16px !important;
+    box-sizing: border-box !important;
+    justify-items: stretch !important; /* i figli occupano l'intera larghezza utile */
+  }
+
+  /* Assicuriamo che il left column resti left-aligned (titolo, bullets, testo) */
+  .sedi-cta-left {
+    text-align: left !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .sedi-cta-left * { text-align: left !important; }
+
+  /* Lista bullets: padding adeguato e allineamento a sinistra */
+  .sedi-cta-features {
+    padding-left: 18px !important;
+    margin-left: 0 !important;
+    text-align: left !important;
+    list-style-position: outside !important;
+  }
+  .sedi-cta-features li { text-align: left !important; }
+
+  /* CTA: manteniamo il blocco centrato e con larghezza estetica */
+  .sedi-cta-right {
+    justify-self: center !important;
+    align-self: start !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+    position: relative !important;
+    left: auto !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+  }
+
+  .sedi-cta-card {
+    display: inline-block !important;      /* si centra come elemento inline-block */
+    margin: 18px auto !important;
+    max-width: 520px !important;           /* tieni la card stretta rispetto al viewport */
+    width: 100% !important;                /* ma non oltre il max-width */
+    box-sizing: border-box !important;
+  }
+
+  .sedi-cta-card-inner { padding-left: 16px !important; padding-right: 16px !important; }
+
+  /* Grid delle sedi: una colonna, card centrate e con gutter interni */
+  .sedi-grid-inner {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    margin: 36px 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .sedi-grid-inner .sede-card {
+    width: 100% !important;
+    max-width: 680px !important;   /* limitiamo la larghezza dei singoli card */
+    margin: 0 auto !important;     /* centrati */
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* pulizia difensiva di trasform/left/float residui */
+  .sedi-cta, .sedi-cta-inner, .sedi-cta-left, .sedi-cta-right, .sedi-grid-inner {
+    transform: none !important;
+    left: auto !important;
+    float: none !important;
+  }
 }

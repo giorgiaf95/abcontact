@@ -1,10 +1,6 @@
 <?php
 /**
- * Template Name: Servizi — Template che riusa news-hero
- * Template Post Type: page
- *
- * Uses featured image (post thumbnail) as hero (partial template-parts/news-hero.php).
- * CTA has been removed by request; small spacing kept between hero and intro.
+ * Template Name: Servizi
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -69,28 +65,91 @@ $intro_body  = get_post_meta( $post_id, 'service_intro_body', true );
 </section>
 
 <?php
-/* The rest of the template (full image, how it works, reviews, final CTA) left unchanged.
-   Fetch and output the same meta fields and markup as before.
-*/
 
-$full_image = '';
-$full_id = get_post_meta( $post_id, 'service_full_image_id', true );
+// --- Full image block (high-res with srcset where available) ---
+$full_img_markup = '';
+$full_id = intval( get_post_meta( $post_id, 'service_full_image_id', true ) );
 
 if ( $full_id ) {
-    $full_image = wp_get_attachment_image_url( (int) $full_id, 'full' );
+    // Use 'full' so WP outputs a high-res src (and srcset if available).
+    $full_img_markup = wp_get_attachment_image( $full_id, 'full', false, array(
+        'class' => 'service-full-image',
+        'alt'   => get_the_title( $post_id ),
+    ) );
+} elseif ( function_exists( '_meta_img_url' ) ) {
+    $fallback_url = _meta_img_url( $post_id, 'service_full_image_id', 'full' );
+    if ( $fallback_url ) {
+        $full_img_markup = '<img src="' . esc_url( $fallback_url ) . '" class="service-full-image" alt="' . esc_attr( get_the_title( $post_id ) ) . '" />';
+    }
 }
 
-// Fallback: se esiste ancora la funzione helper usata in passato, prova quella
-if ( ! $full_image && function_exists( '_meta_img_url' ) ) {
-    $full_image = _meta_img_url( $post_id, 'service_full_image_id', 'full' );
-}
-
-if ( $full_image ) :
+if ( $full_img_markup ) :
 ?>
   <figure class="sp-full-image" role="img" aria-hidden="true">
-    <img src="<?php echo esc_url( $full_image ); ?>" alt="" />
+    <?php echo $full_img_markup; ?>
   </figure>
 <?php endif; ?>
+
+<?php
+// Render additional text groups (repeater) stored in _service_additional_texts
+// Robust handling: meta may be stored as an array (WP-serialized), as JSON string, or serialized string.
+// We try to support all forms and produce a clean array for rendering.
+
+$additional_raw = get_post_meta( $post_id, '_service_additional_texts', true );
+$additional = array();
+
+if ( is_array( $additional_raw ) && ! empty( $additional_raw ) ) {
+    // WP already returned the unserialized array
+    $additional = $additional_raw;
+} elseif ( $additional_raw ) {
+    // Try JSON decode (legacy format)
+    $decoded = json_decode( $additional_raw, true );
+    if ( $decoded === null ) {
+        // maybe escaped JSON
+        $decoded = json_decode( wp_unslash( $additional_raw ), true );
+    }
+    if ( is_array( $decoded ) ) {
+        $additional = $decoded;
+    } else {
+        // Fallback: maybe serialized PHP array
+        $maybe = maybe_unserialize( $additional_raw );
+        if ( is_array( $maybe ) ) {
+            $additional = $maybe;
+        }
+    }
+}
+
+/**
+ * We render additional blocks using a centered container pattern that matches
+ * the intro block: a .container wrapper and an inner element centered to the same width.
+ * This ensures alignment and consistent behavior.
+ */
+if ( ! empty( $additional ) ) :
+    foreach ( $additional as $block ) :
+        $block_title = isset( $block['title'] ) ? $block['title'] : '';
+        $block_body  = isset( $block['body'] ) ? $block['body'] : '';
+
+        // sanitize before output
+        $block_title_s = $block_title ? sanitize_text_field( $block_title ) : '';
+        // body may contain allowed HTML; sanitize and preserve newlines
+        $block_body_s = $block_body ? wp_kses_post( $block_body ) : '';
+        ?>
+        <section class="sp-additional container" aria-label="<?php echo esc_attr( $block_title_s ? $block_title_s : __( 'Sezione Aggiuntiva', 'abcontact' ) ); ?>">
+          <div class="sp-additional-inner">
+            <div class="sp-additional-content">
+              <?php if ( $block_title_s ) : ?>
+                <h2 class="sp-additional-title"><?php echo esc_html( $block_title_s ); ?></h2>
+              <?php endif; ?>
+              <?php if ( $block_body_s ) : ?>
+                <div class="sp-additional-body"><?php echo wpautop( $block_body_s ); ?></div>
+              <?php endif; ?>
+            </div>
+          </div>
+        </section>
+        <?php
+    endforeach;
+endif;
+?>
 
 <?php
 // Phases (same as before)
@@ -104,10 +163,25 @@ for ( $i = 1; $i <= 4; $i++ ) {
 }
 ?>
 
+<?php
+// Read the "How it works" title/subtitle from meta with fallbacks
+$how_title = get_post_meta( $post_id, 'service_how_title', true );
+$how_sub   = get_post_meta( $post_id, 'service_how_subtitle', true );
+
+if ( empty( $how_title ) ) {
+    $how_title = __( 'Come funziona', 'abcontact' );
+}
+if ( empty( $how_sub ) ) {
+    $how_sub = __( 'Il nostro processo in quattro semplici step', 'abcontact' );
+}
+?>
+
 <section class="sp-how container" aria-labelledby="how-title">
   <header class="sp-section-header">
-    <h3 id="how-title"><?php echo esc_html__( 'Come funziona', 'abcontact' ); ?></h3>
-    <p class="sp-section-sub"><?php echo esc_html__( 'Il nostro processo in quattro semplici step', 'abcontact' ); ?></p>
+    <h3 id="how-title"><?php echo esc_html( $how_title ); ?></h3>
+    <?php if ( $how_sub ) : ?>
+      <p class="sp-section-sub"><?php echo wp_kses_post( wpautop( $how_sub ) ); ?></p>
+    <?php endif; ?>
   </header>
 
   <div class="sp-how-grid">
@@ -133,7 +207,6 @@ for ( $i = 1; $i <= 4; $i++ ) {
 </section>
 
 <?php
-// Reviews: render ONLY if shortcode is present; otherwise do not print section or title
 $reviews_shortcode = get_post_meta( $post_id, 'service_reviews_shortcode', true );
 if ( ! empty( $reviews_shortcode ) ) :
     $reviews_title     = get_post_meta( $post_id, 'service_reviews_title', true );
@@ -156,29 +229,55 @@ endif;
 ?>
 
 <?php
-// Final CTA fallback unchanged
-$final_cta_text = get_post_meta( $post_id, 'service_final_cta_text', true );
-$final_cta_link = get_post_meta( $post_id, 'service_final_cta_link', true );
+$post_id = isset( $post_id ) ? (int) $post_id : get_the_ID();
 
-if ( locate_template( 'template-parts/cta.php' ) ) {
-    get_template_part( 'template-parts/cta' );
-} elseif ( locate_template( 'cta.php' ) ) {
-    get_template_part( 'cta' );
-} elseif ( $final_cta_text ) {
-    ?>
-    <section class="sp-final-cta">
-      <div class="container">
-        <div class="sp-final-cta-inner">
-          <p class="sp-final-cta-text"><?php echo esc_html( $final_cta_text ); ?></p>
-          <?php if ( $final_cta_link ) : ?>
-            <a class="sp-final-cta-button" href="<?php echo esc_url( $final_cta_link ); ?>"><?php esc_html_e( 'Richiedi un preventivo', 'abcontact' ); ?></a>
-          <?php endif; ?>
-        </div>
-      </div>
-    </section>
-    <?php
+$cta_title        = get_post_meta( $post_id, 'cta_title', true );
+$cta_subtitle     = get_post_meta( $post_id, 'cta_subtitle', true );
+$cta_button_label = get_post_meta( $post_id, 'cta_button_label', true );
+$cta_button_link  = get_post_meta( $post_id, 'cta_button_link', true );
+$cta_button_color = get_post_meta( $post_id, 'cta_button_color', true );
+$cta_modal_raw    = get_post_meta( $post_id, 'cta_modal', true );
+$cta_modal        = $cta_modal_raw ? true : false;
+
+if ( empty( $cta_title ) ) {
+    $cta_title = get_post_meta( $post_id, 'cs_cta_title', true ) ?: get_post_meta( $post_id, 'service_final_cta_title', true ) ?: get_post_meta( $post_id, 'lc_cta_title', true );
 }
+if ( empty( $cta_subtitle ) ) {
+    $cta_subtitle = get_post_meta( $post_id, 'cs_cta_text', true ) ?: get_post_meta( $post_id, 'service_final_cta_text', true ) ?: get_post_meta( $post_id, 'lc_cta_text', true );
+}
+if ( empty( $cta_button_label ) ) {
+    $cta_button_label = get_post_meta( $post_id, 'cs_cta_button_label', true ) ?: get_post_meta( $post_id, 'service_final_cta_button_label', true ) ?: get_post_meta( $post_id, 'lc_cta_button_label', true );
+}
+if ( empty( $cta_button_link ) ) {
+    $cta_button_link = get_post_meta( $post_id, 'cs_cta_button_link', true ) ?: get_post_meta( $post_id, 'service_final_cta_link', true ) ?: get_post_meta( $post_id, 'lc_cta_button_link', true );
+}
+if ( empty( $cta_button_color ) ) {
+    $cta_button_color = get_post_meta( $post_id, 'cs_cta_button_color', true ) ?: get_post_meta( $post_id, 'service_final_cta_button_color', true ) ?: get_post_meta( $post_id, 'lc_cta_button_color', true );
+}
+
+if ( ! empty( $cta_button_link ) ) {
+    $raw = trim( $cta_button_link );
+    if ( ! preg_match( '#^https?://#i', $raw ) ) {
+        $cta_button_link = home_url( '/' . ltrim( $raw, '/' ) );
+    } else {
+        $cta_button_link = $raw;
+    }
+}
+
+$cta_args = array(
+    'title'        => $cta_title,
+    'subtitle'     => $cta_subtitle,
+    'button_label' => $cta_button_label,
+    'button_link'  => $cta_button_link,
+    'button_color' => $cta_button_color,
+    'modal'        => $cta_modal,
+);
+
+set_query_var( 'args', $cta_args );
+get_template_part( 'template-parts/cta', null, $cta_args );
+set_query_var( 'args', null );
 ?>
 
 <?php
 get_footer();
+?>

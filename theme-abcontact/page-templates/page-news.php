@@ -1,7 +1,6 @@
 <?php
 /**
- * Template Name: News (page-news)
- * Page template to list News with hero, featured and AJAX load more grid.
+ * Template Name: News
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

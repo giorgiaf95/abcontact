@@ -40,19 +40,6 @@
     var(--hero-overlay-bottom) 100%);
 }
 
-/* repeat specific selectors for higher specificity */
-section.hero.news-hero::before,
-section.hero.home-hero::before,
-section.hero.service-hero::before,
-section.hero .service-hero-overlay,
-section.service-hero .service-hero-overlay {
-  background: linear-gradient(180deg,
-    var(--hero-overlay-top) 0%,
-    var(--hero-overlay-mid) 30%,
-    rgba(255,255,255,0.12) 65%,
-    var(--hero-overlay-bottom) 100%);
-}
-
 /* ensure hero content sits above overlay */
 .hero-inner,
 .hero-content,
@@ -77,20 +64,31 @@ section.service-hero .service-hero-overlay {
 /* main title */
 .hero-title {
   margin: 0 0 12px;
-  font-weight: 700;
-  line-height: 1.05;
+  font-weight: 800;
+  line-height: 1.02;
   color: #ffffff;
+  font-size: clamp(1.6rem, 4.6vw, 3.2rem);
+  text-shadow: 0 10px 28px rgba(0,0,0,0.45);
+  letter-spacing: -0.02em;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* constrained subtitle for better readability and centered alignment */
+/* Subtitle / lead sotto il titolo (più grande + shadow).
+   Hardcoded responsive size so admin metabox/customizer non influiscono; più leggibile di default. */
 .news-hero .hero-subtitle,
-.hero.news-hero .hero-subtitle {
+.hero.news-hero .hero-subtitle,
+.hero .hero-subtitle,
+.service-hero .hero-subtitle {
   max-width: 920px;
   margin: 0 auto;
   text-align: center;
-  color: #f2f6fb;
-  line-height: 1.6;
-  font-size: 1.03rem;
+  color: #f4f8fb;
+  line-height: 1.5;
+  font-size: clamp(1.05rem, 2.6vw, 1.35rem);
+  font-weight: 700;
+  text-shadow: 0 8px 20px rgba(0,0,0,0.28);
+  margin-bottom: 12px;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* eyebrow centered and subtle */
@@ -102,7 +100,7 @@ section.service-hero .service-hero-overlay {
   font-weight: 600;
 }
 
-/* Media */
+/* Media adjustments */
 @media (max-width: 880px) {
   .hero::before,
   .service-hero::before,
@@ -117,63 +115,19 @@ section.service-hero .service-hero-overlay {
     min-height: 180px;
   }
   .news-hero .hero-subtitle {
-    font-size: 0.98rem;
+    font-size: calc( clamp(1.05rem, 2.6vw, 1.35rem) * 0.95 );
     padding: 0 10px;
   }
 }
 
-/* ====== Hero (generic) - titoli più grandi, bold e shadow ======
-   Inserire alla fine per sovrascrivere le regole di default.
-   Rendono i titoli degli hero generici (non-home) più grandi, bold e leggibili.
-*/
-.hero .hero-title,
-.service-hero .hero-title,
-.hero .hero-inner .hero-content .hero-title {
-  /* dimensione responsive, più grande del default */
-  font-size: clamp(1.6rem, 4.6vw, 3.2rem) !important;
-  font-weight: 800 !important;
-  line-height: 1.02 !important;
-  color: #ffffff !important; /* assicurati contrasto con overlay */
-  /* ombra evidente per leggibilità su immagini chiare o variabili */
-  text-shadow: 0 10px 28px rgba(0,0,0,0.45) !important;
-  margin-bottom: 8px !important;
-  letter-spacing: -0.02em;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Subtitle / lead sotto il titolo (più grande + shadow) */
-.hero .hero-subtitle,
-.service-hero .hero-subtitle,
-.hero .hero-inner .hero-content .hero-subtitle,
-.hero .hero-inner .hero-content .hero__lead {
-  font-size: clamp(1.0rem, 2.6vw, 1.25rem) !important;
-  font-weight: 700 !important; /* più corposo rispetto al normale */
-  color: #f4f8fb !important;
-  line-height: 1.5 !important;
-  text-shadow: 0 8px 20px rgba(0,0,0,0.28) !important;
-  margin: 0 auto 12px !important;
-  max-width: 920px;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Ridurre leggermente l'effetto ombra su desktop molto larghi per non appesantire */
+/* Slightly reduce shadow intensity on very wide screens */
 @media (min-width: 1200px) {
-  .hero .hero-title,
-  .service-hero .hero-title {
-    text-shadow: 0 8px 20px rgba(0,0,0,0.32) !important;
-  }
-  .hero .hero-subtitle,
-  .service-hero .hero-subtitle {
-    text-shadow: 0 6px 16px rgba(0,0,0,0.22) !important;
-  }
+  .hero .hero-title { text-shadow: 0 8px 20px rgba(0,0,0,0.32); }
+  .hero .hero-subtitle { text-shadow: 0 6px 16px rgba(0,0,0,0.22); }
 }
 
-/* Piccoli adattamenti su mobile per evitare overflow */
+/* Mobile minor adjustments */
 @media (max-width: 420px) {
-  .hero .hero-title {
-    font-size: clamp(1.4rem, 6.8vw, 2.2rem) !important;
-  }
-  .hero .hero-subtitle {
-    font-size: clamp(0.98rem, 3.5vw, 1.05rem) !important;
-  }
+  .hero .hero-title { font-size: clamp(1.4rem, 6.8vw, 2.2rem); }
+  .hero .hero-subtitle { font-size: clamp(0.98rem, 3.5vw, 1.05rem); }
 }

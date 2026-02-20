@@ -1,180 +1,111 @@
-/* ========================= 01) Design Tokens ========================= */
-:root {
-  --cta-padding-vertical: 48px;
-  --cta-bg-gradient: linear-gradient(180deg, rgba(11,95,255,0.06), transparent);
-  --cta-max-width: var(--max-width, 1200px);
-  --cta-gutter: var(--site-gutter, 1rem);
-}
+/* Simplified, deterministic CTA styles.
+   - Uses --cta-btn-color provided inline by the partial (metabox).
+   - Default: outline style (bianco con bordo/colore del metabox).
+   - Hover/focus: pulsante diventa pieno (colorato) usando --cta-btn-color.
+   - Minimal !important usage, solo per forza dove necessario per sovrascrivere regole che potrebbero provenire da plugin esterni.
+*/
 
-/* =========================== 02) CTA Block =========================== */
-.front-cta {
+/* Container / layout */
+.front-cta,
+.cs-cta,
+.sp-final-cta {
   position: relative;
   width: 100vw;
   left: 50%;
   transform: translateX(-50%);
   box-sizing: border-box;
-  padding: var(--cta-padding-vertical) 0;
-  margin-top: 48px;
-  background: var(--cta-bg-gradient);
+  padding: var(--cta-padding-vertical, 30px) 0;
+  margin-top: 32px;
   overflow: hidden;
+  background: linear-gradient(180deg, rgba(11,95,255,0.08) 12%, rgba(255,255,255,0) 70%);
 }
 
-.front-cta .container {
-  max-width: var(--cta-max-width);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--cta-gutter);
-  padding-right: var(--cta-gutter);
-}
+.front-cta .container { max-width: var(--cta-max-width, 1200px); margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
 
-/* layout */
-.cta-inner {
+.front-cta .cta-inner {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
   text-align: center;
-  flex-direction: column;
+  gap: 12px;
+  padding: 6px 0;
   width: 100%;
-  box-sizing: border-box;
-  padding: 0 8px;
 }
 
-/* Title & subtitle */
-.cta-title {
-  font-size: 1.25rem;
-  margin: 0 0 8px 0;
-  line-height: 1.2;
-}
-.cta-sub {
-  margin: 0 0 18px 0;
-  color: var(--color-muted);
-  max-width: 820px;
-  width: 100%;
-  box-sizing: border-box;
-}
+/* Title/subtitle */
+.front-cta .cta-title { margin: 0; font-weight: 700; color: var(--cta-title-color, var(--text-color, #0f1724)); font-size: clamp(1.05rem, 2.4vw, 1.6rem); }
+.front-cta .cta-sub { margin: 0; color: var(--cta-sub-color, var(--muted, #6b7280)); max-width: 760px; }
 
-/* ========================= 03) CTA Button ========================= */
-.cta-button {
+/* Button base: outline visual by default (white background, colored border/text) */
+.front-cta .cta-button,
+.sp-final-cta .sp-final-cta-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 20px;
+  padding: 10px 18px;
   border-radius: 10px;
-  background: var(--color-primary);
-  color: #ffffff;
-  border: none;
-  font-weight: 600;
-  font-size: 0.95rem;
+  min-width: 160px;
+  box-sizing: border-box;
   cursor: pointer;
-  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1;
+  transition: background-color 180ms ease, color 180ms ease, transform 140ms ease, box-shadow 180ms ease;
+  background-color: #ffffff; /* default white */
+  color: var(--cta-btn-color, #0b5fff);
+  border: 1.5px solid var(--cta-btn-color, #0b5fff);
+  text-decoration: none;
+  -webkit-appearance: none; /* avoid native styles on some UAs */
 }
-.cta-button:hover,
-.cta-button:focus {
+
+/* If a stricter filled intent is explicitly used (server can set class), render slightly different base
+   but we still prefer the outline visual for consistency. Keep this rule low-key; the hover behavior below drives the colored state. */
+.front-cta .cta-button.cta-button--filled {
+  /* keep white in base state to match desired UX; designers can change to filled explicitly if wanted */
+  background-color: #ffffff;
+  color: var(--cta-btn-color, #0b5fff);
+  border-color: var(--cta-btn-color, #0b5fff);
+}
+
+/* Hover / focus: become fully colored using the metabox color */
+.front-cta .cta-button:hover,
+.front-cta .cta-button:focus,
+.sp-final-cta .sp-final-cta-button:hover,
+.sp-final-cta .sp-final-cta-button:focus {
+  background-color: var(--cta-btn-color, #0b5fff) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
   transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(11,95,255,0.12);
-  background: #0b5fff;
+  box-shadow: 0 12px 34px rgba(11,95,255,0.12);
   outline: none;
 }
-.cta-button:focus-visible {
-  box-shadow: 0 10px 28px rgba(11,95,255,0.12), 0 0 0 4px rgba(11,95,255,0.10);
-}
 
-.cta-actions { width: 100%; text-align: center; }
-.cta-actions .cta-button { min-width: 220px; }
-
-/* ========================= 04) Modal Style ========================= */
-.abcontact-modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  align-items: center;
-  justify-content: center;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 24px;
-}
-
-.abcontact-modal[aria-hidden="false"] {
-  display: flex;
-}
-
-/* semi-transparent overlay */
-.abcontact-modal__overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(11, 20, 40, 0.45);
-}
-
-/* panel */
-.abcontact-modal__panel {
-  position: relative;
-  max-width: 720px;
-  width: 100%;
-  margin: 32px auto;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(11,20,40,0.18);
-  z-index: 2;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  max-height: calc(100vh - 96px);
-}
-
-/* close button */
-.abcontact-modal__close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: transparent;
-  border: none;
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
-  color: #6b7280;
-  padding: 6px;
-}
-.abcontact-modal__close:focus {
-  outline: 3px solid rgba(11,95,255,0.12);
+/* Small accessible focus style */
+.front-cta .cta-button:focus-visible {
+  box-shadow: 0 12px 34px rgba(11,95,255,0.10);
+  outline: 3px solid rgba(255,255,255,0.12);
   outline-offset: 2px;
 }
 
-/* header */
-.abcontact-modal__header {
-  padding: 20px;
-  border-bottom: 1px solid rgba(0,0,0,0.04);
-  background: transparent;
-}
-.abcontact-modal__header h3 { margin: 0; font-size: 1.125rem; }
-
-.abcontact-modal__body {
-  padding: 18px;
-  overflow: auto;
+/* Responsive tweaks */
+@media (max-width: 900px) {
+  .front-cta .cta-title { font-size: 1.15rem; }
+  .front-cta .cta-button { min-width: 140px; padding: 10px 14px; }
 }
 
-.abcontact-modal__body form {
-  max-height: calc(100vh - 220px);
-  overflow: auto;
-}
+/* Defensive: keep internal elements inline */
+.front-cta .cta-button .cta-icon,
+.front-cta .cta-button .cta-text { display: inline-block; vertical-align: middle; }
 
-/* ========================= 05) Media ========================= */
-@media (max-width: 520px) {
-  .abcontact-modal__panel { width: calc(100% - 24px); margin: 12px; }
-  .cta-sub { padding: 0 12px; }
-  .cta-button { min-width: 180px; padding: 10px 14px; }
-}
-
-/* small focus styles */
-.abcontact-modal__panel :focus { outline: 3px solid rgba(11,95,255,0.12); outline-offset: 3px; }
-
-html, body { overflow-x: hidden; }
-
-html.abcontact-modal-open {
-  overflow: hidden;
+/* Nasconde eventuali vecchie CTA "hard-coded" che NON hanno data-abcontact-cta.
+   La nuova partial ha data-abcontact-cta="1" quindi non verrà nascosta. */
+.front-cta:not([data-abcontact-cta]) {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
 }

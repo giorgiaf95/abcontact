@@ -1,7 +1,6 @@
 <?php
 /**
  * Template Name: Lavora con noi
- * Template Post Type: page
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -31,18 +30,47 @@ set_query_var( 'args', null );
 if ( locate_template( 'template-parts/lavora-why.php' ) ) {
     get_template_part( 'template-parts/lavora-why' );
 }
-?>
 
-<?php
+/**
+ * Helper: normalize possible escaped newline sequences to real newlines.
+ * - Converts literal backslash+n (two chars) to actual "\n"
+ * - Converts literal backslash+r\n as well
+ */
+function lc_normalize_newlines( $str ) {
+    if ( ! is_string( $str ) || $str === '' ) {
+        return $str;
+    }
+    // Convert escaped sequences (from JSON double-escaping etc) to real newlines
+    $str = str_replace( array( '\\r\\n', '\\n', '\\r' ), array( "\r\n", "\n", "\r" ), $str );
+    // Normalize Windows CRLF -> \n
+    $str = str_replace( array( "\r\n", "\r" ), "\n", $str );
+    return $str;
+}
+
 /* ---------------------------
    Posizioni Aperte (render from page meta _lc_positions)
+   Robust handling: accept both array (new) and JSON string (legacy)
    --------------------------- */
 $positions_meta = get_post_meta( $post_id, '_lc_positions', true );
 $positions = array();
-if ( $positions_meta ) {
+
+if ( is_array( $positions_meta ) && ! empty( $positions_meta ) ) {
+    // already stored as array (preferred)
+    $positions = $positions_meta;
+} elseif ( is_string( $positions_meta ) && $positions_meta !== '' ) {
+    // Try JSON decode first
     $decoded = json_decode( $positions_meta, true );
     if ( is_array( $decoded ) ) {
         $positions = $decoded;
+    } else {
+        // Maybe it's a serialized PHP value (older WP storage) -> try maybe_unserialize
+        $maybe = maybe_unserialize( $positions_meta );
+        if ( is_array( $maybe ) ) {
+            $positions = $maybe;
+        } else {
+            // Otherwise leave empty (defensive)
+            $positions = array();
+        }
     }
 }
 ?>
@@ -57,12 +85,32 @@ if ( $positions_meta ) {
 
     <div class="lc-positions-grid">
       <?php foreach ( $positions as $pos ) :
-        $title = isset( $pos['title'] ) ? $pos['title'] : '';
+        // Defensive normalization & sanitization
+        $title = isset( $pos['title'] ) ? (string) $pos['title'] : '';
+        $title = wp_strip_all_tags( $title );
+
         $excerpt = isset( $pos['excerpt'] ) ? $pos['excerpt'] : '';
+        $excerpt = is_string( $excerpt ) ? lc_normalize_newlines( $excerpt ) : '';
+
         $image_id = isset( $pos['image_id'] ) ? intval( $pos['image_id'] ) : 0;
+
         $requirements = isset( $pos['requirements'] ) ? $pos['requirements'] : '';
+        $requirements = is_string( $requirements ) ? lc_normalize_newlines( $requirements ) : '';
+
         $offer = isset( $pos['offer'] ) ? $pos['offer'] : '';
+        $offer = is_string( $offer ) ? lc_normalize_newlines( $offer ) : '';
+
         $apply_url = isset( $pos['apply_url'] ) ? $pos['apply_url'] : '';
+        if ( is_string( $apply_url ) && $apply_url !== '' ) {
+            $raw_link = trim( $apply_url );
+            if ( ! preg_match( '#^https?://#i', $raw_link ) ) {
+                $apply_url = home_url( '/' . ltrim( $raw_link, '/' ) );
+            } else {
+                $apply_url = $raw_link;
+            }
+        } else {
+            $apply_url = '';
+        }
       ?>
         <article class="lc-position-card">
           <?php if ( $image_id ) : ?>
@@ -83,19 +131,26 @@ if ( $positions_meta ) {
             </div>
 
             <?php if ( $excerpt ) : ?>
-              <div class="lc-position-excerpt"><?php echo wp_kses_post( wpautop( wp_trim_words( $excerpt, 40 ) ) ); ?></div>
+              <div class="lc-position-excerpt">
+                <?php
+                // Preserve line breaks and allow limited HTML
+                echo wp_kses_post( wpautop( $excerpt ) );
+                ?>
+              </div>
             <?php endif; ?>
 
             <?php if ( $requirements ) : ?>
               <div class="lc-position-reqs">
                 <h4><?php esc_html_e( 'Requisiti', 'abcontact' ); ?></h4>
                 <?php
+                // If the text contains HTML we print sanitized HTML, otherwise split on newlines
                 if ( strpos( $requirements, '<' ) === false ) {
-                  $lines = preg_split( '/\r\n|\r|\n/', trim( $requirements ) );
+                  $lines = preg_split( '/\n/', trim( $requirements ) );
                   echo '<ul class="lc-position-list">';
                   foreach ( $lines as $l ) {
-                    if ( trim( $l ) === '' ) continue;
-                    echo '<li>' . esc_html( trim( $l ) ) . '</li>';
+                    $l = trim( $l );
+                    if ( $l === '' ) continue;
+                    echo '<li>' . esc_html( $l ) . '</li>';
                   }
                   echo '</ul>';
                 } else {
@@ -110,11 +165,12 @@ if ( $positions_meta ) {
                 <h4><?php esc_html_e( 'Cosa Offriamo', 'abcontact' ); ?></h4>
                 <?php
                 if ( strpos( $offer, '<' ) === false ) {
-                  $lines = preg_split( '/\r\n|\r|\n/', trim( $offer ) );
+                  $lines = preg_split( '/\n/', trim( $offer ) );
                   echo '<ul class="lc-position-list">';
                   foreach ( $lines as $l ) {
-                    if ( trim( $l ) === '' ) continue;
-                    echo '<li>' . esc_html( trim( $l ) ) . '</li>';
+                    $l = trim( $l );
+                    if ( $l === '' ) continue;
+                    echo '<li>' . esc_html( $l ) . '</li>';
                   }
                   echo '</ul>';
                 } else {
@@ -155,10 +211,60 @@ if ( $positions_meta ) {
   <div class="container lavora-content">
 
     <?php
-    // CTA global (existing partial)
-    if ( locate_template( 'template-parts/cta.php' ) ) {
-        get_template_part( 'template-parts/cta' );
+    // === CTA: unified partial, read values from cta_* meta (preferred).
+    // Build args robustly and pass them explicitly to the partial.
+
+    $page_id = isset( $post_id ) ? (int) $post_id : get_the_ID();
+
+    // Preferred keys (central metabox)
+    $cta_title        = get_post_meta( $page_id, 'cta_title', true );
+    $cta_subtitle     = get_post_meta( $page_id, 'cta_subtitle', true );
+    $cta_button_label = get_post_meta( $page_id, 'cta_button_label', true );
+    $cta_button_link  = get_post_meta( $page_id, 'cta_button_link', true );
+    $cta_button_color = get_post_meta( $page_id, 'cta_button_color', true );
+    $cta_modal_raw    = get_post_meta( $page_id, 'cta_modal', true );
+    $cta_modal        = $cta_modal_raw ? true : false;
+
+    // Fallbacks (read-only): legacy meta keys used only if cta_* are empty
+    if ( empty( $cta_title ) ) {
+        $cta_title = get_post_meta( $page_id, 'lc_cta_title', true ) ?: get_post_meta( $page_id, 'service_final_cta_title', true ) ?: get_post_meta( $page_id, 'cs_cta_title', true );
     }
+    if ( empty( $cta_subtitle ) ) {
+        $cta_subtitle = get_post_meta( $page_id, 'lc_cta_text', true ) ?: get_post_meta( $page_id, 'service_final_cta_text', true ) ?: get_post_meta( $page_id, 'cs_cta_text', true );
+    }
+    if ( empty( $cta_button_label ) ) {
+        $cta_button_label = get_post_meta( $page_id, 'lc_cta_button_label', true ) ?: get_post_meta( $page_id, 'service_final_cta_button_label', true ) ?: get_post_meta( $page_id, 'cs_cta_button_label', true );
+    }
+    if ( empty( $cta_button_link ) ) {
+        $cta_button_link = get_post_meta( $page_id, 'lc_cta_button_link', true ) ?: get_post_meta( $page_id, 'service_final_cta_link', true ) ?: get_post_meta( $page_id, 'cs_cta_button_link', true );
+    }
+    if ( empty( $cta_button_color ) ) {
+        $cta_button_color = get_post_meta( $page_id, 'lc_cta_button_color', true ) ?: get_post_meta( $page_id, 'service_final_cta_button_color', true ) ?: get_post_meta( $page_id, 'cs_cta_button_color', true );
+    }
+
+    // Normalize link: accept absolute URL or path
+    if ( ! empty( $cta_button_link ) ) {
+        $raw_link = trim( $cta_button_link );
+        if ( ! preg_match( '#^https?://#i', $raw_link ) ) {
+            $cta_button_link = home_url( '/' . ltrim( $raw_link, '/' ) );
+        } else {
+            $cta_button_link = $raw_link;
+        }
+    }
+
+    $cta_args = array(
+      'title'        => $cta_title,
+      'subtitle'     => $cta_subtitle,
+      'button_label' => $cta_button_label,
+      'button_link'  => $cta_button_link,
+      'button_color' => $cta_button_color,
+      'modal'        => $cta_modal,
+    );
+
+    // Render the central CTA partial — it will render only if there are meaningful values.
+    set_query_var( 'args', $cta_args );
+    get_template_part( 'template-parts/cta', null, $cta_args );
+    set_query_var( 'args', null );
     ?>
 
   </div>

@@ -1,11 +1,13 @@
 <?php
 /**
  * Template Name: Sedi
- * Description: Pagina elenchi sedi
  *
- * Aggiornata: rimosso il titolo sotto l'hero e reso il riquadro mappa contenitore
- * per lo shortcode del plugin. La mappa (shortcode) verrà inserita dentro
- * il riquadro .sedi-map-placeholder. La scritta "sedi registrate" non viene più stampata.
+ * Front-end template: usa i meta impostati nel metabox del tema
+ * per mostrare:
+ *  - mappa (shortcode)
+ *  - blocchi ripetibili (left)
+ *  - CTA blu (right)
+ *  - elenco sedi (dal CPT 'sede', non modificato)
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -25,7 +27,7 @@ if ( file_exists( $local_css ) ) {
 
 get_header();
 
-/* ============================= Hero ============================= */
+/* Hero partial (unchanged) */
 $hero_id = get_post_thumbnail_id( $post_id );
 $hero_image_url = $hero_id ? wp_get_attachment_image_url( $hero_id, 'full' ) : '';
 
@@ -42,7 +44,7 @@ set_query_var( 'args', $hero_args );
 get_template_part( 'template-parts/news-hero' );
 set_query_var( 'args', null );
 
-/* ============================= CPT query sedi ============================= */
+/* Query CPT 'sede' (unchanged) */
 $sedi = get_posts( array(
     'post_type'      => 'sede',
     'posts_per_page' => -1,
@@ -50,8 +52,6 @@ $sedi = get_posts( array(
     'orderby'        => 'title',
     'order'          => 'ASC',
 ) );
-
-$sedi_count = count( $sedi );
 
 $payload = array();
 foreach ( $sedi as $s ) {
@@ -78,7 +78,7 @@ foreach ( $sedi as $s ) {
     );
 }
 
-/* ============================= CTA / meta ============================= */
+/* CTA / meta */
 $cta_link_meta       = get_post_meta( $post_id, 'sedi_cta_button_link', true );
 $cta_label_meta      = get_post_meta( $post_id, 'sedi_cta_button_label', true );
 $cta_title_meta      = get_post_meta( $post_id, 'sedi_cta_title', true );
@@ -95,61 +95,85 @@ $support_phone = $support_phone_meta ?: get_option( 'abcontact_support_phone', '
 $support_email = $support_email_meta ?: get_option( 'abcontact_support_email', get_option( 'admin_email' ) );
 $map_shortcode = $map_shortcode_meta ?: '';
 
+/* Map title: use metabox "Testo introduttivo (hero / lead)" if set, otherwise fallback */
+$map_title_meta = get_post_meta( $post_id, 'sedi_intro_text', true );
+$map_title = $map_title_meta ? wp_strip_all_tags( $map_title_meta ) : __( 'Mappa interattiva delle sedi', 'abcontact' );
+
+/* Page blocks (left column) */
+$sedi_blocks = get_post_meta( $post_id, 'sedi_blocks', true );
+if ( is_string( $sedi_blocks ) && $sedi_blocks !== '' ) {
+    $sedi_blocks = maybe_unserialize( $sedi_blocks );
+}
+if ( ! is_array( $sedi_blocks ) ) {
+    $sedi_blocks = array();
+}
 ?>
 
 <main class="sedi-main container" role="main">
   <div class="sedi-inner">
 
-    <!-- NOTE: removed small "section under hero" title per request (metabox still exists but not printed) -->
-
-    <!-- Map area (shortcode or placeholder)
-         Always render our styled placeholder (.sedi-map-placeholder).
-         If a shortcode is present, its output is injected inside the placeholder.
-         The small "sedi count" is NOT printed here. -->
     <div class="sedi-map-hero">
       <div id="sedi-map" class="sedi-map-placeholder" role="region" aria-label="<?php echo esc_attr__( 'Mappa Sedi', 'abcontact' ); ?>">
-
-        <!-- Big title kept inside the placeholder (we will style it blue & slightly smaller) -->
-        <h2 class="map-title"><?php esc_html_e( 'Mappa interattiva delle sedi', 'abcontact' ); ?></h2>
+        <h2 class="map-title"><?php echo esc_html( $map_title ); ?></h2>
 
         <?php
-        // If a map shortcode is configured, render it inside the placeholder.
         if ( ! empty( $map_shortcode ) ) {
             echo '<div class="sedi-map-shortcode-inner">';
-            // do_shortcode can return markup from plugin - we inject it inside our box
             echo do_shortcode( $map_shortcode );
             echo '</div>';
-        } else {
-            // If no shortcode, optionally show a small helper message (or leave empty)
-            // echo '<p class="map-placeholder-note">' . esc_html__( 'Mappa non ancora configurata.', 'abcontact' ) . '</p>';
         }
         ?>
       </div>
     </div>
 
-    <!-- CTA: left text + bullets, right gradient card -->
+    <!-- CTA: left dynamic groups + right CTA card -->
     <section class="sedi-cta" aria-hidden="false">
       <div class="sedi-cta-inner">
 
-        <!-- Left column -->
         <div class="sedi-cta-left" role="region" aria-label="<?php echo esc_attr__( 'Non trovi la tua città - testo', 'abcontact' ); ?>">
-          <h3 class="sedi-cta-left-title"><?php echo esc_html( get_post_meta( $post_id, 'sedi_cta_title', true ) ?: __( 'Non trovi la tua città?', 'abcontact' ) ); ?></h3>
+          <?php if ( ! empty( $sedi_blocks ) ) : ?>
+            <?php foreach ( $sedi_blocks as $blk ) : ?>
+              <?php
+                $b_title = isset( $blk['title'] ) ? $blk['title'] : '';
+                $b_body  = isset( $blk['body'] ) ? $blk['body'] : '';
+                $b_bullets = isset( $blk['bullets'] ) && is_array( $blk['bullets'] ) ? $blk['bullets'] : array();
+              ?>
+              <?php if ( $b_title ) : ?>
+                <h3 class="sedi-cta-left-title"><?php echo esc_html( $b_title ); ?></h3>
+              <?php endif; ?>
 
-          <?php if ( ! empty( $cta_text ) ) : ?>
-            <div class="sedi-cta-left-desc"><?php echo wp_kses_post( wpautop( $cta_text ) ); ?></div>
+              <?php if ( $b_body ) : ?>
+                <div class="sedi-cta-left-desc"><?php echo wp_kses_post( wpautop( $b_body ) ); ?></div>
+              <?php endif; ?>
+
+              <?php if ( ! empty( $b_bullets ) ) : ?>
+                <ul class="sedi-cta-features" aria-hidden="false">
+                  <?php foreach ( $b_bullets as $bt ) : ?>
+                    <?php if ( trim( $bt ) === '' ) continue; ?>
+                    <li><?php echo esc_html( $bt ); ?></li>
+                  <?php endforeach; ?>
+                </ul>
+              <?php endif; ?>
+
+            <?php endforeach; ?>
           <?php else : ?>
-            <p class="sedi-cta-left-desc"><?php esc_html_e( 'Non preoccuparti! Operiamo in tutta Italia e possiamo raggiungerti ovunque tu sia. I nostri consulenti sono disponibili per appuntamenti anche presso la tua sede o abitazione.', 'abcontact' ); ?></p>
-          <?php endif; ?>
+            <h3 class="sedi-cta-left-title"><?php echo esc_html( get_post_meta( $post_id, 'sedi_cta_title', true ) ?: __( 'Non trovi la tua città?', 'abcontact' ) ); ?></h3>
 
-          <ul class="sedi-cta-features" aria-hidden="false">
-            <li><?php esc_html_e( 'Consulenza gratuita in tutta Italia', 'abcontact' ); ?></li>
-            <li><?php esc_html_e( 'Sopralluoghi tecnici a domicilio', 'abcontact' ); ?></li>
-            <li><?php esc_html_e( 'Supporto da remoto per pratiche amministrative', 'abcontact' ); ?></li>
-            <li><?php esc_html_e( 'Installazioni certificate in tutta la penisola', 'abcontact' ); ?></li>
-          </ul>
+            <?php if ( ! empty( $cta_text ) ) : ?>
+              <div class="sedi-cta-left-desc"><?php echo wp_kses_post( wpautop( $cta_text ) ); ?></div>
+            <?php else : ?>
+              <p class="sedi-cta-left-desc"><?php esc_html_e( 'Non preoccuparti! Operiamo in tutta Italia e possiamo raggiungerti ovunque tu sia. I nostri consulenti sono disponibili per appuntamenti anche presso la tua sede o abitazione.', 'abcontact' ); ?></p>
+            <?php endif; ?>
+
+            <ul class="sedi-cta-features" aria-hidden="false">
+              <li><?php esc_html_e( 'Consulenza gratuita in tutta Italia', 'abcontact' ); ?></li>
+              <li><?php esc_html_e( 'Sopralluoghi tecnici a domicilio', 'abcontact' ); ?></li>
+              <li><?php esc_html_e( 'Supporto da remoto per pratiche amministrative', 'abcontact' ); ?></li>
+              <li><?php esc_html_e( 'Installazioni certificate in tutta la penisola', 'abcontact' ); ?></li>
+            </ul>
+          <?php endif; ?>
         </div>
 
-        <!-- Right column -->
         <aside class="sedi-cta-right" role="region" aria-label="<?php echo esc_attr__( 'Call to action Sedi', 'abcontact' ); ?>">
           <div class="sedi-cta-card">
             <div class="sedi-cta-card-inner">
@@ -211,10 +235,10 @@ $map_shortcode = $map_shortcode_meta ?: '';
   </div>
 </main>
 
-<!-- Inline JSON payload for JS (used by plugin/localization) -->
 <script id="abcontact-sedi-data" type="application/json">
 <?php echo wp_json_encode( $payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ); ?>
 </script>
 
 <?php
 get_footer();
+?>
