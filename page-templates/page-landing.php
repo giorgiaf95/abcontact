@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Landing (no header/footer)
+ * Template Name: Landing Page
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
