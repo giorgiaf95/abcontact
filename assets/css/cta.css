@@ -1,111 +1,171 @@
-/* Simplified, deterministic CTA styles.
-   - Uses --cta-btn-color provided inline by the partial (metabox).
-   - Default: outline style (bianco con bordo/colore del metabox).
-   - Hover/focus: pulsante diventa pieno (colorato) usando --cta-btn-color.
-   - Minimal !important usage, solo per forza dove necessario per sovrascrivere regole che potrebbero provenire da plugin esterni.
-*/
+:root{
+  --cta-bg: #0f1b33;
+  --cta-text: #ffffff;
+  --cta-muted: rgba(255,255,255,0.72);
+  --cta-accent: #0b5fff;
+  --cta-card-bg: #ffffff;
+  --cta-card-text: #111827;
+  --cta-field-bg: #f2f4f7;
+  --cta-field-border: rgba(16,24,40,0.10);
+  --cta-radius-xl: 28px;
+  --cta-radius-lg: 20px;
+}
 
-/* Container / layout */
-.front-cta,
-.cs-cta,
-.sp-final-cta {
+/* Full-bleed background */
+.cta-proto{
   position: relative;
-  width: 100vw;
-  left: 50%;
-  transform: translateX(-50%);
-  box-sizing: border-box;
-  padding: var(--cta-padding-vertical, 30px) 0;
-  margin-top: 32px;
-  overflow: hidden;
-  background: linear-gradient(180deg, rgba(11,95,255,0.08) 12%, rgba(255,255,255,0) 70%);
+  isolation: isolate;
+  padding: 84px 0;
+  color: var(--cta-text);
+}
+.cta-proto::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  width:100vw;
+  left:50%;
+  transform:translateX(-50%);
+  background: radial-gradient(1200px 700px at 70% 20%, rgba(255,255,255,0.10), rgba(255,255,255,0.00) 55%),
+              radial-gradient(900px 600px at 20% 80%, rgba(11,95,255,0.18), rgba(11,95,255,0.00) 60%),
+              var(--cta-bg);
 }
 
-.front-cta .container { max-width: var(--cta-max-width, 1200px); margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
-
-.front-cta .cta-inner {
-  display: flex;
-  flex-direction: column;
+/* Layout */
+.cta-proto__grid{
+  display:grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 36px;
   align-items: center;
-  justify-content: center;
-  text-align: center;
+}
+@media (max-width: 980px){
+  .cta-proto{ padding: 56px 0; }
+  .cta-proto__grid{ grid-template-columns: 1fr; }
+}
+
+.cta-proto__title{
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.03;
+  margin: 0 0 12px;
+  font-weight: 900;
+}
+.cta-proto__subtitle{
+  margin: 0 0 26px;
+  max-width: 560px;
+  color: var(--cta-muted);
+  font-size: 1.06rem;
+  line-height: 1.6;
+}
+
+/* Contacts */
+.cta-proto__contacts{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 14px;
+}
+.cta-proto__contact{
+  display:flex;
+  align-items:center;
   gap: 12px;
-  padding: 6px 0;
-  width: 100%;
 }
-
-/* Title/subtitle */
-.front-cta .cta-title { margin: 0; font-weight: 700; color: var(--cta-title-color, var(--text-color, #0f1724)); font-size: clamp(1.05rem, 2.4vw, 1.6rem); }
-.front-cta .cta-sub { margin: 0; color: var(--cta-sub-color, var(--muted, #6b7280)); max-width: 760px; }
-
-/* Button base: outline visual by default (white background, colored border/text) */
-.front-cta .cta-button,
-.sp-final-cta .sp-final-cta-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: 10px;
-  min-width: 160px;
-  box-sizing: border-box;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 0.95rem;
-  line-height: 1;
-  transition: background-color 180ms ease, color 180ms ease, transform 140ms ease, box-shadow 180ms ease;
-  background-color: #ffffff; /* default white */
-  color: var(--cta-btn-color, #0b5fff);
-  border: 1.5px solid var(--cta-btn-color, #0b5fff);
+.cta-proto__icon{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+}
+.cta-proto__link{
+  color: rgba(255,255,255,0.88);
   text-decoration: none;
-  -webkit-appearance: none; /* avoid native styles on some UAs */
+}
+.cta-proto__link:hover{ color: #ffffff; text-decoration: none; }
+
+/* Card form */
+.cta-proto__card{
+  background: var(--cta-card-bg);
+  color: var(--cta-card-text);
+  border-radius: var(--cta-radius-xl);
+  padding: 30px;
+  box-shadow: 0 26px 70px rgba(0,0,0,0.22);
+  border: 1px solid rgba(16,24,40,0.08);
+}
+@media (max-width: 520px){
+  .cta-proto__card{ padding: 22px; }
 }
 
-/* If a stricter filled intent is explicitly used (server can set class), render slightly different base
-   but we still prefer the outline visual for consistency. Keep this rule low-key; the hover behavior below drives the colored state. */
-.front-cta .cta-button.cta-button--filled {
-  /* keep white in base state to match desired UX; designers can change to filled explicitly if wanted */
-  background-color: #ffffff;
-  color: var(--cta-btn-color, #0b5fff);
-  border-color: var(--cta-btn-color, #0b5fff);
+.cta-proto__form-title{
+  margin: 0 0 18px;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #111827;
 }
 
-/* Hover / focus: become fully colored using the metabox color */
-.front-cta .cta-button:hover,
-.front-cta .cta-button:focus,
-.sp-final-cta .sp-final-cta-button:hover,
-.sp-final-cta .sp-final-cta-button:focus {
-  background-color: var(--cta-btn-color, #0b5fff) !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 34px rgba(11,95,255,0.12);
+.cta-proto__form{
+  display:grid;
+  gap: 14px;
+}
+.cta-proto__row{
+  display:grid;
+  gap: 14px;
+}
+.cta-proto__row--2{
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 520px){
+  .cta-proto__row--2{ grid-template-columns: 1fr; }
+}
+
+.cta-proto__input{
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--cta-field-bg);
+  border: 1px solid var(--cta-field-border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  font-size: 1rem;
   outline: none;
+  color: #111827;
+}
+.cta-proto__input::placeholder{ color: #667085; }
+
+.cta-proto__input:focus{
+  border-color: rgba(11,95,255,0.55);
+  box-shadow: 0 0 0 3px rgba(11,95,255,0.20);
+  background: #ffffff;
 }
 
-/* Small accessible focus style */
-.front-cta .cta-button:focus-visible {
-  box-shadow: 0 12px 34px rgba(11,95,255,0.10);
-  outline: 3px solid rgba(255,255,255,0.12);
-  outline-offset: 2px;
+.cta-proto__textarea{
+  resize: vertical;
+  min-height: 110px;
 }
 
-/* Responsive tweaks */
-@media (max-width: 900px) {
-  .front-cta .cta-title { font-size: 1.15rem; }
-  .front-cta .cta-button { min-width: 140px; padding: 10px 14px; }
+/* Submit */
+.cta-proto__submit{
+  margin-top: 6px;
+  width: 100%;
+  border: none;
+  border-radius: 16px;
+  padding: 18px 18px;
+  background: var(--cta-accent);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 10px;
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
 }
-
-/* Defensive: keep internal elements inline */
-.front-cta .cta-button .cta-icon,
-.front-cta .cta-button .cta-text { display: inline-block; vertical-align: middle; }
-
-/* Nasconde eventuali vecchie CTA "hard-coded" che NON hanno data-abcontact-cta.
-   La nuova partial ha data-abcontact-cta="1" quindi non verrà nascosta. */
-.front-cta:not([data-abcontact-cta]) {
-  display: none !important;
-  visibility: hidden !important;
-  height: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
+.cta-proto__submit:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(11,95,255,0.28);
 }
+.cta-proto__submit:active{ transform: translateY(0px); }
+.cta-proto__submit-arrow{ font-size: 1.35em; line-height: 1; }

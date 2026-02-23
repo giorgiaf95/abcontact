@@ -8,6 +8,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
         </main><!-- #content -->
 
+        <?php
+        // CTA (prototype) – shown only if enabled on this page (default OFF)
+        if ( function_exists( 'abcontact_should_render_cta_prototype' ) && abcontact_should_render_cta_prototype() ) {
+            if ( locate_template( 'template-parts/cta.php' ) ) {
+                get_template_part( 'template-parts/cta' );
+            }
+        }
+        ?>
+
         <footer id="colophon" class="site-footer" role="contentinfo">
             <div class="footer-widgets container" aria-label="<?php esc_attr_e( 'Footer widgets', 'theme-abcontact' ); ?>">
                 <?php if ( is_active_sidebar( 'footer-1' ) ) : ?>

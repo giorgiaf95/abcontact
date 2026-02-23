@@ -148,17 +148,6 @@ while ( have_posts() ) : the_post();
         </div>
       </section>
 
-      <!-- CTA partial (same used elsewhere) -->
-      <section class="single-cta" style="margin-top:48px;">
-        <?php
-        if ( locate_template( 'template-parts/cta.php' ) ) {
-            get_template_part( 'template-parts/cta' );
-        } elseif ( locate_template( 'cta.php' ) ) {
-            get_template_part( 'cta' );
-        }
-        ?>
-      </section>
-
     </div> <!-- .single-post-wrapper -->
 
 <?php
