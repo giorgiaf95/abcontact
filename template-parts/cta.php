@@ -1,11 +1,23 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+/**
+ * CTA + form submit (inline) + PRG redirect (?cta_sent=1 / ?cta_error=1)
+ * Destinatario: get_option('admin_email')
+ */
+
+/* Prevent double render (in case some template includes it and footer.php includes it too) */
+if ( did_action( 'abcontact_cta_prototype_rendered' ) ) {
+    return;
+}
+do_action( 'abcontact_cta_prototype_rendered' );
+
+/* Respect toggle / home always-on logic (function is in inc/metaboxes-cta-toggle.php) */
 if ( function_exists( 'abcontact_should_render_cta_prototype' ) && ! abcontact_should_render_cta_prototype() ) {
-    // Safety: if partial is included manually somewhere, still respect the toggle.
     return;
 }
 
+/* Settings (title/subtitle/contacts) */
 $opt = function_exists('abcontact_cta_prototype_get_settings')
     ? abcontact_cta_prototype_get_settings()
     : array();
@@ -19,14 +31,95 @@ $loc   = $opt['locations_url'] ?? home_url('/sedi/');
 $phone_href = $phone ? 'tel:' . preg_replace('/\s+/', '', $phone) : '';
 $email_href = $email ? 'mailto:' . $email : '';
 
+/* ------------------------ Form handler (inline, with redirect) ------------------------ */
+$cta_errors = array();
+$cta_sent = false;
+
+// Show status from redirect GET params
+if ( isset($_GET['cta_sent']) && (string)$_GET['cta_sent'] === '1' ) {
+    $cta_sent = true;
+}
+if ( isset($_GET['cta_error']) && (string)$_GET['cta_error'] === '1' ) {
+    $cta_errors[] = __( 'Invio non riuscito. Controlla i campi e riprova più tardi.', 'theme-abcontact' );
+}
+
+/**
+ * On submit:
+ * - validate nonce
+ * - validate required fields
+ * - send email
+ * - redirect back with cta_sent=1 or cta_error=1
+ */
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset( $_POST['abcontact_cta_form'] )
+    && (string) $_POST['abcontact_cta_form'] === '1'
+) {
+    $back_url = wp_get_referer() ? wp_get_referer() : home_url('/');
+
+    $nonce_ok = isset( $_POST['abcontact_cta_nonce'] ) && wp_verify_nonce( $_POST['abcontact_cta_nonce'], 'abcontact_cta_submit' );
+    if ( ! $nonce_ok ) {
+        wp_safe_redirect( add_query_arg( 'cta_error', '1', $back_url ) );
+        exit;
+    }
+
+    // sanitize
+    $first_name    = isset($_POST['first_name']) ? sanitize_text_field($_POST['first_name']) : '';
+    $last_name     = isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '';
+    $u_email       = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+    $u_phone       = isset($_POST['phone']) ? sanitize_text_field($_POST['phone']) : '';
+    $customer_type = isset($_POST['customer_type']) ? sanitize_text_field($_POST['customer_type']) : '';
+    $interest      = isset($_POST['interest']) ? sanitize_text_field($_POST['interest']) : '';
+    $message       = isset($_POST['message']) ? sanitize_textarea_field($_POST['message']) : '';
+
+    // validate required
+    $has_error = false;
+    if ( $first_name === '' ) $has_error = true;
+    if ( $last_name === '' ) $has_error = true;
+    if ( $u_email === '' || ! is_email( $u_email ) ) $has_error = true;
+    if ( $u_phone === '' ) $has_error = true;
+    if ( $customer_type === '' ) $has_error = true;
+    if ( $interest === '' ) $has_error = true;
+
+    if ( $has_error ) {
+        wp_safe_redirect( add_query_arg( 'cta_error', '1', $back_url ) );
+        exit;
+    }
+
+    // mail payload
+    $to = get_option( 'admin_email' );
+    $site = wp_parse_url( home_url(), PHP_URL_HOST );
+    $subject = sprintf( '[%s] Nuova richiesta CTA', $site ? $site : 'Sito' );
+
+    $body = implode("\n", array(
+        "Nuova richiesta dalla CTA",
+        "Pagina: " . ( is_singular() ? get_permalink() : home_url('/') ),
+        "----",
+        "Nome: {$first_name}",
+        "Cognome: {$last_name}",
+        "Email: {$u_email}",
+        "Telefono: {$u_phone}",
+        "Tipo: {$customer_type}",
+        "Interesse: {$interest}",
+        "Messaggio: " . ( $message ? $message : '-' ),
+    ));
+
+    $headers = array(
+        'Reply-To: ' . $first_name . ' ' . $last_name . ' <' . $u_email . '>',
+    );
+
+    $sent = wp_mail( $to, $subject, $body, $headers );
+
+    wp_safe_redirect( add_query_arg( $sent ? 'cta_sent' : 'cta_error', '1', $back_url ) );
+    exit;
+}
 ?>
+
 <section class="cta-proto" aria-label="<?php echo esc_attr__( 'Richiedi una consulenza', 'theme-abcontact' ); ?>">
   <div class="cta-proto__container container">
     <div class="cta-proto__grid">
       <div class="cta-proto__left">
-        <h2 class="cta-proto__title">
-          <?php echo esc_html( $title ); ?>
-        </h2>
+        <h2 class="cta-proto__title"><?php echo esc_html( $title ); ?></h2>
 
         <?php if ( $sub ) : ?>
           <p class="cta-proto__subtitle"><?php echo esc_html( $sub ); ?></p>
@@ -83,7 +176,22 @@ $email_href = $email ? 'mailto:' . $email : '';
         <div class="cta-proto__card">
           <h3 class="cta-proto__form-title"><?php echo esc_html__( 'Richiedi una consulenza gratuita', 'theme-abcontact' ); ?></h3>
 
-          <form class="cta-proto__form" method="post" action="#">
+          <?php if ( $cta_sent ) : ?>
+            <div class="cta-proto__notice cta-proto__notice--success" role="status">
+              <?php echo esc_html__( 'Richiesta inviata! Ti ricontatteremo al più presto.', 'theme-abcontact' ); ?>
+            </div>
+          <?php endif; ?>
+
+          <?php if ( ! empty( $cta_errors ) ) : ?>
+            <div class="cta-proto__notice cta-proto__notice--error" role="alert">
+              <?php echo esc_html( implode( ' ', $cta_errors ) ); ?>
+            </div>
+          <?php endif; ?>
+
+          <form class="cta-proto__form" method="post" action="">
+            <?php wp_nonce_field( 'abcontact_cta_submit', 'abcontact_cta_nonce' ); ?>
+            <input type="hidden" name="abcontact_cta_form" value="1">
+
             <div class="cta-proto__row cta-proto__row--2">
               <input class="cta-proto__input" type="text" name="first_name" placeholder="Nome" required>
               <input class="cta-proto__input" type="text" name="last_name" placeholder="Cognome" required>
@@ -97,7 +205,6 @@ $email_href = $email ? 'mailto:' . $email : '';
               <input class="cta-proto__input" type="tel" name="phone" placeholder="Telefono" required>
             </div>
 
-            <!-- NEW: privato/azienda required -->
             <div class="cta-proto__row">
               <select class="cta-proto__input" name="customer_type" required>
                 <option value="" selected disabled>Seleziona: Privato o Azienda</option>
@@ -126,9 +233,17 @@ $email_href = $email ? 'mailto:' . $email : '';
               <span><?php echo esc_html__( 'Invia richiesta', 'theme-abcontact' ); ?></span>
               <span class="cta-proto__submit-arrow" aria-hidden="true">→</span>
             </button>
-
-            <!-- Qui poi agganciamo la logica invio reale (email, CRM, etc.) -->
           </form>
+
+          <p class="cta-proto__debug" style="margin:12px 0 0; font-size:12px; color:#98a2b3;">
+            <?php
+            // Optional: small hint for local testing
+            if ( defined('WP_DEBUG') && WP_DEBUG ) {
+                echo esc_html__( 'Debug: dopo l’invio verrai reindirizzato con ?cta_sent=1 oppure ?cta_error=1.', 'theme-abcontact' );
+            }
+            ?>
+          </p>
+
         </div>
       </div>
     </div>

@@ -169,3 +169,21 @@
 }
 .cta-proto__submit:active{ transform: translateY(0px); }
 .cta-proto__submit-arrow{ font-size: 1.35em; line-height: 1; }
+
+.cta-proto__notice{
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin: 12px 0 14px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.cta-proto__notice--success{
+  background: #ecfdf3;
+  border: 1px solid #abefc6;
+  color: #067647;
+}
+.cta-proto__notice--error{
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+  color: #b42318;
+}

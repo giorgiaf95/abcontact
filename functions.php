@@ -32,7 +32,6 @@ $inc_files = array(
     get_stylesheet_directory() . '/inc/admin-services-home.php',
     get_stylesheet_directory() . '/inc/admin-cta-prototype.php',
     get_stylesheet_directory() . '/inc/metaboxes-cta-toggle.php',
-    get_stylesheet_directory() . '/inc/cta-render.php',
 );
 
 foreach ( $inc_files as $file ) {
