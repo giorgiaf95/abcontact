@@ -2,71 +2,107 @@
 .chi-siamo-main { margin-top: 56px; }
 .chi-siamo-inner { padding: 48px 0; }
 
-/* Rows & columns */
-.cs-row {
-  display: grid;
-  gap: 28px;
-  align-items: center;
-  grid-template-columns: 1fr 1fr;
+/* =========================
+   Gutenberg content wrapper (unico gruppo testo)
+   ========================= */
+.cs-content{
+  padding: 0;
+  margin: 10px auto 34px;
 }
-.cs-row.reverse-on-desktop { grid-auto-flow: dense; }
-@media (min-width: 900px) {
-  .cs-row.reverse-on-desktop { grid-template-columns: 1fr 1fr; }
-  .cs-row.reverse-on-desktop .cs-col--media { order: 1; }
-  .cs-row.reverse-on-desktop .cs-col--text { order: 2; }
+.cs-content-inner{
+  max-width: 980px;
+  margin: 0 auto;
 }
-.cs-col { padding: 12px; }
-.cs-col--media { text-align: center; }
-
-/* Images: subtle card + hover zoom */
-.cs-image {
-  width: 100%;
+.cs-content-inner > * + *{
+  margin-top: 18px;
+}
+.cs-content-inner img{
+  max-width: 100%;
   height: auto;
   border-radius: 12px;
-  box-shadow: 0 18px 40px rgba(16,24,40,0.06);
-  display: block;
-  transition: transform 320ms cubic-bezier(.2,.85,.2,1), box-shadow 320ms ease;
-  will-change: transform;
-  transform-origin: center center;
-}
-.cs-image:hover,
-.cs-image:focus {
-  transform: scale(1.03);
-  box-shadow: 0 28px 56px rgba(16,24,40,0.10);
 }
 
-/* Values (I nostri valori) */
-.cs-values {
-  padding: 88px 0;
+/* =========================
+   Cards section (repeater) — "Come lavoriamo"
+   ========================= */
+.cs-how{
+  padding: 44px 0 18px;
+  text-align: center;
 }
-.values-eyebrow { text-align: center; font-size: 1.05rem; color: var(--color-primary); margin-bottom: 8px; font-weight: 700; } /* Title: blue, slightly larger */
-.values-sub { text-align: center; max-width: 860px; margin: 0 auto 28px; color: var(--color-text); } /* Subtitle: black */
-.values-grid { display: grid; gap: 28px; grid-template-columns: repeat(1, 1fr); }
-@media (min-width: 760px) { .values-grid { grid-template-columns: repeat(4, 1fr); } }
-.values-item { text-align: center; padding: 8px 12px; }
-.values-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 12px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #61b3ff 0%, #1b57d6 100%);
+.cs-how-header{ margin-bottom: 18px; }
+.cs-how-title{
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.cs-how-grid{
+  display: grid;
+  gap: 22px;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  margin-top: 18px;
+  max-width: 1180px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (min-width:760px){ .cs-how-grid{ grid-template-columns: repeat(2,1fr); } }
+@media (min-width:1100px){ .cs-how-grid{ grid-template-columns: repeat(3,1fr); } }
+
+.cs-how-item{
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  padding: 22px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid rgba(16,24,40,0.08);
   box-shadow: 0 10px 30px rgba(16,24,40,0.06);
-  transition: transform 320ms cubic-bezier(.2,.85,.2,1), box-shadow 320ms ease;
 }
-.values-icon img { width: 45px; height: 45px; object-fit: contain; transition: transform 320ms cubic-bezier(.2,.85,.2,1); }
-.values-item:hover .values-icon, .values-item:focus-within .values-icon { transform: translateY(-4px) scale(1.02); box-shadow: 0 18px 40px rgba(16,24,40,0.08); }
-.values-item:hover .values-icon img, .values-item:focus-within .values-icon img { transform: scale(1.05); }
-.values-item-title { font-weight: 700; margin-bottom: 8px; color: var(--color-primary); } /* values item title: blue */
-.values-item-text { color: var(--color-muted); }
+.cs-how-icon{
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(32,80,242,0.10);
+  color: var(--color-primary);
+  margin: 0 0 14px;
+}
+.cs-how-icon img{
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+}
+.cs-how-item-title{
+  margin: 0 0 8px;
+  font-weight: 800;
+  color: var(--color-text);
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+.cs-how-item-text{
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.65;
+  font-size: 0.98rem;
+}
 
-/* Section C spacing (img+text above stats) */
-.cs-section-c { margin-bottom: 80px; }
-@media (min-width: 1200px) { .cs-section_c { margin-bottom: 120px; } }
+@media (hover:hover){
+  .cs-how-item{ transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
+  .cs-how-item:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 16px 44px rgba(16,24,40,0.10);
+    border-color: rgba(32,80,242,0.18);
+  }
+}
 
-/* ============== Statistics ============== */
+/* ============== Statistics (NON MODIFICARE) ============== */
 .cs-stats {
   width: 100vw;
   position: relative;
@@ -84,7 +120,7 @@
   width: 100%;
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 10px 20px; 
+  padding: 10px 20px;
   box-sizing: border-box;
   color: #fff;
   border-radius: 10px;
@@ -176,29 +212,15 @@
 
 /* Media Responsive */
 @media (max-width: 900px) {
-  .cs-row { grid-template-columns: 1fr; }
-  .cs-section-c { margin-bottom: 56px; }
-  .values-icon { width: 72px; height: 72px; }
-  .values-icon img { width: 36px; height: 36px; }
   .cs-cta .cta-button, .cs-cta .button { min-width: 200px; padding: 10px 20px; }
   .cs-stat-value { font-size: clamp(1.4rem, 5.5vw, 2.2rem); }
 }
 
 /* Small refinements */
-
-/* Make main section titles blue */
 .cs-title { color: var(--color-primary); }
-
-/* Values section title (eyebrow) already set above to blue and slightly larger.
-   Ensure values subtitle is black for better contrast. */
-.values-sub { color: var(--color-text); }
-
-/* Values item title set to blue above (.values-item-title) */
-
-/* CTA and other titles still inherit as appropriate */
 .cs-cta-title { color: var(--color-text); }
 
-/* ========================= New: hide fake placeholders and style reviews area ========================= */
+/* ========================= Reviews area resets (defensive) ========================= */
 
 /* Hide possible placeholder/fake boxes injected by third-party or legacy markup */
 .cs-image-placeholder,
@@ -235,152 +257,9 @@
   .cs-reviews-inner { padding-left: 12px; padding-right: 12px; }
 }
 
-
-
-/* ---------------- Chi Siamo: boxed values (icons above text) ---------------- */
-/* Make each "value" a white card with icon above, centered content */
-.values-grid {
-  gap: 32px; /* a bit more breathing room between cards */
-  align-items: start;
-}
-
-/* Card */
-.values-item {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 28px 18px;
-  box-shadow: 0 18px 40px rgba(16,24,40,0.06);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  min-height: 320px; /* uniform height — adjust as needed */
-  box-sizing: border-box;
-}
-
-/* Icon: already circular — enlarge and center it in the card */
-.values-icon {
-  width: 80px;
-  height: 80px;
-  min-width: 80px;
-  border-radius: 999px;
-  margin: 0 0 18px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: linear-gradient(180deg, #61b3ff 0%, #1b57d6 100%);
-  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
-}
-
-/* If the icon is an <img>, make it fit well */
-.values-icon img {
-  width: 44px;
-  height: 44px;
-  object-fit: contain;
-  display:block;
-  filter: none;
-}
-
-/* Title & text inside card */
-.values-item-title {
-  margin: 8px 0 8px;
-  font-weight: 700;
-  color: var(--color-primary);
-  font-size: 1.05rem;
-  line-height: 1.15;
-}
-
-.values-item-text {
+.cs-how-sub{
+  margin: 10px auto 0;
+  max-width: 760px;
   color: var(--color-muted);
-  margin: 0;
-  max-width: 260px;
   line-height: 1.6;
-  font-size: 0.98rem;
-}
-
-/* Desktop: ensure 4 columns layout remains */
-@media (min-width: 760px) {
-  .values-grid { grid-template-columns: repeat(4, 1fr); }
-}
-
-/* Mobile: make cards stack and reduce paddings/heights */
-@media (max-width: 980px) {
-  .values-grid { gap: 22px; }
-  .values-item { min-height: auto; padding: 18px; }
-  .values-icon { width: 72px; height: 72px; min-width: 72px; margin-bottom: 12px; }
-  .values-item-text { max-width: 100%; padding: 0 6%; }
-}
-
-/* Increase spacing between values section and reviews that follow */
-.cs-values {
-  padding-bottom: 140px; /* more space before reviews — tweak value as needed */
-}
-
-/* Accessibility: reduced motion respect */
-@media (prefers-reduced-motion: reduce) {
-  .values-item, .values-icon { transition: none !important; }
-}
-
-/* optional: subtle hover raise for desktop */
-@media (hover: hover) and (pointer: fine) {
-  .values-item { transition: transform 220ms ease, box-shadow 220ms ease; }
-  .values-item:hover { transform: translateY(-6px); box-shadow: 0 28px 56px rgba(16,24,40,0.1); }
-}
-
-/* ---------------- Chi Siamo: stacked layout for Section A & C ---------------- */
-.cs-section--stacked {
-  text-align: center;
-  padding: 48px 0;
-}
-
-/* Center image and constrain width */
-.cs-section--stacked .cs-col--media,
-.cs-section--stacked .cs-image {
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-}
-
-/* Ensure image does not exceed container width */
-.cs-section--stacked .cs-image {
-  width: 80%;
-  max-width: 720px; /* change as needed */
-  height: auto;
-  border-radius: 12px;
-  box-shadow: 0 18px 40px rgba(16,24,40,0.06);
-}
-
-/* Title centered and spaced under image */
-.cs-section--stacked .cs-title {
-  margin-top: 22px;
-  margin-bottom: 14px;
-  text-align: center;
-}
-
-/* Two-column body text for desktop only */
-.cs-section--stacked .cs-text {
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 980px; /* controls lines width before columns apply */
-  box-sizing: border-box;
-  column-gap: 48px;
-  column-count: 2;
-  text-align: left; /* keep body left-aligned inside columns for readability */
-  color: var(--color-text);
-  line-height: 1.7;
-  font-size: 1.02rem;
-  padding: 0 18px;
-}
-
-/* On smaller screens revert to single column and keep centered layout */
-@media (max-width: 980px) {
-  .cs-section--stacked .cs-image { width: 100%; max-width: 520px; }
-  .cs-section--stacked .cs-text { column-count: 1; padding: 0 12px; }
-}
-
-/* Add more separation between these stacked sections and the reviews below */
-.cs-section--stacked + .cs-reviews,
-.cs-section--stacked + .cs-section, /* if another section follows */
-.cs-section--stacked + .cs-stats {
-  margin-top: 56px;
 }

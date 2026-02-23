@@ -1,0 +1,82 @@
+/* ===== FAQ: header/navbar fix (evita overlay sul contenuto) ===== */
+.page-faq #site-header{
+  position: relative !important;
+  z-index: 10000 !important;
+  background: rgba(255,255,255,0.95) !important;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* assicura menu visibile */
+.page-faq #site-header .main-navigation,
+.page-faq #site-header .site-nav,
+.page-faq #site-header .menu{
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+/* contenuto */
+.page-faq .page-faq__content{
+  max-width: 980px;
+  margin: 32px auto 120px;
+  line-height: 1.7;
+  color: var(--color-text, #0f1724);
+}
+
+/* ===== FAQ accordion (<details>) ===== */
+.page-faq details.faq-item{
+  border: 1px solid rgba(16,24,40,0.08);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
+  margin: 14px 0;
+  overflow: hidden;
+}
+
+/* rimuove riga/outline azzurra su click/focus */
+.page-faq details.faq-item summary{
+  cursor: pointer;
+  padding: 16px 18px;
+  font-weight: 800;
+  color: var(--color-text, #0f1724);
+  list-style: none;
+  position: relative;
+  outline: none !important;
+  box-shadow: none !important;
+  border-bottom: 0 !important;
+}
+.page-faq details.faq-item summary::-webkit-details-marker{ display:none; }
+
+/* alcuni temi mettono focus su summary o su elementi interni: annulliamo */
+.page-faq details.faq-item summary:focus,
+.page-faq details.faq-item summary:focus-visible,
+.page-faq details.faq-item summary *:focus,
+.page-faq details.faq-item summary *:focus-visible{
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* separatore interno: se lo vuoi proprio NIENTE, lo teniamo off */
+.page-faq details.faq-item[open] summary{
+  border-bottom: none !important;
+}
+
+/* icona + / - */
+.page-faq details.faq-item summary::after{
+  content: "+";
+  position: absolute;
+  right: 18px;
+  top: 14px;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--color-primary, #0b5fff);
+}
+.page-faq details.faq-item[open] summary::after{ content: "–"; }
+
+/* risposta */
+.page-faq .faq-answer{
+  padding: 0 18px 16px;
+  color: var(--color-muted, #667085);
+  line-height: 1.7;
+}

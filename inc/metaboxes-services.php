@@ -12,6 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * - sostituisce "Come funziona (4 fasi)" con repeater (variabile) salvato in _service_how_steps
  * - migrazione automatica: se repeater vuoto e ci sono le 4 fasi legacy, le copia nel repeater al save
  * - recensioni NON toccate
+ *
+ * FIX DUPLICATI METABOX:
+ * - Questo metabox NON deve più comparire nella pagina template "Chi Siamo"
  */
 
 /* Register metabox */
@@ -31,11 +34,14 @@ add_action( 'add_meta_boxes', 'abcontact_register_service_metabox' );
 function abcontact_render_service_metabox( $post ) {
     $tpl = get_post_meta( $post->ID, '_wp_page_template', true );
     $tpl = $tpl ? basename( $tpl ) : '';
-    $allowed_templates = array( 'page-service-template.php', 'page-chi-siamo.php' );
-    $is_allowed = in_array( $tpl, $allowed_templates, true ) || ( isset( $post->post_name ) && $post->post_name === 'chi-siamo' );
+
+    // IMPORTANT: remove page-chi-siamo.php from allowed templates to avoid duplicate metaboxes on that page
+    $allowed_templates = array( 'page-service-template.php' );
+
+    $is_allowed = in_array( $tpl, $allowed_templates, true );
 
     if ( ! $is_allowed ) {
-        echo '<p>' . esc_html__( 'Questo metabox è disponibile solo per le pagine "Servizi" o "Chi Siamo".', 'abcontact' ) . '</p>';
+        echo '<p>' . esc_html__( 'Questo metabox è disponibile solo per le pagine "Servizi".', 'abcontact' ) . '</p>';
         return;
     }
 
@@ -131,11 +137,7 @@ function abcontact_render_service_metabox( $post ) {
                   <button type="button" class="button svc-how-icon-pick"><?php esc_html_e( 'Seleziona icona', 'abcontact' ); ?></button>
                   <button type="button" class="button svc-how-icon-remove"><?php esc_html_e( 'Rimuovi icona', 'abcontact' ); ?></button>
                   <div class="svc-how-icon-preview">
-                    <?php
-                    if ( $icon_id ) {
-                        echo wp_get_attachment_image( $icon_id, array(72,72) );
-                    }
-                    ?>
+                    <?php if ( $icon_id ) { echo wp_get_attachment_image( $icon_id, array(72,72) ); } ?>
                   </div>
                 </div>
               </div>
@@ -306,6 +308,13 @@ function abcontact_save_service_metabox( $post_id ) {
     if ( ! isset( $_POST['ab_service_nonce'] ) || ! wp_verify_nonce( $_POST['ab_service_nonce'], 'ab_service_save' ) ) return;
     if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
+    // Only handle saves for service template to avoid touching other pages
+    $tpl = get_post_meta( $post_id, '_wp_page_template', true );
+    $tpl = $tpl ? basename( $tpl ) : '';
+    if ( $tpl !== 'page-service-template.php' ) {
+        return;
+    }
+
     // Hero subtitle
     if ( isset( $_POST['service_hero_subtitle'] ) ) {
         $raw = wp_unslash( $_POST['service_hero_subtitle'] );
@@ -337,7 +346,7 @@ function abcontact_save_service_metabox( $post_id ) {
         }
     }
 
-    // NEW: save repeater steps
+    // Save repeater steps
     $steps_in = isset( $_POST['service_how_steps'] ) && is_array( $_POST['service_how_steps'] )
         ? wp_unslash( $_POST['service_how_steps'] )
         : array();
@@ -381,7 +390,6 @@ function abcontact_save_service_metabox( $post_id ) {
             return;
         }
 
-        // If truly empty: remove repeater meta
         delete_post_meta( $post_id, '_service_how_steps' );
     } else {
         update_post_meta( $post_id, '_service_how_steps', $clean );
@@ -405,12 +413,10 @@ function abcontact_enqueue_service_admin_assets( $hook ) {
 
     $tpl = get_post_meta( $post_id, '_wp_page_template', true );
     $tpl = $tpl ? basename( $tpl ) : '';
-    $allowed_templates = array( 'page-service-template.php', 'page-chi-siamo.php', 'front-page.php' );
-    if ( ! in_array( $tpl, $allowed_templates, true ) && $post->post_name !== 'chi-siamo' ) return;
+    if ( $tpl !== 'page-service-template.php' ) return;
 
     wp_enqueue_media();
 
-    // Optional admin CSS
     $admin_css = get_stylesheet_directory() . '/assets/css/admin-metaboxes.css';
     if ( file_exists( $admin_css ) ) {
         wp_enqueue_style( 'ab-admin-metabox', get_stylesheet_directory_uri() . '/assets/css/admin-metaboxes.css', array(), filemtime( $admin_css ) );

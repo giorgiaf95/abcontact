@@ -21,54 +21,35 @@ get_header();
 $hero_id = get_post_thumbnail_id( $post_id );
 $hero_image_url = $hero_id ? wp_get_attachment_image_url( $hero_id, 'full' ) : '';
 
+$hero_subtitle = get_post_meta( $post_id, 'cs_hero_subtitle', true );
+$hero_subtitle = is_string( $hero_subtitle ) ? wp_kses_post( $hero_subtitle ) : '';
+
 $hero_args = array(
     'eyebrow'   => '',
     'title'     => get_the_title( $post_id ),
-    'subtitle'  => '',
+    'subtitle'  => $hero_subtitle,
     'bg_url'    => $hero_image_url,
     'cta'       => '',
     'cta_label' => '',
 );
+
 set_query_var( 'args', $hero_args );
 get_template_part( 'template-parts/news-hero' );
 set_query_var( 'args', null );
 
-/* Team carousel (if available) */
-if ( locate_template( 'template-parts/team-carousel.php' ) ) {
-    get_template_part( 'template-parts/team-carousel' );
+/* ============================= Data (cards repeater + stats + CTA) ============================= */
+
+$cs_cards_title = get_post_meta( $post_id, 'cs_cards_title', true );
+$cs_cards_sub   = get_post_meta( $post_id, 'cs_cards_subtitle', true );
+
+if ( empty( $cs_cards_title ) ) {
+    $cs_cards_title = __( 'Come lavoriamo', 'abcontact' );
 }
 
-/* ============================= Metabox data ============================= */
-/* Section A (left image, right content originally) - we'll render stacked (image, title, 2-column body) */
-$cs_a_title = get_post_meta( $post_id, 'cs_section_a_title', true );
-$cs_a_text  = get_post_meta( $post_id, 'cs_section_a_text', true );
-$cs_a_image_id = absint( get_post_meta( $post_id, 'cs_section_a_image_id', true ) );
-$cs_a_image_url = $cs_a_image_id ? wp_get_attachment_image_url( $cs_a_image_id, 'chi_siamo_image' ) : '';
+$cs_cards_raw = get_post_meta( $post_id, '_cs_how_steps', true );
+$cs_cards = is_array( $cs_cards_raw ) ? $cs_cards_raw : array();
 
-/* I nostri valori */
-$cs_values_title = get_post_meta( $post_id, 'cs_values_title', true );
-$cs_values_sub = get_post_meta( $post_id, 'cs_values_subtitle', true );
-
-$values = array();
-for ( $i = 1; $i <= 4; $i++ ) {
-    $values[$i] = array(
-        'icon_id' => absint( get_post_meta( $post_id, "cs_value_{$i}_icon_id", true ) ),
-        'icon_url' => '',
-        'title' => get_post_meta( $post_id, "cs_value_{$i}_title", true ),
-        'text' => get_post_meta( $post_id, "cs_value_{$i}_text", true ),
-    );
-    if ( $values[$i]['icon_id'] ) {
-        $values[$i]['icon_url'] = wp_get_attachment_image_url( $values[$i]['icon_id'], 'chi_siamo_icon' );
-    }
-}
-
-/* Section C */
-$cs_c_title = get_post_meta( $post_id, 'cs_section_c_title', true );
-$cs_c_text  = get_post_meta( $post_id, 'cs_section_c_text', true );
-$cs_c_image_id = absint( get_post_meta( $post_id, 'cs_section_c_image_id', true ) );
-$cs_c_image_url = $cs_c_image_id ? wp_get_attachment_image_url( $cs_c_image_id, 'chi_siamo_image' ) : '';
-
-/* Statistics (4 items) */
+/* Statistics (4 items) — MUST remain unchanged */
 $cs_stats_heading = get_post_meta( $post_id, 'cs_stats_heading', true );
 $stats = array();
 for ( $i=1; $i<=4; $i++ ) {
@@ -78,9 +59,7 @@ for ( $i=1; $i<=4; $i++ ) {
     );
 }
 
-/* ===================== CTA: read central cta_* meta (preferred) with legacy fallbacks (read-only) ===================== */
-
-// Preferred (central) meta keys
+/* CTA: centralized cta_* meta (preferred) with legacy fallbacks (read-only) */
 $cta_title        = get_post_meta( $post_id, 'cta_title', true );
 $cta_subtitle     = get_post_meta( $post_id, 'cta_subtitle', true );
 $cta_button_label = get_post_meta( $post_id, 'cta_button_label', true );
@@ -105,7 +84,6 @@ if ( empty( $cta_button_color ) ) {
     $cta_button_color = get_post_meta( $post_id, 'cs_cta_button_color', true ) ?: get_post_meta( $post_id, 'service_final_cta_button_color', true );
 }
 
-// Normalize link: accept absolute URL or path
 if ( ! empty( $cta_button_link ) ) {
     $raw_link = trim( $cta_button_link );
     if ( ! preg_match( '#^https?://#i', $raw_link ) ) {
@@ -114,93 +92,67 @@ if ( ! empty( $cta_button_link ) ) {
         $cta_button_link = $raw_link;
     }
 }
-
 ?>
 
 <main class="chi-siamo-main container" role="main">
   <div class="chi-siamo-inner">
 
-    <!-- ===== Section A: stacked (image centered, title centered, text 2-columns) ===== -->
-    <section class="cs-section cs-section-a cs-section--stacked">
-      <div class="container">
-        <?php if ( $cs_a_image_url ) : ?>
-          <div class="cs-col cs-col--media">
-            <img class="cs-image" src="<?php echo esc_url( $cs_a_image_url ); ?>" alt="<?php echo esc_attr( $cs_a_title ?: get_the_title() ); ?>">
-          </div>
-        <?php endif; ?>
-
-        <div class="cs-col cs-col--text">
-          <?php if ( $cs_a_title ) : ?>
-            <h2 class="cs-title"><?php echo esc_html( $cs_a_title ); ?></h2>
-          <?php endif; ?>
-
-          <?php if ( $cs_a_text ) : ?>
-            <div class="cs-text"><?php echo wp_kses_post( wpautop( $cs_a_text ) ); ?></div>
-          <?php endif; ?>
-        </div>
+    <!-- ===== Contenuto Gutenberg (unico gruppo testo) ===== -->
+    <section class="cs-content container" aria-label="<?php esc_attr_e( 'Contenuto', 'abcontact' ); ?>">
+      <div class="cs-content-inner">
+        <?php
+        while ( have_posts() ) :
+            the_post();
+            the_content();
+        endwhile;
+        ?>
       </div>
     </section>
 
-    <!-- I nostri valori -->
-    <section class="cs-values">
-      <div class="container">
-        <?php if ( $cs_values_title ) : ?>
-          <p class="values-eyebrow"><?php echo esc_html( $cs_values_title ); ?></p>
-        <?php endif; ?>
-        <?php if ( $cs_values_sub ) : ?>
-          <div class="values-sub"><?php echo wp_kses_post( wpautop( $cs_values_sub ) ); ?></div>
-        <?php endif; ?>
+    <!-- ===== Card repeater ===== -->
+    <?php if ( ! empty( $cs_cards ) ) : ?>
+      <section class="cs-how container" aria-label="<?php echo esc_attr( $cs_cards_title ); ?>">
+        <header class="cs-how-header">
+          <h2 class="cs-how-title"><?php echo esc_html( $cs_cards_title ); ?></h2>
+          <?php if ( ! empty( $cs_cards_sub ) ) : ?>
+            <p class="cs-how-sub"><?php echo esc_html( $cs_cards_sub ); ?></p>
+          <?php endif; ?>
+        </header>
 
-        <div class="values-grid">
-          <?php foreach ( $values as $v ) : ?>
-            <div class="values-item">
-              <?php if ( ! empty( $v['icon_url'] ) ) : ?>
-                <div class="values-icon"><img src="<?php echo esc_url( $v['icon_url'] ); ?>" alt="" /></div>
+        <div class="cs-how-grid">
+          <?php foreach ( $cs_cards as $c ) :
+            if ( ! is_array( $c ) ) continue;
+            $t = isset( $c['title'] ) ? sanitize_text_field( $c['title'] ) : '';
+            $x = isset( $c['text'] ) ? sanitize_textarea_field( $c['text'] ) : '';
+            $icon_id = isset( $c['icon_id'] ) ? absint( $c['icon_id'] ) : 0;
+            if ( $t === '' && $x === '' ) continue;
+            $icon_url = $icon_id ? wp_get_attachment_image_url( $icon_id, array(64,64) ) : '';
+            ?>
+            <article class="cs-how-item">
+              <?php if ( $icon_url ) : ?>
+                <div class="cs-how-icon" aria-hidden="true">
+                  <img src="<?php echo esc_url( $icon_url ); ?>" alt="">
+                </div>
               <?php endif; ?>
-              <?php if ( $v['title'] ) : ?><h4 class="values-item-title"><?php echo esc_html( $v['title'] ); ?></h4><?php endif; ?>
-              <?php if ( $v['text'] ) : ?><div class="values-item-text"><?php echo wp_kses_post( wpautop( $v['text'] ) ); ?></div><?php endif; ?>
-            </div>
+
+              <div class="cs-how-body">
+                <?php if ( $t ) : ?><h3 class="cs-how-item-title"><?php echo esc_html( $t ); ?></h3><?php endif; ?>
+                <?php if ( $x ) : ?><p class="cs-how-item-text"><?php echo esc_html( $x ); ?></p><?php endif; ?>
+              </div>
+            </article>
           <?php endforeach; ?>
         </div>
-      </div>
-    </section>
-
-    <!-- ===== Section C: stacked (image centered, title centered, text 2-columns) ===== -->
-    <section class="cs-section cs-section-c cs-section--stacked">
-      <div class="container">
-        <?php if ( $cs_c_image_url ) : ?>
-          <div class="cs-col cs-col--media">
-            <img class="cs-image" src="<?php echo esc_url( $cs_c_image_url ); ?>" alt="<?php echo esc_attr( $cs_c_title ?: get_the_title() ); ?>">
-          </div>
-        <?php endif; ?>
-
-        <div class="cs-col cs-col--text">
-          <?php if ( $cs_c_title ) : ?>
-            <h3 class="cs-title"><?php echo esc_html( $cs_c_title ); ?></h3>
-          <?php endif; ?>
-
-          <?php if ( $cs_c_text ) : ?>
-            <div class="cs-text"><?php echo wp_kses_post( wpautop( $cs_c_text ) ); ?></div>
-          <?php endif; ?>
-        </div>
-      </div>
-    </section>
-
-    <!-- Insert Reviews Shortcode (if provided in metabox) -->
-    <?php
-    $cs_reviews_shortcode = get_post_meta( $post_id, 'cs_reviews_shortcode', true );
-    if ( ! empty( $cs_reviews_shortcode ) ) :
-    ?>
-      <section class="cs-reviews" aria-label="<?php esc_attr_e( 'Recensioni', 'abcontact' ); ?>">
-        <div class="container cs-reviews-inner" style="max-width:var(--max-width); margin:28px auto;">
-          <?php echo do_shortcode( $cs_reviews_shortcode ); ?>
-        </div>
       </section>
+    <?php endif; ?>
+
+    <!-- ===== Team carousel (sotto le card) ===== -->
     <?php
-    endif;
+    if ( locate_template( 'template-parts/team-carousel.php' ) ) {
+        get_template_part( 'template-parts/team-carousel' );
+    }
     ?>
 
-    <!-- Statistics: blue box with white text -->
+    <!-- Statistics: blue box with white text (UNCHANGED) -->
     <section class="cs-stats" aria-label="<?php esc_attr_e( 'Statistiche aziendali', 'abcontact' ); ?>">
       <div class="container cs-stats-inner">
         <?php if ( $cs_stats_heading ) : ?>
@@ -219,7 +171,7 @@ if ( ! empty( $cta_button_link ) ) {
       </div>
     </section>
 
-    <!-- CTA finale (use centralized partial that reads cta_* meta) -->
+    <!-- CTA finale (central partial) -->
     <?php
     $cta_args = array(
       'title'        => $cta_title,
@@ -230,7 +182,6 @@ if ( ! empty( $cta_button_link ) ) {
       'modal'        => $cta_modal,
     );
 
-    // Render the central CTA partial — it will output only if there are meaningful values.
     set_query_var( 'args', $cta_args );
     get_template_part( 'template-parts/cta', null, $cta_args );
     set_query_var( 'args', null );
@@ -239,7 +190,7 @@ if ( ! empty( $cta_button_link ) ) {
   </div>
 </main>
 
-<!-- Inline JS: simple counter animation (animates integer part on viewport) -->
+<!-- Inline JS: simple counter animation (UNCHANGED) -->
 <script>
 (function(){
   function animateCounters() {
