@@ -4,77 +4,98 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $opt = get_option( 'abcontact_home_services_settings', array() );
-if ( ! is_array( $opt ) ) {
-    $opt = array();
-}
+if ( ! is_array( $opt ) ) $opt = array();
 
-$section_title    = ! empty( $opt['section_title'] ) ? $opt['section_title'] : __( 'I Nostri Servizi', 'theme-abcontact' );
-$section_subtitle = ! empty( $opt['section_subtitle'] ) ? $opt['section_subtitle'] : __( "Soluzioni complete per l'efficienza energetica di privati e aziende", 'theme-abcontact' );
-$items            = ( ! empty( $opt['items'] ) && is_array( $opt['items'] ) ) ? $opt['items'] : array();
+$section_title    = $opt['section_title'] ?? __( 'I Nostri Servizi', 'theme-abcontact' );
+$section_subtitle = $opt['section_subtitle'] ?? __( "Soluzioni complete per l'efficienza energetica di privati e aziende", 'theme-abcontact' );
 
-if ( empty( $items ) ) {
-    return;
+$groups = isset($opt['groups']) && is_array($opt['groups']) ? $opt['groups'] : array();
+$privati = $groups['privati'] ?? array();
+$aziende = $groups['aziende'] ?? array();
+
+$g_list = array(
+  'privati' => $privati,
+  'aziende' => $aziende,
+);
+
+$has_any = false;
+foreach ($g_list as $g) {
+  if (!empty($g['items']) && is_array($g['items'])) { $has_any = true; break; }
 }
+if (!$has_any) return;
 ?>
 
-<section class="theme-services-section" aria-label="<?php esc_attr_e( 'I nostri servizi', 'theme-abcontact' ); ?>">
+<section class="home-services" aria-label="<?php esc_attr_e('I nostri servizi','theme-abcontact'); ?>">
   <div class="container">
-    <header class="theme-services__header">
-      <h2 class="theme-services__title"><?php echo esc_html( $section_title ); ?></h2>
-      <p class="theme-services__subtitle"><?php echo esc_html( $section_subtitle ); ?></p>
+    <header class="home-services__header">
+      <h2 class="home-services__eyebrow"><?php echo esc_html($section_title); ?></h2>
+      <p class="home-services__title"><?php echo esc_html($section_subtitle); ?></p>
     </header>
 
-    <div class="theme-services__list">
-      <?php
-      foreach ( $items as $row ) :
-        $title    = isset( $row['title'] ) ? $row['title'] : '';
-        $subtitle = isset( $row['subtitle'] ) ? $row['subtitle'] : '';
-        $icon_id  = ! empty( $row['icon_id'] ) ? (int) $row['icon_id'] : 0;
-        $pills    = ( ! empty( $row['pills'] ) && is_array( $row['pills'] ) ) ? $row['pills'] : array();
-
-        if ( $title === '' && $subtitle === '' && ! $icon_id && empty( $pills ) ) {
-            continue;
-        }
+    <div class="home-services__grid">
+      <?php foreach (array('privati','aziende') as $key):
+        $g = $g_list[$key];
+        $g_title = $g['title'] ?? '';
+        $g_sub   = $g['subtitle'] ?? '';
+        $g_icon_id = !empty($g['icon_id']) ? (int)$g['icon_id'] : 0;
+        $items = !empty($g['items']) && is_array($g['items']) ? $g['items'] : array();
+        if (empty($items)) continue;
       ?>
-        <article class="service-row service-row--no-media">
-          <div class="service-row__content">
-            <div class="service-row__meta">
-              <div class="service-row__icon-circle" aria-hidden="true">
-                <?php
-                  if ( $icon_id ) {
-                    echo wp_get_attachment_image( $icon_id, 'thumbnail', false, array( 'class' => 'service-row__icon', 'alt' => '' ) );
-                  } else {
-                    echo '<svg class="service-row__icon-fallback" width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg>';
-                  }
-                ?>
-              </div>
-
-              <div class="service-row__text">
-                <?php if ( $title ) : ?>
-                  <h3 class="service-row__title"><?php echo esc_html( $title ); ?></h3>
-                <?php endif; ?>
-                <?php if ( $subtitle ) : ?>
-                  <div class="service-row__desc"><?php echo esc_html( $subtitle ); ?></div>
-                <?php endif; ?>
-
-                <?php if ( ! empty( $pills ) ) : ?>
-                  <p class="service-row__pills">
-                    <?php foreach ( $pills as $p ) :
-                        $pl = $p['label'] ?? '';
-                        $pu = $p['url'] ?? '';
-                        if ( ! $pu ) continue;
-                    ?>
-                      <a class="pill" href="<?php echo esc_url( $pu ); ?>">
-                        <?php echo esc_html( $pl ? $pl : __( 'Link', 'theme-abcontact' ) ); ?>
-                      </a>
-                    <?php endforeach; ?>
-                  </p>
-                <?php endif; ?>
-
-              </div>
+        <section class="services-box services-box--<?php echo esc_attr($key); ?>">
+          <header class="services-box__head">
+            <div class="services-box__badge" aria-hidden="true">
+              <?php
+                if ($g_icon_id) echo wp_get_attachment_image($g_icon_id,'thumbnail',false,array('class'=>'services-box__badge-img','alt'=>''));
+              ?>
             </div>
+            <div class="services-box__titles">
+              <h3 class="services-box__title"><?php echo esc_html($g_title); ?></h3>
+              <?php if ($g_sub): ?><p class="services-box__subtitle"><?php echo esc_html($g_sub); ?></p><?php endif; ?>
+            </div>
+          </header>
+
+          <div class="services-box__list">
+            <?php foreach ($items as $row):
+              $it_title = $row['title'] ?? '';
+              $it_sub   = $row['subtitle'] ?? '';
+              $it_url   = $row['url'] ?? '';
+              $it_icon  = !empty($row['icon_id']) ? (int)$row['icon_id'] : 0;
+              $pills    = !empty($row['pills']) && is_array($row['pills']) ? $row['pills'] : array();
+              if (!$it_title && !$it_sub) continue;
+            ?>
+              <article class="services-item">
+                <div class="services-item__row">
+                  <div class="services-item__icon" aria-hidden="true">
+                    <?php if ($it_icon) echo wp_get_attachment_image($it_icon,'thumbnail',false,array('class'=>'services-item__icon-img','alt'=>'')); ?>
+                  </div>
+
+                  <div class="services-item__text">
+                    <h4 class="services-item__title"><?php echo esc_html($it_title); ?></h4>
+                    <?php if ($it_sub): ?><p class="services-item__subtitle"><?php echo esc_html($it_sub); ?></p><?php endif; ?>
+                  </div>
+
+                  <?php if ($it_url): ?>
+                    <a class="services-item__arrow" href="<?php echo esc_url($it_url); ?>" aria-label="<?php echo esc_attr($it_title); ?>">›</a>
+                  <?php else: ?>
+                    <span class="services-item__arrow" aria-hidden="true">›</span>
+                  <?php endif; ?>
+                </div>
+
+                <?php if (!empty($pills)): ?>
+                  <div class="services-item__pills">
+                    <?php foreach ($pills as $p):
+                      $pl = $p['label'] ?? '';
+                      $pu = $p['url'] ?? '';
+                      if (!$pu) continue;
+                    ?>
+                      <a class="services-pill" href="<?php echo esc_url($pu); ?>"><?php echo esc_html($pl ?: __('Link','theme-abcontact')); ?></a>
+                    <?php endforeach; ?>
+                  </div>
+                <?php endif; ?>
+              </article>
+            <?php endforeach; ?>
           </div>
-        </article>
+        </section>
       <?php endforeach; ?>
     </div>
   </div>
