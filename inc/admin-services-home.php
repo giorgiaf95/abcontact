@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 const ABCONTACT_HOME_SERVICES_OPTION = 'abcontact_home_services_settings';
 
-function abcontact_home_services_defaults_v2() {
+function abcontact_home_services_defaults_v3() {
     return array(
         'section_title'    => 'I Nostri Servizi',
         'section_subtitle' => "Soluzioni complete per l'efficienza energetica di privati e aziende",
@@ -26,14 +26,13 @@ function abcontact_home_services_defaults_v2() {
     );
 }
 
-function abcontact_home_services_get_settings_v2() {
+function abcontact_home_services_get_settings_v3() {
     $saved = get_option( ABCONTACT_HOME_SERVICES_OPTION, array() );
     if ( ! is_array( $saved ) ) $saved = array();
+    $def = abcontact_home_services_defaults_v3();
 
-    $def = abcontact_home_services_defaults_v2();
-
-    // Merge shallow + ensure nested keys exist
     $merged = array_merge( $def, $saved );
+
     if ( empty( $merged['groups'] ) || ! is_array( $merged['groups'] ) ) {
         $merged['groups'] = $def['groups'];
     }
@@ -52,15 +51,12 @@ function abcontact_home_services_get_settings_v2() {
     return $merged;
 }
 
-function abcontact_home_services_sanitize_v2( $input ) {
-    $out = abcontact_home_services_defaults_v2();
-
+function abcontact_home_services_sanitize_v3( $input ) {
+    $out = abcontact_home_services_defaults_v3();
     if ( ! is_array( $input ) ) return $out;
 
     $out['section_title']    = isset( $input['section_title'] ) ? sanitize_text_field( $input['section_title'] ) : $out['section_title'];
     $out['section_subtitle'] = isset( $input['section_subtitle'] ) ? sanitize_text_field( $input['section_subtitle'] ) : $out['section_subtitle'];
-
-    $out['groups'] = $out['groups']; // start from defaults
 
     $groups_in = isset( $input['groups'] ) && is_array( $input['groups'] ) ? $input['groups'] : array();
 
@@ -72,8 +68,8 @@ function abcontact_home_services_sanitize_v2( $input ) {
         $out['groups'][ $gk ]['icon_id']  = isset( $g['icon_id'] ) ? absint( $g['icon_id'] ) : 0;
 
         $out['groups'][ $gk ]['items'] = array();
-        $items = isset( $g['items'] ) && is_array( $g['items'] ) ? $g['items'] : array();
 
+        $items = isset( $g['items'] ) && is_array( $g['items'] ) ? $g['items'] : array();
         foreach ( $items as $row ) {
             if ( ! is_array( $row ) ) continue;
 
@@ -82,30 +78,21 @@ function abcontact_home_services_sanitize_v2( $input ) {
             $url      = isset( $row['url'] ) ? esc_url_raw( $row['url'] ) : '';
             $icon_id  = isset( $row['icon_id'] ) ? absint( $row['icon_id'] ) : 0;
 
-            $pills_out = array();
-            if ( ! empty( $row['pills'] ) && is_array( $row['pills'] ) ) {
-                foreach ( $row['pills'] as $p ) {
-                    if ( ! is_array( $p ) ) continue;
-                    $pl = isset( $p['label'] ) ? sanitize_text_field( $p['label'] ) : '';
-                    $pu = isset( $p['url'] ) ? esc_url_raw( $p['url'] ) : '';
-                    if ( $pu === '' ) continue;
-                    $pills_out[] = array(
-                        'label' => $pl !== '' ? $pl : __( 'Link', 'theme-abcontact' ),
-                        'url'   => $pu,
-                    );
-                }
+            // URL obbligatorio: se manca non salviamo la voce (evita output rotto)
+            if ( $url === '' ) {
+                continue;
             }
 
-            if ( $title === '' && $subtitle === '' && $url === '' && ! $icon_id && empty( $pills_out ) ) {
+            // Skip row if basically empty (but url exists, so keep if title empty? meglio richiedere title)
+            if ( $title === '' && $subtitle === '' && ! $icon_id ) {
                 continue;
             }
 
             $out['groups'][ $gk ]['items'][] = array(
                 'title'    => $title,
                 'subtitle' => $subtitle,
-                'url'      => $url,      // opzionale (freccia a destra)
-                'icon_id'  => $icon_id,  // icona voce
-                'pills'    => $pills_out,
+                'url'      => $url,      // unico link
+                'icon_id'  => $icon_id,
             );
         }
     }
@@ -119,7 +106,7 @@ add_action( 'admin_menu', function () {
         __( 'Home – Servizi', 'theme-abcontact' ),
         'manage_options',
         'abcontact-home-services',
-        'abcontact_home_services_render_admin_page_v2',
+        'abcontact_home_services_render_admin_page_v3',
         'dashicons-screenoptions',
         58
     );
@@ -131,30 +118,27 @@ add_action( 'admin_init', function () {
         ABCONTACT_HOME_SERVICES_OPTION,
         array(
             'type'              => 'array',
-            'sanitize_callback' => 'abcontact_home_services_sanitize_v2',
-            'default'           => abcontact_home_services_defaults_v2(),
+            'sanitize_callback' => 'abcontact_home_services_sanitize_v3',
+            'default'           => abcontact_home_services_defaults_v3(),
         )
     );
 } );
 
 add_action( 'admin_enqueue_scripts', function ( $hook ) {
-    if ( $hook !== 'toplevel_page_abcontact-home-services' ) {
-        return;
-    }
+    if ( $hook !== 'toplevel_page_abcontact-home-services' ) return;
 
     wp_enqueue_media();
 
-    // Make sortable reliably available
     wp_enqueue_script( 'jquery-ui-core' );
     wp_enqueue_script( 'jquery-ui-widget' );
     wp_enqueue_script( 'jquery-ui-mouse' );
     wp_enqueue_script( 'jquery-ui-sortable' );
 } );
 
-function abcontact_home_services_render_admin_page_v2() {
+function abcontact_home_services_render_admin_page_v3() {
     if ( ! current_user_can( 'manage_options' ) ) return;
 
-    $opt = abcontact_home_services_get_settings_v2();
+    $opt = abcontact_home_services_get_settings_v3();
     ?>
     <div class="wrap">
         <h1><?php esc_html_e( 'Home – Sezione Servizi (tema)', 'theme-abcontact' ); ?></h1>
@@ -189,7 +173,10 @@ function abcontact_home_services_render_admin_page_v2() {
 
               .ab-group{border:1px solid #dcdcde; border-radius:12px; background:#fff; padding:14px;}
               .ab-group h2{margin:0 0 10px;}
-              .ab-group-meta{display:grid; grid-template-columns:120px 1fr 1fr; gap:12px; align-items:start;}
+
+              /* icon + fields stacked */
+              .ab-group-meta{display:grid; grid-template-columns:120px 1fr; gap:12px; align-items:start;}
+              .ab-group-fields{display:grid; grid-template-columns:1fr; gap:12px;}
 
               .ab-square-preview{width:72px; height:72px; border-radius:14px; border:1px solid rgba(16,24,40,0.10); background:#f6f7f7; display:flex; align-items:center; justify-content:center; overflow:hidden;}
               .ab-square-preview img{width:100%; height:100%; object-fit:contain; display:block;}
@@ -204,9 +191,6 @@ function abcontact_home_services_render_admin_page_v2() {
               .ab-drag-handle:active{cursor:grabbing;}
               .ab-item-grid{display:grid; grid-template-columns:140px 1fr 1fr; gap:12px; align-items:start; margin-top:12px;}
               .ab-sort-placeholder{border:2px dashed #8c8f94; border-radius:12px; background:#f6f7f7; height: 64px;}
-
-              .ab-pills{margin-top: 14px; padding-top: 12px; border-top: 1px dashed #dcdcde;}
-              .ab-pill-row{display:grid; grid-template-columns: 1fr 2fr 90px; gap:10px; align-items:start; margin-top: 10px;}
             </style>
 
             <div class="ab-two-cols">
@@ -234,18 +218,20 @@ function abcontact_home_services_render_admin_page_v2() {
                       </div>
                     </div>
 
-                    <div>
-                      <label><strong><?php esc_html_e('Titolo gruppo', 'theme-abcontact'); ?></strong></label>
-                      <input type="text" class="regular-text"
-                        name="<?php echo esc_attr( ABCONTACT_HOME_SERVICES_OPTION ); ?>[groups][<?php echo esc_attr($gk); ?>][title]"
-                        value="<?php echo esc_attr( $g['title'] ?? '' ); ?>">
-                    </div>
+                    <div class="ab-group-fields">
+                      <div>
+                        <label><strong><?php esc_html_e('Titolo gruppo', 'theme-abcontact'); ?></strong></label>
+                        <input type="text" class="regular-text"
+                          name="<?php echo esc_attr( ABCONTACT_HOME_SERVICES_OPTION ); ?>[groups][<?php echo esc_attr($gk); ?>][title]"
+                          value="<?php echo esc_attr( $g['title'] ?? '' ); ?>">
+                      </div>
 
-                    <div>
-                      <label><strong><?php esc_html_e('Sottotitolo gruppo', 'theme-abcontact'); ?></strong></label>
-                      <input type="text" class="large-text"
-                        name="<?php echo esc_attr( ABCONTACT_HOME_SERVICES_OPTION ); ?>[groups][<?php echo esc_attr($gk); ?>][subtitle]"
-                        value="<?php echo esc_attr( $g['subtitle'] ?? '' ); ?>">
+                      <div>
+                        <label><strong><?php esc_html_e('Sottotitolo gruppo', 'theme-abcontact'); ?></strong></label>
+                        <input type="text" class="large-text"
+                          name="<?php echo esc_attr( ABCONTACT_HOME_SERVICES_OPTION ); ?>[groups][<?php echo esc_attr($gk); ?>][subtitle]"
+                          value="<?php echo esc_attr( $g['subtitle'] ?? '' ); ?>">
+                      </div>
                     </div>
                   </div>
 
@@ -253,7 +239,6 @@ function abcontact_home_services_render_admin_page_v2() {
                     <?php foreach ( $items as $idx => $row ) :
                       $icon_id = (int) ($row['icon_id'] ?? 0);
                       $icon_url = $icon_id ? wp_get_attachment_image_url($icon_id, 'thumbnail') : '';
-                      $pills = ( ! empty($row['pills']) && is_array($row['pills']) ) ? $row['pills'] : array();
                     ?>
                       <div class="ab-item" data-item data-index="<?php echo (int)$idx; ?>">
                         <div class="ab-item-head">
@@ -285,8 +270,9 @@ function abcontact_home_services_render_admin_page_v2() {
                             <input type="text" class="regular-text"
                               name="<?php echo esc_attr( ABCONTACT_HOME_SERVICES_OPTION ); ?>[groups][<?php echo esc_attr($gk); ?>][items][<?php echo (int)$idx; ?>][title]"
                               value="<?php echo esc_attr($row['title'] ?? ''); ?>">
-                            <div class="ab-muted"><?php esc_html_e('Link freccia (opzionale)', 'theme-abcontact'); ?></div>
-                            <input type="url" class="large-text"
+
+                            <label style="display:block; margin-top:10px;"><strong><?php esc_html_e('Link (obbligatorio)', 'theme-abcontact'); ?></strong></label>
+                            <input type="url" class="large-text" required
                               name="<?php echo esc_attr( ABCONTACT_HOME_SERVICES_OPTION ); ?>[groups][<?php echo esc_attr($gk); ?>][items][<?php echo (int)$idx; ?>][url]"
                               value="<?php echo esc_attr($row['url'] ?? ''); ?>"
                               placeholder="https://...">
@@ -299,36 +285,6 @@ function abcontact_home_services_render_admin_page_v2() {
                               value="<?php echo esc_attr($row['subtitle'] ?? ''); ?>">
                           </div>
                         </div>
-
-                        <div class="ab-pills" data-pills>
-                          <p style="margin:0;"><strong><?php esc_html_e('Bottoni (pill)', 'theme-abcontact'); ?></strong></p>
-                          <div data-pills-list>
-                            <?php foreach ($pills as $pidx => $p): ?>
-                              <div class="ab-pill-row" data-pill-row>
-                                <div>
-                                  <label class="ab-muted"><?php esc_html_e('Label', 'theme-abcontact'); ?></label>
-                                  <input type="text" class="regular-text"
-                                    name="<?php echo esc_attr( ABCONTACT_HOME_SERVICES_OPTION ); ?>[groups][<?php echo esc_attr($gk); ?>][items][<?php echo (int)$idx; ?>][pills][<?php echo (int)$pidx; ?>][label]"
-                                    value="<?php echo esc_attr($p['label'] ?? ''); ?>">
-                                </div>
-                                <div>
-                                  <label class="ab-muted"><?php esc_html_e('URL', 'theme-abcontact'); ?></label>
-                                  <input type="url" class="large-text"
-                                    name="<?php echo esc_attr( ABCONTACT_HOME_SERVICES_OPTION ); ?>[groups][<?php echo esc_attr($gk); ?>][items][<?php echo (int)$idx; ?>][pills][<?php echo (int)$pidx; ?>][url]"
-                                    value="<?php echo esc_attr($p['url'] ?? ''); ?>"
-                                    placeholder="https://...">
-                                </div>
-                                <div style="padding-top:18px;">
-                                  <button type="button" class="button button-link-delete" data-remove-pill><?php esc_html_e('Elimina', 'theme-abcontact'); ?></button>
-                                </div>
-                              </div>
-                            <?php endforeach; ?>
-                          </div>
-                          <p style="margin:12px 0 0;">
-                            <button type="button" class="button" data-add-pill><?php esc_html_e('Aggiungi bottone', 'theme-abcontact'); ?></button>
-                          </p>
-                        </div>
-
                       </div>
                     <?php endforeach; ?>
                   </div>
@@ -389,37 +345,14 @@ function abcontact_home_services_render_admin_page_v2() {
               '<div>' +
                 '<label><strong><?php echo esc_js( __( 'Titolo', 'theme-abcontact' ) ); ?></strong></label>' +
                 '<input type="text" class="regular-text" name="'+OPT+'[groups]['+groupKey+'][items]['+idx+'][title]" value="">' +
-                '<div class="ab-muted"><?php echo esc_js( __( 'Link freccia (opzionale)', 'theme-abcontact' ) ); ?></div>' +
-                '<input type="url" class="large-text" name="'+OPT+'[groups]['+groupKey+'][items]['+idx+'][url]" value="" placeholder="https://...">' +
+                '<label style="display:block; margin-top:10px;"><strong><?php echo esc_js( __( 'Link (obbligatorio)', 'theme-abcontact' ) ); ?></strong></label>' +
+                '<input type="url" class="large-text" required name="'+OPT+'[groups]['+groupKey+'][items]['+idx+'][url]" value="" placeholder="https://...">' +
               '</div>' +
 
               '<div>' +
                 '<label><strong><?php echo esc_js( __( 'Sottotitolo', 'theme-abcontact' ) ); ?></strong></label>' +
                 '<input type="text" class="large-text" name="'+OPT+'[groups]['+groupKey+'][items]['+idx+'][subtitle]" value="">' +
               '</div>' +
-            '</div>' +
-
-            '<div class="ab-pills" data-pills>' +
-              '<p style="margin:0;"><strong><?php echo esc_js( __( 'Bottoni (pill)', 'theme-abcontact' ) ); ?></strong></p>' +
-              '<div data-pills-list></div>' +
-              '<p style="margin:12px 0 0;"><button type="button" class="button" data-add-pill><?php echo esc_js( __( 'Aggiungi bottone', 'theme-abcontact' ) ); ?></button></p>' +
-            '</div>' +
-          '</div>';
-      }
-
-      function pillTemplate(groupKey, itemIdx, pillIdx){
-        return ''+
-          '<div class="ab-pill-row" data-pill-row>' +
-            '<div>' +
-              '<label class="ab-muted"><?php echo esc_js( __( 'Label', 'theme-abcontact' ) ); ?></label>' +
-              '<input type="text" class="regular-text" name="'+OPT+'[groups]['+groupKey+'][items]['+itemIdx+'][pills]['+pillIdx+'][label]" value="">' +
-            '</div>' +
-            '<div>' +
-              '<label class="ab-muted"><?php echo esc_js( __( 'URL', 'theme-abcontact' ) ); ?></label>' +
-              '<input type="url" class="large-text" name="'+OPT+'[groups]['+groupKey+'][items]['+itemIdx+'][pills]['+pillIdx+'][url]" value="" placeholder="https://...">' +
-            '</div>' +
-            '<div style="padding-top:18px;">' +
-              '<button type="button" class="button button-link-delete" data-remove-pill><?php echo esc_js( __( 'Elimina', 'theme-abcontact' ) ); ?></button>' +
             '</div>' +
           '</div>';
       }
@@ -438,7 +371,6 @@ function abcontact_home_services_render_admin_page_v2() {
             var name = $el.attr('name');
             if (!name) return;
 
-            // Replace items[OLD] to items[NEW] only inside this group
             var re = new RegExp('\\['+escRe(OPT)+'\\]\\[groups\\]\\['+escRe(groupKey)+'\\]\\[items\\]\\[\\d+\\]');
             name = name.replace(re, '['+OPT+'][groups]['+groupKey+'][items]['+newIdx+']');
             $el.attr('name', name);
@@ -459,12 +391,10 @@ function abcontact_home_services_render_admin_page_v2() {
             tolerance: 'pointer',
             update: function(){ reindexGroup($group); }
           });
-        } else {
-          if (window.console && console.warn) console.warn('abcontact: sortable not available');
         }
       });
 
-      // Delegated events
+      // Group icon pickers
       $(document).on('click', '[data-pick-group-icon]', function(e){
         e.preventDefault();
         var $group = $(this).closest('[data-group]');
@@ -482,6 +412,7 @@ function abcontact_home_services_render_admin_page_v2() {
         $group.find('[data-group-icon-preview]').empty();
       });
 
+      // Add/remove items
       $(document).on('click', '[data-add-item]', function(e){
         e.preventDefault();
         var $group = $(this).closest('[data-group]');
@@ -499,6 +430,7 @@ function abcontact_home_services_render_admin_page_v2() {
         reindexGroup($group);
       });
 
+      // Item icon pickers
       $(document).on('click', '[data-pick-item-icon]', function(e){
         e.preventDefault();
         var $item = $(this).closest('[data-item]');
@@ -514,22 +446,6 @@ function abcontact_home_services_render_admin_page_v2() {
         var $item = $(this).closest('[data-item]');
         $item.find('[data-item-icon-id]').val(0);
         $item.find('[data-item-icon-preview]').empty();
-      });
-
-      $(document).on('click', '[data-add-pill]', function(e){
-        e.preventDefault();
-        var $group = $(this).closest('[data-group]');
-        var groupKey = $group.data('group');
-        var $item = $(this).closest('[data-item]');
-        var itemIdx = parseInt($item.attr('data-index') || '0', 10);
-        var $list = $item.find('[data-pills-list]').first();
-        var pillIdx = $list.find('[data-pill-row]').length;
-        $list.append(pillTemplate(groupKey, itemIdx, pillIdx));
-      });
-
-      $(document).on('click', '[data-remove-pill]', function(e){
-        e.preventDefault();
-        $(this).closest('[data-pill-row]').remove();
       });
 
     })(jQuery);

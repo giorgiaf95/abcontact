@@ -27,7 +27,6 @@
 .services-box--aziende .services-item__title{ color:#fff; }
 .services-box--aziende .services-box__subtitle,
 .services-box--aziende .services-item__subtitle{ color: rgba(255,255,255,0.72); }
-.services-box--aziende .services-item__arrow{ color: rgba(255,255,255,0.75); }
 .services-box--aziende .services-pill{ border-color: rgba(255,255,255,0.28); color:#fff; }
 
 .services-box__head{ display:flex; gap:14px; align-items:center; margin-bottom: 16px; }
@@ -54,19 +53,9 @@
 .services-item__icon-img{ width: 22px; height: 22px; object-fit: contain; display:block; }
 
 .services-item__text{ flex: 1 1 auto; min-width: 0; }
-.services-item__title{ margin:0; font-size: 1rem; font-weight: 800; color:#111827; }
+.services-item__title{ margin:0; font-size: 1rem; font-weight: 800; color:#111827; text-transform: none; }
 .services-item__subtitle{ margin:2px 0 0; color:#64748b; font-size: 0.95rem; }
 
-.services-item__arrow{
-  text-decoration:none;
-  font-size: 22px;
-  line-height: 1;
-  padding: 6px 10px;
-  border-radius: 12px;
-  color:#334155;
-  flex: 0 0 auto;
-}
-.services-item__pills{ margin-top: 10px; display:flex; gap:10px; flex-wrap:wrap; }
 .services-pill{
   display:inline-flex;
   padding: 8px 14px;
@@ -77,4 +66,5 @@
   font-weight: 700;
   font-size: 0.95rem;
   background: transparent;
+  white-space: nowrap;
 }

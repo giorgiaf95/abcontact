@@ -26,7 +26,18 @@ if ( ! function_exists( 'abcontact_enqueue_assets' ) ) {
             );
         }
 
-/* =============================== CTA CSS =============================== */
+        /* ========================== Services (Home) css ========================== */
+        $services_css = get_stylesheet_directory() . '/assets/css/services.css';
+        if ( file_exists( $services_css ) && is_front_page() ) {
+            wp_enqueue_style(
+                'abcontact-services',
+                get_stylesheet_directory_uri() . '/assets/css/services.css',
+                array( 'abcontact-main' ),
+                filemtime( $services_css )
+            );
+        }
+
+        /* =============================== CTA CSS =============================== */
         $cta_css = get_stylesheet_directory() . '/assets/css/cta.css';
         if ( file_exists( $cta_css ) ) {
             wp_enqueue_style(
@@ -37,7 +48,7 @@ if ( ! function_exists( 'abcontact_enqueue_assets' ) ) {
             );
         }
 
-/* ========================== Footer-specifics css ========================== */
+        /* ========================== Footer-specifics css ========================== */
         $footer_css = get_stylesheet_directory() . '/assets/css/footer.css';
         if ( file_exists( $footer_css ) ) {
             wp_enqueue_style(
@@ -48,7 +59,7 @@ if ( ! function_exists( 'abcontact_enqueue_assets' ) ) {
             );
         }
 
-/* ========================== News-specifics css ========================== */
+        /* ========================== News-specifics css ========================== */
         $news_css = get_stylesheet_directory() . '/assets/css/news.css';
         if ( file_exists( $news_css ) ) {
             wp_enqueue_style(
@@ -59,7 +70,7 @@ if ( ! function_exists( 'abcontact_enqueue_assets' ) ) {
             );
         }
 
-/* ========================== News archive css ========================== */
+        /* ========================== News archive css ========================== */
         $news_archive_css = get_stylesheet_directory() . '/assets/css/news-archive.css';
         if ( file_exists( $news_archive_css ) ) {
             wp_enqueue_style(
@@ -93,7 +104,7 @@ if ( ! function_exists( 'abcontact_enqueue_assets' ) ) {
             );
         }
 
-/* =============================== CTA js =============================== */
+        /* =============================== CTA js =============================== */
         $cta_js = get_stylesheet_directory() . '/assets/js/cta.js';
         if ( file_exists( $cta_js ) ) {
             wp_enqueue_script(
@@ -105,7 +116,7 @@ if ( ! function_exists( 'abcontact_enqueue_assets' ) ) {
             );
         }
 
-/* ============================ News archive js ============================ */
+        /* ============================ News archive js ============================ */
         $news_archive_js = get_stylesheet_directory() . '/assets/js/news-archive.js';
         if ( file_exists( $news_archive_js ) ) {
             wp_enqueue_script(
@@ -123,7 +134,7 @@ if ( ! function_exists( 'abcontact_enqueue_assets' ) ) {
             ) );
         }
 
-/* ================================ Footer js ================================ */
+        /* ================================ Footer js ================================ */
         $footer_js = get_stylesheet_directory() . '/assets/js/footer.js';
         if ( file_exists( $footer_js ) ) {
             wp_enqueue_script(
@@ -135,7 +146,7 @@ if ( ! function_exists( 'abcontact_enqueue_assets' ) ) {
             );
         }
 
-/* ========================== Optional News js ========================== */
+        /* ========================== Optional News js ========================== */
         $news_js = get_stylesheet_directory() . '/assets/js/news.js';
         if ( file_exists( $news_js ) ) {
             wp_enqueue_script(
@@ -161,14 +172,3 @@ function abcontact_enqueue_hero_shared_css() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'abcontact_enqueue_hero_shared_css', 16 );
-
-// ========================== Services (Home) css ==========================
-$services_css = get_stylesheet_directory() . '/assets/css/services.css';
-if ( is_front_page() && file_exists( $services_css ) ) {
-    wp_enqueue_style(
-        'abcontact-services',
-        get_stylesheet_directory_uri() . '/assets/css/services.css',
-        array( 'abcontact-main' ),
-        filemtime( $services_css )
-    );
-}
