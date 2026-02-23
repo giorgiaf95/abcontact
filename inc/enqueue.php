@@ -161,3 +161,14 @@ function abcontact_enqueue_hero_shared_css() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'abcontact_enqueue_hero_shared_css', 16 );
+
+// ========================== Services (Home) css ==========================
+$services_css = get_stylesheet_directory() . '/assets/css/services.css';
+if ( is_front_page() && file_exists( $services_css ) ) {
+    wp_enqueue_style(
+        'abcontact-services',
+        get_stylesheet_directory_uri() . '/assets/css/services.css',
+        array( 'abcontact-main' ),
+        filemtime( $services_css )
+    );
+}

@@ -378,3 +378,21 @@ a.column-title[data-menu-heading="1"]:focus-visible {
   word-break: break-word !important;
   box-sizing: border-box !important;
 }
+
+/* ===== Logo switch: light at top, dark when scrolled/sticky ===== */
+.site-branding .site-logo-img--light { display: block; }
+.site-branding .site-logo-img--dark  { display: none; }
+
+.site-header.scrolled .site-branding .site-logo-img--light,
+.header.scrolled .site-branding .site-logo-img--light,
+.site-header.is-sticky .site-branding .site-logo-img--light,
+.header.is-sticky .site-branding .site-logo-img--light {
+  display: none;
+}
+
+.site-header.scrolled .site-branding .site-logo-img--dark,
+.header.scrolled .site-branding .site-logo-img--dark,
+.site-header.is-sticky .site-branding .site-logo-img--dark,
+.header.is-sticky .site-branding .site-logo-img--dark {
+  display: block;
+}

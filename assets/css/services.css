@@ -104,3 +104,14 @@
   .service-row__img { border-radius:10px; }
   .service-row__icon-circle { width:56px; height:56px; }
 }
+
+/* Variant: services without big media (keeps prototype spacing) */
+.service-row--no-media {
+  grid-template-columns: 1fr;
+}
+
+.service-row--no-media .service-row__content {
+  padding: 0;
+  max-width: 920px;
+  margin: 0 auto;
+}

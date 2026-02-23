@@ -26,17 +26,54 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<div class="site-branding">
 					<?php
-					if ( function_exists( 'the_custom_logo' ) && has_custom_logo() ) {
-						the_custom_logo();
-					} else {
-						if ( ! is_front_page() ) : ?>
-							<a id="site-title" class="site-title" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-								<?php bloginfo( 'name' ); ?>
-							</a>
-							<p class="site-description"><?php bloginfo( 'description' ); ?></p>
-						<?php
-						endif;
-					}
+					$logo_light_id = (int) get_theme_mod( 'header_logo_light', 0 );
+					$logo_dark_id  = (int) get_theme_mod( 'header_logo_dark', 0 );
+
+					// If both set, use the dual-logo switcher
+					if ( $logo_light_id || $logo_dark_id ) :
+					?>
+						<a class="site-logo custom-logo-link" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" aria-label="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">
+							<?php
+							if ( $logo_light_id ) {
+								echo wp_get_attachment_image(
+									$logo_light_id,
+									'full',
+									false,
+									array(
+										'class' => 'site-logo-img site-logo-img--light',
+										'alt'   => get_bloginfo( 'name' ),
+									)
+								);
+							}
+
+							if ( $logo_dark_id ) {
+								echo wp_get_attachment_image(
+									$logo_dark_id,
+									'full',
+									false,
+									array(
+										'class' => 'site-logo-img site-logo-img--dark',
+										'alt'   => get_bloginfo( 'name' ),
+									)
+								);
+							}
+							?>
+						</a>
+					<?php
+					else :
+						// Fallback to default WP custom logo
+						if ( function_exists( 'the_custom_logo' ) && has_custom_logo() ) {
+							the_custom_logo();
+						} else {
+							if ( ! is_front_page() ) : ?>
+								<a id="site-title" class="site-title" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+									<?php bloginfo( 'name' ); ?>
+								</a>
+								<p class="site-description"><?php bloginfo( 'description' ); ?></p>
+							<?php
+							endif;
+						}
+					endif;
 					?>
 				</div>
 

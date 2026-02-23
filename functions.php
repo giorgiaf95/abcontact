@@ -30,6 +30,7 @@ $inc_files = array(
     get_stylesheet_directory() . '/inc/metaboxes-sedi.php',
     get_stylesheet_directory() . '/inc/chi-siamo-admin.php',
     get_stylesheet_directory() . '/inc/metaboxes-landing.php',
+    get_stylesheet_directory() . '/inc/admin-services-home.php',
 );
 
 foreach ( $inc_files as $file ) {
@@ -431,14 +432,51 @@ add_action( 'admin_init', function() {
     }
 }, 20 );
 
-/* ================== Admin enqueue (for media picker script) ================== */
+/**
+ * Customizer: Header logos (light/dark)
+ */
+add_action( 'customize_register', function( $wp_customize ) {
 
-/* NOTE:
-   The "Chi Siamo" grouped metabox (render / save / admin enqueue) has been moved
-   to inc/chi-siamo-admin.php. This keeps functions.php lean and avoids duplicate
-   declarations. Ensure the file inc/chi-siamo-admin.php exists (we provided it).
-*/
+    $section = 'title_tagline'; // se vuoi, posso creare una sezione "Header" dedicata
+    $priority = 65;
 
-/* ===================== Remaining admin / frontend code is loaded from inc/ files ===================== */
+    $wp_customize->add_setting( 'header_logo_light', array(
+        'default'           => 0,
+        'sanitize_callback' => 'absint',
+        'transport'         => 'refresh',
+    ) );
+
+    $wp_customize->add_control( new WP_Customize_Media_Control(
+        $wp_customize,
+        'header_logo_light',
+        array(
+            'label'       => __( 'Logo header (chiaro)', 'theme-abcontact' ),
+            'description' => __( 'Usato quando sei in alto (navbar trasparente). PNG chiaro su sfondo scuro.', 'theme-abcontact' ),
+            'section'     => $section,
+            'mime_type'   => 'image',
+            'priority'    => $priority,
+        )
+    ) );
+
+    $wp_customize->add_setting( 'header_logo_dark', array(
+        'default'           => 0,
+        'sanitize_callback' => 'absint',
+        'transport'         => 'refresh',
+    ) );
+
+    $wp_customize->add_control( new WP_Customize_Media_Control(
+        $wp_customize,
+        'header_logo_dark',
+        array(
+            'label'       => __( 'Logo header (scuro)', 'theme-abcontact' ),
+            'description' => __( 'Usato quando la navbar diventa bianca (scrolled/sticky). PNG scuro su sfondo chiaro.', 'theme-abcontact' ),
+            'section'     => $section,
+            'mime_type'   => 'image',
+            'priority'    => $priority + 1,
+        )
+    ) );
+
+} );
 
 ?>
+
