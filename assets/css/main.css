@@ -1974,3 +1974,9 @@ body.error404 .page-404-inner {
     border-radius: 16px;
   }
 }
+
+/* Smooth scroll for anchor links (optional but recommended) */
+html { scroll-behavior: smooth; }
+
+/* Avoid the anchor target being hidden under a sticky header */
+#cta-footer { scroll-margin-top: 90px; }

@@ -64,7 +64,18 @@ $primary_label = get_theme_mod( 'hero_primary_label', __( 'Scopri i servizi', 't
 $primary_link  = get_theme_mod( 'hero_primary_link', home_url( '/servizi' ) );
 
 $secondary_label = get_theme_mod( 'hero_secondary_label', __( 'Richiedi consulenza', 'theme-abcontact' ) );
-$secondary_link  = get_theme_mod( 'hero_secondary_link', home_url( '/contatti' ) );
+
+/**
+ * ✅ Change requested:
+ * The secondary CTA should scroll down to the footer CTA section on the same page.
+ * We keep it configurable but default to the anchor.
+ *
+ * IMPORTANT: ensure the footer CTA section has id="cta-footer" (in template-parts/cta.php).
+ */
+$secondary_link = get_theme_mod( 'hero_secondary_link', '' );
+if ( ! $secondary_link ) {
+    $secondary_link = '#cta-footer';
+}
 
 /* KPIs (3) */
 $kpi_1_value = get_theme_mod( 'hero_kpi_1_value', '30%' );
@@ -115,6 +126,10 @@ $kpi_3_label = get_theme_mod( 'hero_kpi_3_label', __( 'Anni di esperienza', 'the
                 'variant' => 'ghost',
                 'size'    => 'lg',
                 'class'   => 'btn btn-ghost',
+                // helpful for JS-based smooth scroll if you ever add it
+                'attrs'   => array(
+                    'data-scroll-to' => 'cta-footer',
+                ),
             ) );
         }
         ?>
