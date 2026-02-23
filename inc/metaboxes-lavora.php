@@ -4,11 +4,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Metaboxes for "Lavora con noi" page
- * repeater for "Posizioni Aperte"
+ * Metaboxes for "Lavora con noi" page (v2)
+ * - Repeater for "Posizioni Aperte"
+ * - Stores data in: _ab_lc_positions_v2 (array)
  *
- * NOTE: this file registers the metabox only when editing the correct page/template.
+ * NOTE: This intentionally stops using legacy meta `_lc_positions`.
  */
+
+const ABCONTACT_LC_POSITIONS_META_V2 = '_ab_lc_positions_v2';
 
 /* Helper: detect Lavora page/template (safe, reusable) */
 if ( ! function_exists( 'abcontact_is_lavora_post' ) ) {
@@ -32,7 +35,6 @@ if ( ! function_exists( 'abcontact_is_lavora_post' ) ) {
         $tpl = get_post_meta( $post->ID, '_wp_page_template', true );
         $tpl = $tpl ? basename( $tpl ) : '';
 
-        // Accept multiple possible filenames for the template
         $allowed_templates = array(
             'page-lavora.php',
             'page-lavora-con-noi.php',
@@ -45,7 +47,6 @@ if ( ! function_exists( 'abcontact_is_lavora_post' ) ) {
             return true;
         }
 
-        // Accept a couple of likely slugs (page slug may differ per site)
         $allowed_slugs = array( 'lavora', 'lavora-con-noi', 'lavora-con-noi-page' );
         if ( isset( $post->post_name ) && in_array( $post->post_name, $allowed_slugs, true ) ) {
             return true;
@@ -58,7 +59,6 @@ if ( ! function_exists( 'abcontact_is_lavora_post' ) ) {
 /* Register metabox only when editing the Lavora page/template */
 if ( ! function_exists( 'ab_lavora_register_metaboxes' ) ) {
     function ab_lavora_register_metaboxes() {
-        // try to detect current post
         $post = null;
         if ( isset( $_GET['post'] ) ) {
             $post = get_post( (int) $_GET['post'] );
@@ -73,9 +73,9 @@ if ( ! function_exists( 'ab_lavora_register_metaboxes' ) ) {
         }
 
         add_meta_box(
-            'ab_lavora_sections',
+            'ab_lavora_positions_v2',
             __( 'Lavora con noi — Posizioni Aperte', 'abcontact' ),
-            'ab_lavora_metabox_render',
+            'ab_lavora_metabox_render_v2',
             'page',
             'normal',
             'high'
@@ -84,56 +84,51 @@ if ( ! function_exists( 'ab_lavora_register_metaboxes' ) ) {
     add_action( 'add_meta_boxes', 'ab_lavora_register_metaboxes' );
 }
 
-/* Render metabox (existing markup) */
-if ( ! function_exists( 'ab_lavora_metabox_render' ) ) {
-    function ab_lavora_metabox_render( $post ) {
-        // nonce for positions repeater
-        wp_nonce_field( 'ab_lavora_positions_save', 'ab_lavora_positions_nonce' );
+if ( ! function_exists( 'abcontact_lc_v2_generate_id' ) ) {
+    function abcontact_lc_v2_generate_id() {
+        // stable-enough random id for a repeater item
+        $rand = function_exists( 'wp_generate_password' ) ? wp_generate_password( 8, false, false ) : substr( md5( uniqid( '', true ) ), 0, 8 );
+        return 'job_' . time() . '_' . strtolower( $rand );
+    }
+}
 
-        // load existing positions meta
-        $positions_raw = get_post_meta( $post->ID, '_lc_positions', true );
-        $positions = array();
+if ( ! function_exists( 'ab_lavora_metabox_render_v2' ) ) {
+    function ab_lavora_metabox_render_v2( $post ) {
+        wp_nonce_field( 'ab_lavora_positions_v2_save', 'ab_lavora_positions_v2_nonce' );
 
-        // Accept both array (new storage) and JSON string (legacy)
-        if ( $positions_raw ) {
-            if ( is_string( $positions_raw ) ) {
-                $decoded = json_decode( $positions_raw, true );
-                if ( is_array( $decoded ) ) {
-                    $positions = $decoded;
-                }
-            } elseif ( is_array( $positions_raw ) ) {
-                $positions = $positions_raw;
-            }
-        }
+        $positions_raw = get_post_meta( $post->ID, ABCONTACT_LC_POSITIONS_META_V2, true );
+        $positions = is_array( $positions_raw ) ? $positions_raw : array();
 
         ?>
         <style>
-          .ab-lc-row{ margin-bottom:18px; }
-          .ab-lc-img-preview{ display:block; max-width:220px; height:auto; margin-top:8px; border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,0.06);}
           .ab-lc-field{ width:100%; box-sizing:border-box; padding:6px 8px; }
           .lc-positions-repeater { margin-top: 12px; }
           .lc-position-item { border:1px solid #e6e9ee; padding:10px; margin-bottom:10px; border-radius:6px; background:#fff; }
-          .lc-position-item .handle { cursor:move; font-weight:600; color:#0b5fff; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;}
-          .lc-position-row { display:flex; gap:8px; align-items:flex-start; margin-bottom:8px; }
+          .lc-position-item .handle { cursor:move; font-weight:600; color:#0b5fff; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;}
+          .lc-position-row { display:flex; gap:10px; align-items:flex-start; margin-bottom:10px; }
           .lc-position-row .col { flex:1; }
-          .lc-position-actions { text-align:right; }
-          .lc-cta-preview { margin-top:18px; padding:12px 14px; border-radius:8px; border:1px solid #eee; background:#fafafa; }
-          .lc-cta-preview h4 { margin-top:0; }
+          .lc-position-actions { text-align:right; display:flex; gap:8px; align-items:center; }
+          .lc-position-help { color:#6b7280; margin:6px 0 0; font-size: 12px; }
         </style>
 
-        <h4><?php esc_html_e( 'Posizioni Aperte (gestione)', 'abcontact' ); ?></h4>
-        <p class="description"><?php esc_html_e( 'Aggiungi qui le posizioni aperte che vuoi mostrare nella sezione. Puoi riordinare, modificare o rimuovere.', 'abcontact' ); ?></p>
+        <h4><?php esc_html_e( 'Posizioni Aperte', 'abcontact' ); ?></h4>
+        <p class="description"><?php esc_html_e( 'Aggiungi, riordina o rimuovi le posizioni. Questi dati alimentano la lista e il popup di candidatura nel frontend.', 'abcontact' ); ?></p>
 
-        <div class="lc-positions-repeater" data-repeater>
+        <div class="lc-positions-repeater" data-repeater="lc-v2">
           <?php
           if ( ! empty( $positions ) ) :
             foreach ( $positions as $index => $pos ) :
-              $title = isset( $pos['title'] ) ? $pos['title'] : '';
-              $excerpt = isset( $pos['excerpt'] ) ? $pos['excerpt'] : '';
-              $image_id = isset( $pos['image_id'] ) ? intval( $pos['image_id'] ) : 0;
-              $requirements = isset( $pos['requirements'] ) ? $pos['requirements'] : '';
-              $offer = isset( $pos['offer'] ) ? $pos['offer'] : '';
-              $apply = isset( $pos['apply_url'] ) ? $pos['apply_url'] : '';
+              if ( ! is_array( $pos ) ) continue;
+
+              $id = isset( $pos['id'] ) ? sanitize_text_field( $pos['id'] ) : '';
+              if ( $id === '' ) $id = abcontact_lc_v2_generate_id();
+
+              $title = isset( $pos['title'] ) ? sanitize_text_field( $pos['title'] ) : '';
+              $category = isset( $pos['category'] ) ? sanitize_text_field( $pos['category'] ) : '';
+              $employment_type = isset( $pos['employment_type'] ) ? sanitize_text_field( $pos['employment_type'] ) : 'full_time';
+              $location = isset( $pos['location'] ) ? sanitize_text_field( $pos['location'] ) : '';
+              $description = isset( $pos['description'] ) ? $pos['description'] : '';
+              $description = is_string( $description ) ? wp_kses_post( $description ) : '';
           ?>
             <div class="lc-position-item" data-index="<?php echo esc_attr( $index ); ?>">
               <div class="handle">
@@ -143,52 +138,46 @@ if ( ! function_exists( 'ab_lavora_metabox_render' ) ) {
                 </div>
               </div>
 
+              <input type="hidden" name="lc_positions_v2[<?php echo esc_attr( $index ); ?>][id]" value="<?php echo esc_attr( $id ); ?>">
+
               <div class="lc-position-row">
                 <div class="col">
-                  <label><?php esc_html_e( 'Titolo', 'abcontact' ); ?></label>
-                  <input type="text" name="lc_positions[<?php echo esc_attr( $index ); ?>][title]" value="<?php echo esc_attr( $title ); ?>" class="ab-lc-field">
+                  <label><?php esc_html_e( 'Nome posizione', 'abcontact' ); ?> *</label>
+                  <input type="text" name="lc_positions_v2[<?php echo esc_attr( $index ); ?>][title]" value="<?php echo esc_attr( $title ); ?>" class="ab-lc-field" required>
                 </div>
                 <div class="col">
-                  <label><?php esc_html_e( 'Candidatura (URL)', 'abcontact' ); ?></label>
-                  <input type="text" name="lc_positions[<?php echo esc_attr( $index ); ?>][apply_url]" value="<?php echo esc_attr( $apply ); ?>" class="ab-lc-field">
+                  <label><?php esc_html_e( 'Categoria', 'abcontact' ); ?></label>
+                  <input type="text" name="lc_positions_v2[<?php echo esc_attr( $index ); ?>][category]" value="<?php echo esc_attr( $category ); ?>" class="ab-lc-field" placeholder="<?php esc_attr_e( 'Es. Consulenza', 'abcontact' ); ?>">
                 </div>
               </div>
 
               <div class="lc-position-row">
                 <div class="col">
-                  <label><?php esc_html_e( 'Immagine (anteprima)', 'abcontact' ); ?></label><br>
-                  <input type="hidden" name="lc_positions[<?php echo esc_attr( $index ); ?>][image_id]" class="lc-pos-image-id" value="<?php echo esc_attr( $image_id ); ?>">
-                  <button type="button" class="button lc-pos-image-button"><?php esc_html_e( 'Seleziona immagine', 'abcontact' ); ?></button>
-                  <button type="button" class="button lc-pos-image-remove" style="margin-left:8px;"><?php esc_html_e( 'Rimuovi', 'abcontact' ); ?></button>
-                  <div class="lc-pos-image-preview">
-                    <?php if ( $image_id ) echo wp_get_attachment_image( $image_id, 'medium', false, array( 'class' => 'ab-lc-img-preview' ) ); ?>
-                  </div>
+                  <label><?php esc_html_e( 'Tipo contratto', 'abcontact' ); ?></label>
+                  <select name="lc_positions_v2[<?php echo esc_attr( $index ); ?>][employment_type]" class="ab-lc-field">
+                    <option value="full_time" <?php selected( $employment_type, 'full_time' ); ?>><?php esc_html_e( 'Full-time', 'abcontact' ); ?></option>
+                    <option value="part_time" <?php selected( $employment_type, 'part_time' ); ?>><?php esc_html_e( 'Part-time', 'abcontact' ); ?></option>
+                  </select>
+                </div>
+                <div class="col">
+                  <label><?php esc_html_e( 'Luogo', 'abcontact' ); ?></label>
+                  <input type="text" name="lc_positions_v2[<?php echo esc_attr( $index ); ?>][location]" value="<?php echo esc_attr( $location ); ?>" class="ab-lc-field" placeholder="<?php esc_attr_e( 'Es. Milano / Remoto', 'abcontact' ); ?>">
                 </div>
               </div>
 
               <div>
-                <label><?php esc_html_e( 'Descrizione / Intro', 'abcontact' ); ?></label>
-                <textarea name="lc_positions[<?php echo esc_attr( $index ); ?>][excerpt]" rows="3" class="ab-lc-field"><?php echo esc_textarea( $excerpt ); ?></textarea>
+                <label><?php esc_html_e( 'Descrizione (popup)', 'abcontact' ); ?></label>
+                <textarea name="lc_positions_v2[<?php echo esc_attr( $index ); ?>][description]" rows="5" class="ab-lc-field"><?php echo esc_textarea( wp_strip_all_tags( $description ) ); ?></textarea>
+                <p class="lc-position-help"><?php esc_html_e( 'Questo testo viene mostrato nel popup quando l’utente clicca sulla posizione.', 'abcontact' ); ?></p>
               </div>
 
-              <div class="lc-position-row">
-                <div class="col">
-                  <label><?php esc_html_e( 'Requisiti (una voce per riga)', 'abcontact' ); ?></label>
-                  <textarea name="lc_positions[<?php echo esc_attr( $index ); ?>][requirements]" rows="3" class="ab-lc-field"><?php echo esc_textarea( $requirements ); ?></textarea>
-                </div>
-                <div class="col">
-                  <label><?php esc_html_e( 'Cosa Offriamo (una voce per riga)', 'abcontact' ); ?></label>
-                  <textarea name="lc_positions[<?php echo esc_attr( $index ); ?>][offer]" rows="3" class="ab-lc-field"><?php echo esc_textarea( $offer ); ?></textarea>
-                </div>
-              </div>
             </div>
           <?php
             endforeach;
           endif;
           ?>
 
-          <!-- template for new item (cloned by JS) -->
-          <template id="lc-position-template">
+          <template id="lc-position-template-v2">
             <div class="lc-position-item" data-index="__index__">
               <div class="handle">
                 <span class="label"><?php esc_html_e( 'Nuova posizione', 'abcontact' ); ?></span>
@@ -197,157 +186,90 @@ if ( ! function_exists( 'ab_lavora_metabox_render' ) ) {
                 </div>
               </div>
 
+              <input type="hidden" name="lc_positions_v2[__index__][id]" value="">
+
               <div class="lc-position-row">
                 <div class="col">
-                  <label><?php esc_html_e( 'Titolo', 'abcontact' ); ?></label>
-                  <input type="text" name="lc_positions[__index__][title]" value="" class="ab-lc-field">
+                  <label><?php esc_html_e( 'Nome posizione', 'abcontact' ); ?> *</label>
+                  <input type="text" name="lc_positions_v2[__index__][title]" value="" class="ab-lc-field" required>
                 </div>
                 <div class="col">
-                  <label><?php esc_html_e( 'Candidatura (URL)', 'abcontact' ); ?></label>
-                  <input type="text" name="lc_positions[__index__][apply_url]" value="" class="ab-lc-field">
+                  <label><?php esc_html_e( 'Categoria', 'abcontact' ); ?></label>
+                  <input type="text" name="lc_positions_v2[__index__][category]" value="" class="ab-lc-field" placeholder="<?php esc_attr_e( 'Es. Consulenza', 'abcontact' ); ?>">
                 </div>
               </div>
 
               <div class="lc-position-row">
                 <div class="col">
-                  <label><?php esc_html_e( 'Immagine (anteprima)', 'abcontact' ); ?></label><br>
-                  <input type="hidden" name="lc_positions[__index__][image_id]" class="lc-pos-image-id" value="">
-                  <button type="button" class="button lc-pos-image-button"><?php esc_html_e( 'Seleziona immagine', 'abcontact' ); ?></button>
-                  <button type="button" class="button lc-pos-image-remove" style="margin-left:8px;"><?php esc_html_e( 'Rimuovi', 'abcontact' ); ?></button>
-                  <div class="lc-pos-image-preview"></div>
+                  <label><?php esc_html_e( 'Tipo contratto', 'abcontact' ); ?></label>
+                  <select name="lc_positions_v2[__index__][employment_type]" class="ab-lc-field">
+                    <option value="full_time"><?php esc_html_e( 'Full-time', 'abcontact' ); ?></option>
+                    <option value="part_time"><?php esc_html_e( 'Part-time', 'abcontact' ); ?></option>
+                  </select>
+                </div>
+                <div class="col">
+                  <label><?php esc_html_e( 'Luogo', 'abcontact' ); ?></label>
+                  <input type="text" name="lc_positions_v2[__index__][location]" value="" class="ab-lc-field" placeholder="<?php esc_attr_e( 'Es. Milano / Remoto', 'abcontact' ); ?>">
                 </div>
               </div>
 
               <div>
-                <label><?php esc_html_e( 'Descrizione / Intro', 'abcontact' ); ?></label>
-                <textarea name="lc_positions[__index__][excerpt]" rows="3" class="ab-lc-field"></textarea>
-              </div>
-
-              <div class="lc-position-row">
-                <div class="col">
-                  <label><?php esc_html_e( 'Requisiti (una voce per riga)', 'abcontact' ); ?></label>
-                  <textarea name="lc_positions[__index__][requirements]" rows="3" class="ab-lc-field"></textarea>
-                </div>
-                <div class="col">
-                  <label for=""><?php esc_html_e( 'Cosa Offriamo (una voce per riga)', 'abcontact' ); ?></label>
-                  <textarea name="lc_positions[__index__][offer]" rows="3" class="ab-lc-field"></textarea>
-                </div>
+                <label><?php esc_html_e( 'Descrizione (popup)', 'abcontact' ); ?></label>
+                <textarea name="lc_positions_v2[__index__][description]" rows="5" class="ab-lc-field"></textarea>
               </div>
             </div>
           </template>
 
-          <p><button type="button" class="button button-primary" id="lc-add-position"><?php esc_html_e( 'Aggiungi Posizione', 'abcontact' ); ?></button></p>
-
+          <p><button type="button" class="button button-primary" id="lc-add-position-v2"><?php esc_html_e( 'Aggiungi Posizione', 'abcontact' ); ?></button></p>
         </div>
-
-        <!-- CTA preview -->
-        <div class="lc-cta-preview" aria-label="<?php esc_attr_e( 'Anteprima CTA principale', 'abcontact' ); ?>">
-          <h4><?php esc_html_e( 'Anteprima CTA principale', 'abcontact' ); ?></h4>
-          <p class="description">
-            <?php
-            echo esc_html__( 'La CTA viene gestita centralmente. Usa il metabox "Front CTA" o i meta cta_* della pagina per impostarla. Qui sotto vedi una preview della CTA principale (se impostata).', 'abcontact' );
-            ?>
-          </p>
-
-          <?php
-          // Build preview args reading cta_* first, fallback legacy for preview only.
-          $post_id_for_cta = isset( $post->ID ) ? (int) $post->ID : get_the_ID();
-
-          $cta_title        = get_post_meta( $post_id_for_cta, 'cta_title', true );
-          $cta_subtitle     = get_post_meta( $post_id_for_cta, 'cta_subtitle', true );
-          $cta_button_label = get_post_meta( $post_id_for_cta, 'cta_button_label', true );
-          $cta_button_link  = get_post_meta( $post_id_for_cta, 'cta_button_link', true );
-          $cta_button_color = get_post_meta( $post_id_for_cta, 'cta_button_color', true );
-          $cta_modal_raw    = get_post_meta( $post_id_for_cta, 'cta_modal', true );
-          $cta_modal        = $cta_modal_raw ? true : false;
-
-          if ( empty( $cta_title ) ) {
-              $cta_title = get_post_meta( $post_id_for_cta, 'lc_cta_title', true ) ?: get_post_meta( $post_id_for_cta, 'service_final_cta_title', true ) ?: get_post_meta( $post_id_for_cta, 'cs_cta_title', true );
-          }
-          if ( empty( $cta_subtitle ) ) {
-              $cta_subtitle = get_post_meta( $post_id_for_cta, 'lc_cta_text', true ) ?: get_post_meta( $post_id_for_cta, 'service_final_cta_text', true ) ?: get_post_meta( $post_id_for_cta, 'cs_cta_text', true );
-          }
-          if ( empty( $cta_button_label ) ) {
-              $cta_button_label = get_post_meta( $post_id_for_cta, 'lc_cta_button_label', true ) ?: get_post_meta( $post_id_for_cta, 'service_final_cta_button_label', true ) ?: get_post_meta( $post_id_for_cta, 'cs_cta_button_label', true );
-          }
-          if ( empty( $cta_button_link ) ) {
-              $cta_button_link = get_post_meta( $post_id_for_cta, 'lc_cta_button_link', true ) ?: get_post_meta( $post_id_for_cta, 'service_final_cta_link', true ) ?: get_post_meta( $post_id_for_cta, 'cs_cta_button_link', true );
-          }
-          if ( empty( $cta_button_color ) ) {
-              $cta_button_color = get_post_meta( $post_id_for_cta, 'lc_cta_button_color', true ) ?: get_post_meta( $post_id_for_cta, 'service_final_cta_button_color', true ) ?: get_post_meta( $post_id_for_cta, 'cs_cta_button_color', true );
-          }
-
-          if ( ! empty( $cta_button_link ) ) {
-              $raw_link = trim( $cta_button_link );
-              if ( ! preg_match( '#^https?://#i', $raw_link ) ) {
-                  $cta_button_link = home_url( '/' . ltrim( $raw_link, '/' ) );
-              } else {
-                  $cta_button_link = $raw_link;
-              }
-          }
-
-          $preview_args = array(
-              'title'        => $cta_title,
-              'subtitle'     => $cta_subtitle,
-              'button_label' => $cta_button_label,
-              'button_link'  => $cta_button_link,
-              'button_color' => $cta_button_color,
-              'modal'        => $cta_modal,
-          );
-
-          set_query_var( 'args', $preview_args );
-          get_template_part( 'template-parts/cta', null, $preview_args );
-          set_query_var( 'args', null );
-          ?>
-
-        </div>
-
         <?php
     }
 }
 
-/* Save handler */
+/* Save handler (v2) */
 if ( ! function_exists( 'ab_lavora_metabox_save' ) ) {
     function ab_lavora_metabox_save( $post_id ) {
         if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
         if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
-        if ( ! isset( $_POST['ab_lavora_positions_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['ab_lavora_positions_nonce'] ), 'ab_lavora_positions_save' ) ) {
+        if ( ! isset( $_POST['ab_lavora_positions_v2_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['ab_lavora_positions_v2_nonce'] ), 'ab_lavora_positions_v2_save' ) ) {
             return;
         }
 
-        if ( isset( $_POST['lc_positions'] ) && is_array( $_POST['lc_positions'] ) ) {
-            $raw = wp_unslash( $_POST['lc_positions'] );
-            $clean = array();
+        $raw = isset( $_POST['lc_positions_v2'] ) && is_array( $_POST['lc_positions_v2'] ) ? wp_unslash( $_POST['lc_positions_v2'] ) : array();
+        $clean = array();
 
-            if ( is_array( $raw ) ) {
-                foreach ( $raw as $item ) {
-                    if ( ! is_array( $item ) ) continue;
-                    $title = isset( $item['title'] ) ? sanitize_text_field( $item['title'] ) : '';
-                    $excerpt = isset( $item['excerpt'] ) ? wp_kses_post( $item['excerpt'] ) : '';
-                    $image_id = isset( $item['image_id'] ) ? intval( $item['image_id'] ) : 0;
-                    $requirements = isset( $item['requirements'] ) ? sanitize_textarea_field( $item['requirements'] ) : '';
-                    $offer = isset( $item['offer'] ) ? sanitize_textarea_field( $item['offer'] ) : '';
-                    $apply_url = isset( $item['apply_url'] ) ? esc_url_raw( $item['apply_url'] ) : '';
+        foreach ( $raw as $item ) {
+            if ( ! is_array( $item ) ) continue;
 
-                    if ( $title === '' && $excerpt === '' && $image_id === 0 && $requirements === '' && $offer === '' && $apply_url === '' ) {
-                        continue;
-                    }
+            $id = isset( $item['id'] ) ? sanitize_text_field( $item['id'] ) : '';
+            if ( $id === '' ) $id = abcontact_lc_v2_generate_id();
 
-                    $clean[] = array(
-                        'title' => $title,
-                        'excerpt' => $excerpt,
-                        'image_id' => $image_id,
-                        'requirements' => $requirements,
-                        'offer' => $offer,
-                        'apply_url' => $apply_url,
-                    );
-                }
+            $title = isset( $item['title'] ) ? sanitize_text_field( $item['title'] ) : '';
+            $category = isset( $item['category'] ) ? sanitize_text_field( $item['category'] ) : '';
+            $employment_type = isset( $item['employment_type'] ) ? sanitize_text_field( $item['employment_type'] ) : 'full_time';
+            if ( ! in_array( $employment_type, array( 'full_time', 'part_time' ), true ) ) {
+                $employment_type = 'full_time';
+            }
+            $location = isset( $item['location'] ) ? sanitize_text_field( $item['location'] ) : '';
+            $description = isset( $item['description'] ) ? sanitize_textarea_field( $item['description'] ) : '';
+
+            // Skip empty rows
+            if ( $title === '' && $category === '' && $location === '' && $description === '' ) {
+                continue;
             }
 
-            // Save as array to avoid JSON unicode escapes being displayed raw in frontend.
-            update_post_meta( $post_id, '_lc_positions', $clean );
+            $clean[] = array(
+                'id'              => $id,
+                'title'           => $title,
+                'category'        => $category,
+                'employment_type' => $employment_type,
+                'location'        => $location,
+                'description'     => $description,
+            );
         }
+
+        update_post_meta( $post_id, ABCONTACT_LC_POSITIONS_META_V2, $clean );
     }
     add_action( 'save_post', 'ab_lavora_metabox_save' );
 }
@@ -360,7 +282,6 @@ if ( ! function_exists( 'ab_lavora_admin_assets' ) ) {
             return;
         }
 
-        // try to detect post object
         $post_obj = null;
         if ( isset( $post ) && $post instanceof WP_Post ) {
             $post_obj = $post;
@@ -373,12 +294,9 @@ if ( ! function_exists( 'ab_lavora_admin_assets' ) ) {
         if ( ! $post_obj || $post_obj->post_type !== 'page' ) {
             return;
         }
-
         if ( ! abcontact_is_lavora_post( $post_obj ) ) {
             return;
         }
-
-        wp_enqueue_media();
 
         $theme_dir = get_stylesheet_directory();
         $theme_uri = get_stylesheet_directory_uri();
@@ -386,9 +304,8 @@ if ( ! function_exists( 'ab_lavora_admin_assets' ) ) {
         $js1 = $theme_dir . '/assets/js/admin-lavora-metabox.js';
         if ( file_exists( $js1 ) ) {
             wp_enqueue_script( 'ab-lavora-admin', $theme_uri . '/assets/js/admin-lavora-metabox.js', array( 'jquery' ), filemtime( $js1 ), true );
-
             wp_localize_script( 'ab-lavora-admin', 'abLavoraPositions', array(
-              'removeConfirm' => esc_html__( 'Rimuovere questa posizione?', 'abcontact' ),
+                'removeConfirm' => esc_html__( 'Rimuovere questa posizione?', 'abcontact' ),
             ) );
         }
     }

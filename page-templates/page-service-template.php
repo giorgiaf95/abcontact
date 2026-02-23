@@ -23,16 +23,20 @@ if ( file_exists( $js_path ) ) {
     wp_enqueue_script( 'service-hero-offset', get_stylesheet_directory_uri() . '/assets/js/service-hero-offset.js', array(), filemtime( $js_path ), true );
 }
 
-/* HERO */
+/* HERO (title from page title; subtitle from metabox) */
 $hero_image = get_the_post_thumbnail_url( $post_id, 'full' ) ?: '';
+$hero_subtitle = get_post_meta( $post_id, 'service_hero_subtitle', true );
+$hero_subtitle = is_string( $hero_subtitle ) ? wp_kses_post( $hero_subtitle ) : '';
+
 $hero_args = array(
     'eyebrow'   => '',
     'title'     => get_the_title( $post_id ),
-    'subtitle'  => '',
+    'subtitle'  => $hero_subtitle,
     'bg_url'    => $hero_image,
     'cta'       => '',
     'cta_label' => '',
 );
+
 set_query_var( 'args', $hero_args );
 if ( locate_template( 'template-parts/news-hero.php' ) ) {
     get_template_part( 'template-parts/news-hero' );
@@ -41,130 +45,42 @@ if ( locate_template( 'template-parts/news-hero.php' ) ) {
     <header class="sp-hero" style="<?php if ( $hero_image ) echo 'background-image: url(' . esc_url( $hero_image ) . ');'; ?>">
       <div class="sp-hero-inner container">
         <h1 class="sp-hero-title"><?php echo esc_html( get_the_title( $post_id ) ); ?></h1>
+        <?php if ( $hero_subtitle ) : ?>
+          <p class="sp-hero-sub"><?php echo wp_kses_post( wpautop( $hero_subtitle ) ); ?></p>
+        <?php endif; ?>
       </div>
     </header>
     <?php
 }
 set_query_var( 'args', null );
 
-/* small spacer between hero and intro (keeps minimal gap as requested) */
+/* small spacer between hero and content */
 ?>
 <div style="height:32px" aria-hidden="true"></div>
 <?php
 
-/* Intro */
-$intro_title = get_post_meta( $post_id, 'service_intro_title', true );
-$intro_body  = get_post_meta( $post_id, 'service_intro_body', true );
-
+/* =========================
+   MAIN CONTENT (Gutenberg)
+   ========================= */
 ?>
-<section class="sp-intro container">
-  <div class="sp-intro-inner">
-    <?php if ( $intro_title ) : ?><h2 class="sp-intro-title"><?php echo esc_html( $intro_title ); ?></h2><?php endif; ?>
-    <?php if ( $intro_body ) : ?><div class="sp-intro-body"><?php echo wp_kses_post( wpautop( $intro_body ) ); ?></div><?php endif; ?>
+<section class="sp-content container" aria-label="<?php esc_attr_e( 'Contenuto del servizio', 'abcontact' ); ?>">
+  <div class="sp-content-inner">
+    <?php
+    while ( have_posts() ) :
+        the_post();
+        the_content();
+    endwhile;
+    ?>
   </div>
 </section>
 
 <?php
+/* =========================
+   KEEP: Come funziona / Reviews / CTA
+   - Come funziona: ora legge il repeater _service_how_steps (con fallback legacy a 4 fasi)
+   ========================= */
 
-// --- Full image block (high-res with srcset where available) ---
-$full_img_markup = '';
-$full_id = intval( get_post_meta( $post_id, 'service_full_image_id', true ) );
-
-if ( $full_id ) {
-    // Use 'full' so WP outputs a high-res src (and srcset if available).
-    $full_img_markup = wp_get_attachment_image( $full_id, 'full', false, array(
-        'class' => 'service-full-image',
-        'alt'   => get_the_title( $post_id ),
-    ) );
-} elseif ( function_exists( '_meta_img_url' ) ) {
-    $fallback_url = _meta_img_url( $post_id, 'service_full_image_id', 'full' );
-    if ( $fallback_url ) {
-        $full_img_markup = '<img src="' . esc_url( $fallback_url ) . '" class="service-full-image" alt="' . esc_attr( get_the_title( $post_id ) ) . '" />';
-    }
-}
-
-if ( $full_img_markup ) :
-?>
-  <figure class="sp-full-image" role="img" aria-hidden="true">
-    <?php echo $full_img_markup; ?>
-  </figure>
-<?php endif; ?>
-
-<?php
-// Render additional text groups (repeater) stored in _service_additional_texts
-// Robust handling: meta may be stored as an array (WP-serialized), as JSON string, or serialized string.
-// We try to support all forms and produce a clean array for rendering.
-
-$additional_raw = get_post_meta( $post_id, '_service_additional_texts', true );
-$additional = array();
-
-if ( is_array( $additional_raw ) && ! empty( $additional_raw ) ) {
-    // WP already returned the unserialized array
-    $additional = $additional_raw;
-} elseif ( $additional_raw ) {
-    // Try JSON decode (legacy format)
-    $decoded = json_decode( $additional_raw, true );
-    if ( $decoded === null ) {
-        // maybe escaped JSON
-        $decoded = json_decode( wp_unslash( $additional_raw ), true );
-    }
-    if ( is_array( $decoded ) ) {
-        $additional = $decoded;
-    } else {
-        // Fallback: maybe serialized PHP array
-        $maybe = maybe_unserialize( $additional_raw );
-        if ( is_array( $maybe ) ) {
-            $additional = $maybe;
-        }
-    }
-}
-
-/**
- * We render additional blocks using a centered container pattern that matches
- * the intro block: a .container wrapper and an inner element centered to the same width.
- * This ensures alignment and consistent behavior.
- */
-if ( ! empty( $additional ) ) :
-    foreach ( $additional as $block ) :
-        $block_title = isset( $block['title'] ) ? $block['title'] : '';
-        $block_body  = isset( $block['body'] ) ? $block['body'] : '';
-
-        // sanitize before output
-        $block_title_s = $block_title ? sanitize_text_field( $block_title ) : '';
-        // body may contain allowed HTML; sanitize and preserve newlines
-        $block_body_s = $block_body ? wp_kses_post( $block_body ) : '';
-        ?>
-        <section class="sp-additional container" aria-label="<?php echo esc_attr( $block_title_s ? $block_title_s : __( 'Sezione Aggiuntiva', 'abcontact' ) ); ?>">
-          <div class="sp-additional-inner">
-            <div class="sp-additional-content">
-              <?php if ( $block_title_s ) : ?>
-                <h2 class="sp-additional-title"><?php echo esc_html( $block_title_s ); ?></h2>
-              <?php endif; ?>
-              <?php if ( $block_body_s ) : ?>
-                <div class="sp-additional-body"><?php echo wpautop( $block_body_s ); ?></div>
-              <?php endif; ?>
-            </div>
-          </div>
-        </section>
-        <?php
-    endforeach;
-endif;
-?>
-
-<?php
-// Phases (same as before)
-$phases = array();
-for ( $i = 1; $i <= 4; $i++ ) {
-    $phases[] = array(
-        'title' => get_post_meta( $post_id, "service_phase_{$i}_title", true ),
-        'text'  => get_post_meta( $post_id, "service_phase_{$i}_text", true ),
-        'icon'  => intval( get_post_meta( $post_id, "service_phase_{$i}_icon_id", true ) ),
-    );
-}
-?>
-
-<?php
-// Read the "How it works" title/subtitle from meta with fallbacks
+/* Read the "How it works" title/subtitle from meta with fallbacks */
 $how_title = get_post_meta( $post_id, 'service_how_title', true );
 $how_sub   = get_post_meta( $post_id, 'service_how_subtitle', true );
 
@@ -173,6 +89,33 @@ if ( empty( $how_title ) ) {
 }
 if ( empty( $how_sub ) ) {
     $how_sub = __( 'Il nostro processo in quattro semplici step', 'abcontact' );
+}
+
+/* NEW: Repeater steps (preferred) */
+$steps_raw = get_post_meta( $post_id, '_service_how_steps', true );
+$steps = is_array( $steps_raw ) ? $steps_raw : array();
+
+/* Fallback legacy 4 phases if repeater empty */
+if ( empty( $steps ) ) {
+    $phases = array();
+    for ( $i = 1; $i <= 4; $i++ ) {
+        $phases[] = array(
+            'title'   => get_post_meta( $post_id, "service_phase_{$i}_title", true ),
+            'text'    => get_post_meta( $post_id, "service_phase_{$i}_text", true ),
+            'icon_id' => intval( get_post_meta( $post_id, "service_phase_{$i}_icon_id", true ) ),
+        );
+    }
+
+    foreach ( $phases as $p ) {
+        if ( empty( $p['title'] ) && empty( $p['text'] ) ) {
+            continue;
+        }
+        $steps[] = array(
+            'title'   => (string) $p['title'],
+            'text'    => (string) $p['text'],
+            'icon_id' => (int) $p['icon_id'],
+        );
+    }
 }
 ?>
 
@@ -185,9 +128,16 @@ if ( empty( $how_sub ) ) {
   </header>
 
   <div class="sp-how-grid">
-    <?php foreach ( $phases as $p ) :
-      if ( empty( $p['title'] ) && empty( $p['text'] ) ) continue;
-      $icon_url = $p['icon'] ? wp_get_attachment_image_url( $p['icon'], array(64,64) ) : '';
+    <?php foreach ( $steps as $s ) :
+      if ( ! is_array( $s ) ) continue;
+
+      $t = isset( $s['title'] ) ? sanitize_text_field( $s['title'] ) : '';
+      $x = isset( $s['text'] ) ? sanitize_textarea_field( $s['text'] ) : '';
+      $icon_id = isset( $s['icon_id'] ) ? absint( $s['icon_id'] ) : 0;
+
+      if ( $t === '' && $x === '' ) continue;
+
+      $icon_url = $icon_id ? wp_get_attachment_image_url( $icon_id, array(64,64) ) : '';
     ?>
       <article class="sp-how-item">
         <div class="sp-how-icon" aria-hidden="true">
@@ -198,8 +148,8 @@ if ( empty( $how_sub ) ) {
           <?php endif; ?>
         </div>
         <div class="sp-how-body">
-          <?php if ( $p['title'] ) : ?><h4 class="sp-how-title"><?php echo esc_html( $p['title'] ); ?></h4><?php endif; ?>
-          <?php if ( $p['text'] ) : ?><div class="sp-how-text"><?php echo wp_kses_post( wpautop( $p['text'] ) ); ?></div><?php endif; ?>
+          <?php if ( $t ) : ?><h4 class="sp-how-title"><?php echo esc_html( $t ); ?></h4><?php endif; ?>
+          <?php if ( $x ) : ?><div class="sp-how-text"><?php echo esc_html( $x ); ?></div><?php endif; ?>
         </div>
       </article>
     <?php endforeach; ?>
@@ -276,8 +226,6 @@ $cta_args = array(
 set_query_var( 'args', $cta_args );
 get_template_part( 'template-parts/cta', null, $cta_args );
 set_query_var( 'args', null );
-?>
 
-<?php
 get_footer();
 ?>

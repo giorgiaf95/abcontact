@@ -209,78 +209,122 @@ add_action( 'widgets_init', 'abcontact_register_sidebars' );
 
 /* ============================ Customizer: Footer settings ============================ */
 function abcontact_customize_register( $wp_customize ) {
-   
-$wp_customize->add_setting( 'hero_primary_label', array(
-    'default'           => __( 'Richiedi Consulenza', 'theme-abcontact' ),
-    'sanitize_callback' => 'sanitize_text_field',
-    'capability'        => 'manage_options',
-) );
 
-$wp_customize->add_control( 'hero_primary_label', array(
-    'label'    => __( 'Hero - Testo bottone principale', 'theme-abcontact' ),
-    'section'  => 'abcontact_footer_section', 
-    'type'     => 'text',
-) );
-
-$wp_customize->add_setting( 'hero_primary_link', array(
-    'default'           => home_url( '/contatti' ),
-    'sanitize_callback' => 'esc_url_raw',
-    'capability'        => 'manage_options',
-) );
-
-$wp_customize->add_control( 'hero_primary_link', array(
-    'label'    => __( 'Hero - Link bottone principale', 'theme-abcontact' ),
-    'section'  => 'abcontact_footer_section',
-    'type'     => 'url',
-) );
-   
-// Header CTA: label e link
-$wp_customize->add_setting( 'header_cta_label', array(
-    'default'           => __( 'Contattaci', 'theme-abcontact' ),
-    'sanitize_callback' => 'sanitize_text_field',
-    'capability'        => 'manage_options',
-) );
-
-$wp_customize->add_control( 'header_cta_label', array(
-    'label'    => __( 'Testo pulsante header', 'theme-abcontact' ),
-    'section'  => 'abcontact_footer_section', 
-    'type'     => 'text',
-) );
-
-$wp_customize->add_setting( 'header_cta_link', array(
-    'default'           => home_url( '/contatti' ),
-    'sanitize_callback' => 'esc_url_raw',
-    'capability'        => 'manage_options',
-) );
-
-$wp_customize->add_control( 'header_cta_link', array(
-    'label'    => __( 'Link pulsante header', 'theme-abcontact' ),
-    'section'  => 'abcontact_footer_section',
-    'type'     => 'url',
-) );
-    
-// Impostazione e controllo per la email di ricezione richieste bolletta
-$wp_customize->add_setting( 'abcontact_recipient_email', array(
-    'default'           => '',
-    'sanitize_callback' => 'sanitize_email',
-    'capability'        => 'manage_options',
-    'type'              => 'option', 
-) );
-
-$wp_customize->add_control( 'abcontact_recipient_email', array(
-    'label'    => __( 'Email ricezione richieste bolletta', 'abcontact' ),
-    'section'  => 'abcontact_footer_section', 
-    'type'     => 'email',
-) );
-
+    // Footer section (existing)
     $wp_customize->add_section( 'abcontact_footer_section', array(
         'title'       => __( 'Footer settings', 'abcontact' ),
         'priority'    => 160,
         'description' => __( 'Contenuti e contatti nel footer', 'abcontact' ),
     ) );
 
+    // NEW: Header section (dedicated)
+    $wp_customize->add_section( 'abcontact_header_section', array(
+        'title'       => __( 'Header settings', 'theme-abcontact' ),
+        'priority'    => 159,
+        'description' => __( 'Impostazioni dell’header (es. pulsante Contattaci).', 'theme-abcontact' ),
+    ) );
+
+    /* ---------------- HERO (unchanged, still in footer section as in your file) ---------------- */
+    $wp_customize->add_setting( 'hero_primary_label', array(
+        'default'           => __( 'Richiedi Consulenza', 'theme-abcontact' ),
+        'sanitize_callback' => 'sanitize_text_field',
+        'capability'        => 'manage_options',
+    ) );
+
+    $wp_customize->add_control( 'hero_primary_label', array(
+        'label'    => __( 'Hero - Testo bottone principale', 'theme-abcontact' ),
+        'section'  => 'abcontact_footer_section',
+        'type'     => 'text',
+    ) );
+
+    $wp_customize->add_setting( 'hero_primary_link', array(
+        'default'           => home_url( '/contatti' ),
+        'sanitize_callback' => 'esc_url_raw',
+        'capability'        => 'manage_options',
+    ) );
+
+    $wp_customize->add_control( 'hero_primary_link', array(
+        'label'    => __( 'Hero - Link bottone principale', 'theme-abcontact' ),
+        'section'  => 'abcontact_footer_section',
+        'type'     => 'url',
+    ) );
+
+    /* ---------------- HEADER CTA (moved to Header section + adds mode/shortcode) ---------------- */
+    $wp_customize->add_setting( 'header_cta_label', array(
+        'default'           => __( 'Contattaci', 'theme-abcontact' ),
+        'sanitize_callback' => 'sanitize_text_field',
+        'capability'        => 'manage_options',
+    ) );
+
+    $wp_customize->add_control( 'header_cta_label', array(
+        'label'    => __( 'Pulsante Contattaci - Testo', 'theme-abcontact' ),
+        'section'  => 'abcontact_header_section',
+        'type'     => 'text',
+    ) );
+
+    $wp_customize->add_setting( 'header_cta_mode', array(
+        'default'           => 'link',
+        'sanitize_callback' => function( $v ) {
+            $v = is_string( $v ) ? strtolower( trim( $v ) ) : 'link';
+            return in_array( $v, array( 'link', 'shortcode' ), true ) ? $v : 'link';
+        },
+        'capability'        => 'manage_options',
+    ) );
+
+    $wp_customize->add_control( 'header_cta_mode', array(
+        'label'    => __( 'Pulsante Contattaci - Tipo azione', 'theme-abcontact' ),
+        'section'  => 'abcontact_header_section',
+        'type'     => 'select',
+        'choices'  => array(
+            'link'      => __( 'Link', 'theme-abcontact' ),
+            'shortcode' => __( 'Shortcode (popup plugin)', 'theme-abcontact' ),
+        ),
+    ) );
+
+    $wp_customize->add_setting( 'header_cta_link', array(
+        'default'           => home_url( '/contatti' ),
+        'sanitize_callback' => 'esc_url_raw',
+        'capability'        => 'manage_options',
+    ) );
+
+    $wp_customize->add_control( 'header_cta_link', array(
+        'label'       => __( 'Pulsante Contattaci - Link (se Tipo azione = Link)', 'theme-abcontact' ),
+        'section'     => 'abcontact_header_section',
+        'type'        => 'url',
+    ) );
+
+    $wp_customize->add_setting( 'header_cta_shortcode', array(
+        'default'           => '',
+        'sanitize_callback' => function( $v ) {
+            return is_string( $v ) ? trim( $v ) : '';
+        },
+        'capability'        => 'manage_options',
+    ) );
+
+    $wp_customize->add_control( 'header_cta_shortcode', array(
+        'label'       => __( 'Pulsante Contattaci - Shortcode (se Tipo azione = Shortcode)', 'theme-abcontact' ),
+        'section'     => 'abcontact_header_section',
+        'type'        => 'text',
+        'description' => __( 'Incolla lo shortcode generato dal plugin (es. GreenPopup).', 'theme-abcontact' ),
+    ) );
+
+    /* ---------------- Recipient email (unchanged) ---------------- */
+    $wp_customize->add_setting( 'abcontact_recipient_email', array(
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_email',
+        'capability'        => 'manage_options',
+        'type'              => 'option',
+    ) );
+
+    $wp_customize->add_control( 'abcontact_recipient_email', array(
+        'label'    => __( 'Email ricezione richieste bolletta', 'abcontact' ),
+        'section'  => 'abcontact_footer_section',
+        'type'     => 'email',
+    ) );
+
+    /* ---------------- Footer fields (unchanged) ---------------- */
     $wp_customize->add_setting( 'footer_about_text', array(
-        'default'           => __( 'Testo breve con slogan o call to action inerente ai nostri servizi e/o obiettivi', 'abcontact' ),
+        'default'           => __( 'Testo breve con slogan o call to action inerente ai nostri servizi e/o obietti', 'abcontact' ),
         'sanitize_callback' => 'wp_kses_post',
         'transport'         => 'postMessage',
     ) );
@@ -393,8 +437,6 @@ function abcontact_print_hero_custom_css_vars() {
 }
 add_action( 'wp_head', 'abcontact_print_hero_custom_css_vars', 5 );
 
-add_action( 'customize_register', 'abcontact_customize_register' );
-
 add_action( 'admin_init', function() {
     if ( ! current_user_can( 'manage_options' ) ) {
         return;
@@ -438,7 +480,7 @@ add_action( 'admin_init', function() {
  */
 add_action( 'customize_register', function( $wp_customize ) {
 
-    $section = 'title_tagline'; // se vuoi, posso creare una sezione "Header" dedicata
+    $section = 'title_tagline'; 
     $priority = 65;
 
     $wp_customize->add_setting( 'header_logo_light', array(
@@ -478,6 +520,4 @@ add_action( 'customize_register', function( $wp_customize ) {
     ) );
 
 } );
-
 ?>
-

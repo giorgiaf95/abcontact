@@ -1,103 +1,64 @@
 (function($){
-  var frame;
-
-  function openMedia(frameTitle, targetInput, previewWrap) {
-    if (frame) frame.close();
-    frame = wp.media({
-      title: frameTitle,
-      button: { text: 'Seleziona' },
-      multiple: false
-    });
-    frame.on('select', function(){
-      var attachment = frame.state().get('selection').first().toJSON();
-      $(targetInput).val(attachment.id).trigger('change');
-      var thumb = attachment.sizes && attachment.sizes.medium ? attachment.sizes.medium.url : attachment.url;
-      $(previewWrap).html('<img src="' + thumb + '" class="ab-lc-img-preview" />');
-    });
-    frame.open();
-  }
-
-  /* =========== Repeater for positions =========== */
-
-  function openMediaFor(button, targetInput, previewWrap) {
-    if (frame) frame.close();
-    frame = wp.media({
-      title: 'Seleziona immagine',
-      button: { text: 'Seleziona' },
-      multiple: false
-    });
-    frame.on('select', function(){
-      var attachment = frame.state().get('selection').first().toJSON();
-      $(targetInput).val(attachment.id).trigger('change');
-      var thumb = attachment.sizes && attachment.sizes.medium ? attachment.sizes.medium.url : attachment.url;
-      $(previewWrap).html('<img src="' + thumb + '" class="ab-lc-img-preview" />');
-    });
-    frame.open();
-  }
+  'use strict';
 
   function reindex($container) {
     $container.find('.lc-position-item').each(function(i){
       var $it = $(this);
       $it.attr('data-index', i);
+
       $it.find('[name]').each(function(){
-        var name = $(this).attr('name');
+        var name = $(this).attr('name') || '';
         name = name.replace(/\[\d+\]/, '['+i+']');
         name = name.replace(/\[__index__\]/, '['+i+']');
         $(this).attr('name', name);
       });
-      // update handle label
+
       var title = $it.find('input[name*="[title]"]').val();
-      var label = title ? title : (i+1);
-      $it.find('.handle .label').text(label);
+      $it.find('.handle .label').text(title ? title : ('Posizione ' + (i+1)));
     });
   }
 
+  function ensureId($item){
+    var $id = $item.find('input[name*="[id]"]');
+    if(!$id.length) return;
+
+    if(!$id.val()){
+      // simple random id
+      var rand = Math.random().toString(36).slice(2, 10);
+      $id.val('job_' + Date.now() + '_' + rand);
+    }
+  }
+
   function bindItem($item, $container) {
+    ensureId($item);
+
     $item.find('.lc-position-remove').on('click', function(e){
       e.preventDefault();
-      if ( confirm( (window.abLavoraPositions && window.abLavoraPositions.removeConfirm) ? window.abLavoraPositions.removeConfirm : 'Rimuovere questa posizione?' ) ) {
+      var msg = (window.abLavoraPositions && window.abLavoraPositions.removeConfirm) ? window.abLavoraPositions.removeConfirm : 'Rimuovere questa posizione?';
+      if ( confirm(msg) ) {
         $item.remove();
         reindex($container);
       }
     });
 
-    $item.find('.lc-pos-image-button').on('click', function(e){
-      e.preventDefault();
-      var $btn = $(this);
-      var $wrapper = $btn.closest('.lc-position-item');
-      var $input = $wrapper.find('.lc-pos-image-id');
-      var $preview = $wrapper.find('.lc-pos-image-preview');
-      openMediaFor($btn, $input, $preview);
-    });
-
-    $item.find('.lc-pos-image-remove').on('click', function(e){
-      e.preventDefault();
-      var $btn = $(this);
-      var $wrapper = $btn.closest('.lc-position-item');
-      $wrapper.find('.lc-pos-image-id').val('');
-      $wrapper.find('.lc-pos-image-preview').html('');
-    });
-
-    // when title changes, update handle label
     $item.find('input[name*="[title]"]').on('input', function(){
       var val = $(this).val();
-      $item.find('.handle .label').text( val ? val : 'Nuova posizione' );
+      $item.find('.handle .label').text(val ? val : 'Nuova posizione');
     });
   }
 
   function initRepeater(containerSelector) {
     var $container = $(containerSelector);
-    if ( !$container.length ) return;
+    if (!$container.length) return;
 
-    var tpl = $('#lc-position-template').html();
+    var tpl = $('#lc-position-template-v2').html();
+    if(!tpl) return;
 
-    // bind existing
     $container.find('.lc-position-item').each(function(){
       bindItem($(this), $container);
     });
 
-    // add
-    $('#lc-add-position').on('click', function(e){
+    $('#lc-add-position-v2').on('click', function(e){
       e.preventDefault();
       var idx = $container.find('.lc-position-item').length;
       var html = tpl.replace(/__index__/g, idx);
@@ -105,27 +66,23 @@
       $container.append($node);
       bindItem($node, $container);
       reindex($container);
-      // if sortable available, refresh
-      if ( $container.find('.lc-position-item').length && $.fn.sortable ) {
+      if ($container.find('.lc-position-item').length && $.fn.sortable) {
         $container.sortable('refresh');
       }
     });
 
-    // init sortable if available
-    if ( $.fn.sortable ) {
+    if ($.fn.sortable) {
       $container.sortable({
         handle: '.handle',
         items: '.lc-position-item',
         axis: 'y',
-        update: function(){
-          reindex($container);
-        }
+        update: function(){ reindex($container); }
       });
     }
   }
 
   $(document).ready(function(){
-    initRepeater('[data-repeater]');
+    initRepeater('[data-repeater="lc-v2"]');
   });
 
 })(jQuery);

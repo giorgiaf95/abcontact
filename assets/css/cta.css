@@ -1,48 +1,57 @@
+/* =========================== CTA Prototype (Footer CTA) =========================== */
+
 :root{
-  --cta-bg: #0f1b33;
-  --cta-text: #ffffff;
-  --cta-muted: rgba(255,255,255,0.72);
-  --cta-accent: #0b5fff;
+  --cta-bg-top: #132a55;
+  --cta-bg-mid: #0f1b33;
+  --cta-bg-bottom: #0f1724; /* match footer solid */
   --cta-card-bg: #ffffff;
   --cta-card-text: #111827;
-  --cta-field-bg: #f2f4f7;
-  --cta-field-border: rgba(16,24,40,0.10);
-  --cta-radius-xl: 28px;
-  --cta-radius-lg: 20px;
+  --cta-field-bg: #f3f4f6;
+  --cta-field-border: rgba(17,24,39,0.10);
+  --cta-muted: rgba(255,255,255,0.82);
+  --cta-radius-xl: 22px;
 }
 
-/* Full-bleed background */
+/* Outer section: NO background, no full-bleed hacks */
 .cta-proto{
-  position: relative;
-  isolation: isolate;
-  padding: 84px 0;
-  color: var(--cta-text);
+  margin: 0;
 }
-.cta-proto::before{
+
+/* Background wrapper: full-bleed + gradient ONLY here */
+.cta-proto__bg{
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  margin-left: -50vw;
+  box-sizing: border-box;
+  overflow: hidden;
+  color: #ffffff;
+
+  /* spacing of CTA area */
+  padding: 84px 0 18px; /* small bottom so it doesn't create a band */
+}
+
+.cta-proto__bg::before{
   content:"";
   position:absolute;
-  z-index:-1;
   inset:0;
-  width:100vw;
-  left:50%;
-  transform:translateX(-50%);
-  background: radial-gradient(1200px 700px at 70% 20%, rgba(255,255,255,0.10), rgba(255,255,255,0.00) 55%),
-              radial-gradient(900px 600px at 20% 80%, rgba(11,95,255,0.18), rgba(11,95,255,0.00) 60%),
-              var(--cta-bg);
+  z-index:-1;
+  background:
+    radial-gradient(1200px 700px at 70% 20%, rgba(255,255,255,0.12), rgba(255,255,255,0.00) 55%),
+    radial-gradient(900px 600px at 20% 80%, rgba(11,95,255,0.22), rgba(11,95,255,0.00) 60%),
+    linear-gradient(180deg, var(--cta-bg-top) 0%, var(--cta-bg-mid) 62%, var(--cta-bg-bottom) 100%);
 }
 
-/* Layout */
+/* container / layout */
+.cta-proto__container{ position: relative; }
 .cta-proto__grid{
-  display:grid;
-  grid-template-columns: 1.05fr 1fr;
-  gap: 36px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 38px;
   align-items: center;
 }
-@media (max-width: 980px){
-  .cta-proto{ padding: 56px 0; }
-  .cta-proto__grid{ grid-template-columns: 1fr; }
-}
 
+/* Left */
 .cta-proto__title{
   font-size: clamp(2rem, 4vw, 3.2rem);
   line-height: 1.03;
@@ -94,6 +103,7 @@
   padding: 30px;
   box-shadow: 0 26px 70px rgba(0,0,0,0.22);
   border: 1px solid rgba(16,24,40,0.08);
+  margin-bottom: 18px; /* ensures it doesn't "touch" the footer border visually */
 }
 @media (max-width: 520px){
   .cta-proto__card{ padding: 22px; }
@@ -106,17 +116,9 @@
   color: #111827;
 }
 
-.cta-proto__form{
-  display:grid;
-  gap: 14px;
-}
-.cta-proto__row{
-  display:grid;
-  gap: 14px;
-}
-.cta-proto__row--2{
-  grid-template-columns: 1fr 1fr;
-}
+.cta-proto__form{ display:grid; gap: 14px; }
+.cta-proto__row{ display:grid; gap: 14px; }
+.cta-proto__row--2{ grid-template-columns: 1fr 1fr; }
 @media (max-width: 520px){
   .cta-proto__row--2{ grid-template-columns: 1fr; }
 }
@@ -133,88 +135,36 @@
   color: #111827;
 }
 .cta-proto__input::placeholder{ color: #667085; }
-
 .cta-proto__input:focus{
   border-color: rgba(11,95,255,0.55);
   box-shadow: 0 0 0 3px rgba(11,95,255,0.20);
   background: #ffffff;
 }
 
-.cta-proto__textarea{
-  resize: vertical;
-  min-height: 110px;
-}
+.cta-proto__textarea{ resize: vertical; min-height: 110px; }
 
-/* Submit */
+/* submit button */
 .cta-proto__submit{
-  margin-top: 6px;
-  width: 100%;
-  border: none;
-  border-radius: 16px;
-  padding: 18px 18px;
-  background: var(--cta-accent);
-  color: #fff;
-  font-weight: 800;
-  font-size: 1.05rem;
-  cursor: pointer;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap: 10px;
-  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+  gap: 12px;
+  width: 100%;
+  border: 0;
+  border-radius: 18px;
+  padding: 16px 18px;
+  font-weight: 800;
+  cursor: pointer;
+  background: #1f5fff;
+  color: #ffffff;
+  transition: transform 120ms ease, filter 120ms ease;
 }
-.cta-proto__submit:hover{
-  transform: translateY(-2px);
-  box-shadow: 0 18px 40px rgba(11,95,255,0.28);
-}
-.cta-proto__submit:active{ transform: translateY(0px); }
-.cta-proto__submit-arrow{ font-size: 1.35em; line-height: 1; }
+.cta-proto__submit:hover{ filter: brightness(1.03); }
+.cta-proto__submit:active{ transform: translateY(1px); }
+.cta-proto__submit-arrow{ font-size: 1.2em; }
 
-.cta-proto__notice{
-  border-radius: 14px;
-  padding: 12px 14px;
-  margin: 12px 0 14px;
-  font-size: 0.95rem;
-  line-height: 1.4;
-}
-.cta-proto__notice--success{
-  background: #ecfdf3;
-  border: 1px solid #abefc6;
-  color: #067647;
-}
-.cta-proto__notice--error{
-  background: #fef3f2;
-  border: 1px solid #fecdca;
-  color: #b42318;
-}
-
-/* ===== Join CTA to footer without empty band ===== */
-
-/* 1) Section ends flush with footer (no empty bottom area) */
-.cta-proto{
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
-}
-
-/* 2) Add breathing room below the grid/card, not as section padding */
-.cta-proto__container{
-  padding-bottom: 34px; /* aumenta/diminuisci: 26-44px */
-}
-
-/* 3) Ensure the footer attaches with no margin */
-.cta-proto + #colophon{
-  margin-top: 0 !important;
-}
-
-/* 4) Gradient only on CTA background, ending at CTA bottom */
-.cta-proto::before{
-  background:
-    radial-gradient(1200px 700px at 70% 20%, rgba(255,255,255,0.12), rgba(255,255,255,0.00) 55%),
-    radial-gradient(900px 600px at 20% 80%, rgba(11,95,255,0.22), rgba(11,95,255,0.00) 60%),
-    linear-gradient(180deg, #132a55 0%, #0f1b33 62%, #0f1724 100%);
-}
-
-/* 5) If you previously added a tail, disable it (keeps footer solid color) */
-.cta-proto::after{
-  content: none !important;
+/* Responsive */
+@media (max-width: 980px){
+  .cta-proto__bg{ padding: 56px 0 16px; }
+  .cta-proto__grid{ grid-template-columns: 1fr; }
 }
