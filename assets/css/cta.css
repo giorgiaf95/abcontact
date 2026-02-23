@@ -187,3 +187,34 @@
   border: 1px solid #fecdca;
   color: #b42318;
 }
+
+/* ===== Join CTA to footer without empty band ===== */
+
+/* 1) Section ends flush with footer (no empty bottom area) */
+.cta-proto{
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* 2) Add breathing room below the grid/card, not as section padding */
+.cta-proto__container{
+  padding-bottom: 34px; /* aumenta/diminuisci: 26-44px */
+}
+
+/* 3) Ensure the footer attaches with no margin */
+.cta-proto + #colophon{
+  margin-top: 0 !important;
+}
+
+/* 4) Gradient only on CTA background, ending at CTA bottom */
+.cta-proto::before{
+  background:
+    radial-gradient(1200px 700px at 70% 20%, rgba(255,255,255,0.12), rgba(255,255,255,0.00) 55%),
+    radial-gradient(900px 600px at 20% 80%, rgba(11,95,255,0.22), rgba(11,95,255,0.00) 60%),
+    linear-gradient(180deg, #132a55 0%, #0f1b33 62%, #0f1724 100%);
+}
+
+/* 5) If you previously added a tail, disable it (keeps footer solid color) */
+.cta-proto::after{
+  content: none !important;
+}
