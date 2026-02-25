@@ -22,6 +22,9 @@ function abcontact_ajax_load_more_news() {
 
     $paged = isset( $_POST['page'] ) ? intval( $_POST['page'] ) : 1;
     $cat = isset( $_POST['cat'] ) ? intval( $_POST['cat'] ) : 0;
+    $cats = isset( $_POST['cats'] ) ? (array) wp_unslash( $_POST['cats'] ) : array();
+    $cats = array_filter( array_map( 'intval', $cats ) );
+    $search = isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : '';
     $exclude = isset( $_POST['exclude'] ) ? intval( $_POST['exclude'] ) : 0;
     $posts_per_page = 6;
 
@@ -32,8 +35,14 @@ function abcontact_ajax_load_more_news() {
         'ignore_sticky_posts' => true,
         'paged'               => $paged,
     );
-    if ( $cat ) {
+    if ( ! empty( $cats ) ) {
+        $args['category__in'] = $cats;
+    } elseif ( $cat ) {
         $args['cat'] = $cat;
+    }
+    if ( '' !== $search ) {
+        $args['s'] = $search;
+        $args['search_columns'] = array( 'post_title', 'post_content' );
     }
     if ( $exclude ) {
         $args['post__not_in'] = array( $exclude );
