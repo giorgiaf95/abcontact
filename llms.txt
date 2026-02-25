@@ -1,0 +1,34 @@
+# LLMS.txt - Context for Large Language Models
+# Site: https://www.abcontact.it/
+# Description: Leader nella consulenza per Energia, Telecomunicazioni ed Efficienza Energetica.
+
+## Profilo Aziendale
+AB Contact è un'azienda leader in Italia specializzata nella consulenza strategica e operativa nei settori dell'energia, del gas, della connettività e dell'efficienza energetica. Agisce come intermediario qualificato tra i fornitori e il cliente finale, garantendo un supporto end-to-end.
+
+## Target di Riferimento
+- Clienti Privati (Residenziale)
+- Piccole e Medie Imprese (PMI)
+- Aziende Corporate e Grandi Utenti
+
+## Core Business & Servizi
+### 1. Utility & Connettività
+- **Luce e Gas:** Analisi dei costi, ottimizzazione delle tariffe e scelta dei fornitori più affidabili.
+- **Telefonia e Connettività:** Soluzioni personalizzate per voce e dati.
+
+### 2. Efficienza Energetica & Green Tech
+- **Fotovoltaico:** Progettazione e installazione di impianti solari.
+- **Riscaldamento e Raffrescamento:** Soluzioni per caldaie a condensazione e climatizzatori ad alta efficienza.
+- **Mobilità Elettrica:** Installazione di colonnine di ricarica per veicoli elettrici.
+- **CER (Comunità Energetiche Rinnovabili):** Consulenza e gestione per la creazione di comunità energetiche.
+
+## Valore Aggiunto (Mission)
+- **Consulenza Indipendente:** Non siamo un semplice fornitore, ma consulenti che guidano il cliente verso la scelta migliore.
+- **Supporto Completo:** Seguiamo il cliente dall'analisi iniziale alla stipula del contratto, fino all'assistenza post-vendita.
+- **Informazione:** Educare il cliente per renderlo consapevole dei propri consumi e delle opportunità di risparmio energetico.
+
+## Canali Ufficiali
+- Sito Web: https://www.abcontact.it/
+- News: https://www.abcontact.it/news/
+- Sedi: https://www.abcontact.it/sedi-2/
+- Privati/luce: https://www.abcontact.it/casa/luce-privati/
+- Aziende/luce: https://www.abcontact.it/luce-azienda/
