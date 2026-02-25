@@ -22,47 +22,135 @@
         });
       }
 
-      // Filters
-      var filterBtns = document.querySelectorAll('.news-filter-button');
-      if ( filterBtns && filterBtns.length ) {
-        filterBtns.forEach(function (btn) {
+      // Filters: multi-category + search + apply button
+      var filterChips = document.querySelectorAll('.news-filter-chip');
+      if ( filterChips && filterChips.length ) {
+        filterChips.forEach(function (btn) {
           btn.addEventListener('click', function () {
-            self.applyFilter(this.getAttribute('data-cat'));
-            filterBtns.forEach(function (b) { b.classList.remove('active'); });
-            this.classList.add('active');
+            this.classList.toggle('is-selected');
           });
         });
       }
+
+      var applyBtn = document.getElementById('news-filter-apply');
+      if ( applyBtn ) {
+        applyBtn.addEventListener('click', function () {
+          self.applyFilters();
+        });
+      }
+
+      var clearBtn = document.getElementById('news-filter-clear');
+      if ( clearBtn ) {
+        clearBtn.addEventListener('click', function () {
+          self.clearFilters();
+        });
+      }
+
+      var searchInput = document.getElementById('news-filter-search');
+      if ( searchInput ) {
+        searchInput.addEventListener('keydown', function (e) {
+          if ( e.key === 'Enter' ) {
+            e.preventDefault();
+            self.applyFilters();
+          }
+        });
+      }
+
+      this.bindMobileFiltersToggle();
     },
 
-    applyFilter: function (catId) {
+    bindMobileFiltersToggle: function () {
+      var catsWrap = document.querySelector('.news-filters-cats-wrap');
+      var toggleBtn = document.getElementById('news-filters-toggle');
+      if ( !catsWrap || !toggleBtn ) {
+        return;
+      }
+
+      toggleBtn.addEventListener('click', function () {
+        var isOpen = catsWrap.classList.toggle('is-open');
+        toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+    },
+
+    applyFilters: function () {
       var grid = document.getElementById('news-archive-grid');
       var loadMoreBtn = document.getElementById('news-load-more');
+      var filters = this.getCurrentFilters();
 
       if ( loadMoreBtn ) {
         loadMoreBtn.setAttribute('data-page', 1);
+        loadMoreBtn.style.display = '';
         loadMoreBtn.disabled = false;
         loadMoreBtn.textContent = (window.abcontactNews && window.abcontactNews.load_more_label) || 'Carica altri articoli';
       }
 
-      this.fetchPosts(1, catId, function (res) {
+      this.fetchPosts(1, filters, function (res) {
         if ( grid ) {
-          grid.innerHTML = res.html;
+          if ( res.html ) {
+            grid.innerHTML = res.html;
+          } else {
+            grid.innerHTML = '<p class="news-empty">' + (((window.abcontactNews && window.abcontactNews.no_results_label) || 'Nessun articolo trovato con i filtri selezionati.')) + '</p>';
+          }
+        }
+        if ( loadMoreBtn && ( !res.max_pages || res.max_pages <= 1 ) ) {
+          loadMoreBtn.style.display = 'none';
+        }
+
+        if ( window.matchMedia('(max-width: 760px)').matches ) {
+          var catsWrap = document.querySelector('.news-filters-cats-wrap');
+          var toggleBtn = document.getElementById('news-filters-toggle');
+          if ( catsWrap && toggleBtn ) {
+            catsWrap.classList.remove('is-open');
+            toggleBtn.setAttribute('aria-expanded', 'false');
+          }
         }
       });
+    },
+
+    clearFilters: function () {
+      var searchInput = document.getElementById('news-filter-search');
+      var filterChips = document.querySelectorAll('.news-filter-chip.is-selected');
+      if ( searchInput ) {
+        searchInput.value = '';
+      }
+      if ( filterChips && filterChips.length ) {
+        filterChips.forEach(function (chip) {
+          chip.classList.remove('is-selected');
+        });
+      }
+      this.applyFilters();
+    },
+
+    getCurrentFilters: function () {
+      var selected = [];
+      var chips = document.querySelectorAll('.news-filter-chip.is-selected');
+      if ( chips && chips.length ) {
+        chips.forEach(function (chip) {
+          var id = parseInt(chip.getAttribute('data-cat'), 10);
+          if ( id > 0 ) {
+            selected.push(id);
+          }
+        });
+      }
+
+      var searchInput = document.getElementById('news-filter-search');
+      var searchTerm = searchInput ? (searchInput.value || '').trim() : '';
+
+      return {
+        cats: selected,
+        search: searchTerm
+      };
     },
 
     loadMore: function (btn) {
       var page = parseInt(btn.getAttribute('data-page'), 10) || 1;
       var next = page + 1;
-      var exclude = btn.getAttribute('data-exclude') || 0;
-      var activeCatBtn = document.querySelector('.news-filter-button.active');
-      var cat = activeCatBtn ? activeCatBtn.getAttribute('data-cat') : 0;
+      var filters = this.getCurrentFilters();
 
       btn.disabled = true;
-      btn.textContent = '...';
+      btn.textContent = ((window.abcontactNews && window.abcontactNews.loading_label) || 'Caricamento...');
 
-      this.fetchPosts(next, cat, function (res) {
+      this.fetchPosts(next, filters, function (res) {
         var grid = document.getElementById('news-archive-grid');
         if (!grid) {
           // nothing to append to
@@ -85,12 +173,19 @@
       });
     },
 
-    fetchPosts: function (page, cat, callback ) {
+    fetchPosts: function (page, filters, callback ) {
       var data = new FormData();
       data.append( 'action', 'abcontact_load_more_news' );
       data.append( 'nonce', this.nonce );
       data.append( 'page', page );
-      data.append( 'cat', cat );
+      data.append( 'search', filters && filters.search ? filters.search : '' );
+      if ( filters && filters.cats && filters.cats.length ) {
+        filters.cats.forEach(function (catId) {
+          data.append( 'cats[]', catId );
+        });
+      } else {
+        data.append( 'cat', 0 );
+      }
       var excludeEl = document.getElementById('news-load-more');
       if ( excludeEl ) {
         data.append( 'exclude', excludeEl.getAttribute('data-exclude') || 0 );

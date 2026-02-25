@@ -1256,7 +1256,7 @@ body.admin-bar .header.is-sticky {
 .related-news .related-grid .news-card-grid,
 .related-news .related-grid .post-card,
 .related-news .related-grid .news-card {
-  padding: 18px;
+  padding: 0;
   box-sizing: border-box;
   max-width: none;
   background: #fff;
@@ -1307,7 +1307,7 @@ body.admin-bar .header.is-sticky {
   .related-news .related-grid .news-card-grid,
   .related-news .related-grid .post-card,
   .related-news .related-grid .news-card {
-    padding: 14px !important;
+    padding: 0 !important;
     border-radius: 10px !important;
   }
 
@@ -1473,9 +1473,10 @@ body.error404 .page-404-inner {
 }
 .related-news .grid .news-card-grid,
 .related-news .grid .card.news-card-grid,
-.post-card, .news-card {
+.related-news .grid .post-card,
+.related-news .grid .news-card {
   max-width: none; /* non limitare troppo */
-  padding: 20px;
+  padding: 0;
 }
 /* se le card sono in grid a 4 colonne, riduci a 3 colonne su larghezze medie per più spazio */
 @media (min-width:1100px) {
@@ -1980,4 +1981,3 @@ html { scroll-behavior: smooth; }
 
 /* Avoid the anchor target being hidden under a sticky header */
 #cta-footer { scroll-margin-top: 90px; }
-

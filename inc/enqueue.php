@@ -131,6 +131,8 @@ if ( ! function_exists( 'abcontact_enqueue_assets' ) ) {
                 'nonce' => wp_create_nonce( 'abcontact_news_load_more' ),
                 'posts_per_page' => 6,
                 'load_more_label' => __( 'Carica altri articoli', 'theme-abcontact' ),
+                'loading_label' => __( 'Caricamento...', 'theme-abcontact' ),
+                'no_results_label' => __( 'Nessun articolo trovato con i filtri selezionati.', 'theme-abcontact' ),
             ) );
         }
 

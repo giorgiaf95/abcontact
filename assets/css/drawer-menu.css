@@ -1,4 +1,4 @@
-/* drawer-menu.css - aggiornato: fallback icon lines, X minimal, slide-out close animation */
+/* drawer-menu.css */
 
 /* Variabili */
 :root{
@@ -29,7 +29,7 @@
   }
   .menu-toggle .menu-label { display: none; }
 
-  /* Fallback: ensure pseudo lines appear even if JS didn't create .mi-line */
+  /* Fallback */
   .menu-toggle .menu-icon {
     display: inline-block !important;
     position: relative !important;
@@ -50,7 +50,7 @@
   }
   .menu-toggle .menu-icon::before { top: 0; }
   .menu-toggle .menu-icon::after { bottom: 0; }
-  /* middle line fallback (if JS didn't create .mi-line) */
+  /* middle line fallback */
   .menu-toggle .menu-icon .mi-line {
     position: absolute !important;
     left: 0 !important;
@@ -64,7 +64,7 @@
   .menu-toggle .menu-icon .mi-line:nth-child(2) { top: 8px; }
   .menu-toggle .menu-icon .mi-line:nth-child(3) { top: 16px; }
 
-  /* Overlay: gradient dark -> transparent (behind drawer) */
+  /* Overlay: gradient dark -> transparent */
   .drawer-overlay {
     display:block;
     position: fixed;
@@ -78,7 +78,7 @@
   body.drawer-open .drawer-overlay { opacity:1; pointer-events:auto; }
   body.drawer-closing .drawer-overlay { opacity:0; pointer-events:none; }
 
-  /* DRAWER: right-side panel */
+  /* DRAWER */
   .mobile-drawer {
     display:block;
     position: fixed;
@@ -88,7 +88,7 @@
     width: var(--drawer-width);
     background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 30%, rgba(255,255,255,0.88) 60%, rgba(255,255,255,0.80) 100%);
     box-shadow: 0 28px 80px rgba(2,10,30,0.12);
-    transform: translateX(110%);                    /* offscreen to right by default */
+    transform: translateX(110%);                    
     opacity: 0;
     transition: transform 320ms cubic-bezier(.2,.9,.18,1), opacity 240ms ease;
     z-index: calc(var(--drawer-z) + 200);
@@ -98,20 +98,20 @@
     border-left: 1px solid rgba(2,10,30,0.03);
     pointer-events: none;
   }
-  /* open: visible and interactive */
+  /* open */
   body.drawer-open .mobile-drawer {
     transform: translateX(0);
     opacity: 1;
     pointer-events: auto;
   }
-  /* closing: animate slide-out to right while still present in DOM */
+  /* closing */
   body.drawer-closing .mobile-drawer {
     transform: translateX(110%);
     opacity: 0;
     pointer-events: none;
   }
 
-  /* close button: NO box, just a larger X */
+  /* close button */
   .mobile-drawer-close {
     position: absolute;
     top: 10px;

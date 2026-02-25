@@ -5,6 +5,16 @@
 
   /* Mega / container */
   --hdr-mega-bg: #ffffff;
+  --hdr-mega-col-left-bg: #f2f7ff;
+  --hdr-mega-col-right-bg: #628fc7;
+  --hdr-mega-col-left-category-color: #163f8f;
+  --hdr-mega-col-right-category-color: #ffffff;
+  --hdr-mega-col-left-secondary-color: #4aa3d9;
+  --hdr-mega-col-right-secondary-color: #d7ecff;
+  --hdr-mega-col-left-link-color: #111827;
+  --hdr-mega-col-right-link-color: #ffffff;
+  --hdr-mega-col-left-link-hover-color: #0b5fff;
+  --hdr-mega-col-right-link-hover-color: #d7ecff;
   --hdr-mega-shadow: 0 8px 30px rgba(16,24,40,0.08);
   --hdr-mega-border-radius: 8px;
 
@@ -16,7 +26,7 @@
   --hdr-category-title-font-weight: 700;
 
   /* Secondary column titles (Luce, Gas e Connettività) */
-  --hdr-secondary-title-color: #6b7280;
+  --hdr-secondary-title-color: #5fb7e5;
   --hdr-secondary-title-font-size: 15px;
   --hdr-secondary-title-font-weight: 200;
 
@@ -377,6 +387,82 @@ a.column-title[data-menu-heading="1"]:focus-visible {
   min-width: 0 !important;
   word-break: break-word !important;
   box-sizing: border-box !important;
+}
+
+/* Servizi mega-menu: background diverso per colonna sinistra/destra */
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu {
+  background: linear-gradient(
+    to right,
+    var(--hdr-mega-col-left-bg) 0 50%,
+    var(--hdr-mega-col-right-bg) 50% 100%
+  ) !important;
+  gap: 0 !important;
+  padding: 0 !important;
+}
+
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:first-child {
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 20px 18px !important;
+}
+
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:last-child {
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 20px 18px !important;
+}
+
+.site-header.scrolled #site-navigation .primary-menu > .menu-item.mega > .sub-menu,
+.header.scrolled #site-navigation .primary-menu > .menu-item.mega > .sub-menu,
+.site-header.is-sticky #site-navigation .primary-menu > .menu-item.mega > .sub-menu,
+.header.is-sticky #site-navigation .primary-menu > .menu-item.mega > .sub-menu {
+  background: linear-gradient(
+    to right,
+    var(--hdr-mega-col-left-bg) 0 50%,
+    var(--hdr-mega-col-right-bg) 50% 100%
+  ) !important;
+  gap: 0 !important;
+  padding: 0 !important;
+}
+
+/* Colonna sinistra: categorie e link */
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:first-child > a,
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:first-child .menu-heading > a,
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:first-child .menu-heading--privati > a {
+  color: var(--hdr-mega-col-left-category-color) !important;
+}
+
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:first-child li.column-title > a {
+  color: var(--hdr-mega-col-left-secondary-color) !important;
+}
+
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:first-child a:not(.menu-heading__anchor):not(.column-title) {
+  color: var(--hdr-mega-col-left-link-color) !important;
+}
+
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:first-child a:not(.menu-heading__anchor):not(.column-title):hover,
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:first-child a:not(.menu-heading__anchor):not(.column-title):focus {
+  color: var(--hdr-mega-col-left-link-hover-color) !important;
+}
+
+/* Colonna destra: categorie e link */
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:last-child > a,
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:last-child .menu-heading > a,
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:last-child .menu-heading--aziende > a {
+  color: var(--hdr-mega-col-right-category-color) !important;
+}
+
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:last-child li.column-title > a {
+  color: var(--hdr-mega-col-right-secondary-color) !important;
+}
+
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:last-child a:not(.menu-heading__anchor):not(.column-title) {
+  color: var(--hdr-mega-col-right-link-color) !important;
+}
+
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:last-child a:not(.menu-heading__anchor):not(.column-title):hover,
+#site-navigation .primary-menu > .menu-item.mega > .sub-menu > li:last-child a:not(.menu-heading__anchor):not(.column-title):focus {
+  color: var(--hdr-mega-col-right-link-hover-color) !important;
 }
 
 /* ===== Logo switch: light at top, dark when scrolled/sticky ===== */

@@ -49,22 +49,60 @@ get_template_part( 'template-parts/news-hero' );
     }
     ?>
 
-    <!-- category filter -->
-    <div class="news-filters" style="margin:28px 0; text-align:center;">
-      <?php
-      $cats = get_categories( array( 'hide_empty' => true ) );
-      echo '<div class="news-filter-list">';
-      echo '<button class="news-filter-button active" data-cat="0">' . esc_html__( 'Tutte', 'theme-abcontact' ) . '</button>';
-      foreach ( $cats as $c ) {
-          printf(
-              '<button class="news-filter-button" data-cat="%1$s">%2$s</button>',
-              esc_attr( $c->term_id ),
-              esc_html( $c->name )
-          );
-      }
-      echo '</div>';
-      ?>
-    </div>
+    <!-- category/search filters -->
+    <section class="news-filters" aria-label="<?php esc_attr_e( 'Filtri news', 'theme-abcontact' ); ?>">
+      <div class="news-filters-panel">
+        <div class="news-filters__search-row">
+          <label class="screen-reader-text" for="news-filter-search"><?php esc_html_e( 'Cerca articoli', 'theme-abcontact' ); ?></label>
+          <input
+            id="news-filter-search"
+            class="news-filter-search"
+            type="search"
+            placeholder="<?php esc_attr_e( 'Cerca per titolo o contenuto', 'theme-abcontact' ); ?>"
+            autocomplete="off"
+          />
+          <button id="news-filter-apply" class="button news-filter-apply" type="button">
+            <?php esc_html_e( 'Applica filtri', 'theme-abcontact' ); ?>
+          </button>
+        </div>
+
+        <div class="news-filters-cats-wrap">
+          <button
+            id="news-filters-toggle"
+            class="news-filters-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="news-filters-cats-panel"
+          >
+            <?php esc_html_e( 'Seleziona categorie', 'theme-abcontact' ); ?>
+          </button>
+
+          <div id="news-filters-cats-panel" class="news-filters-cats-panel">
+            <div class="news-filters__actions">
+              <button id="news-filter-clear" class="news-filter-clear" type="button">
+                <?php esc_html_e( 'Azzera', 'theme-abcontact' ); ?>
+              </button>
+              <p class="news-filters__hint"><?php esc_html_e( 'Seleziona una o piu categorie', 'theme-abcontact' ); ?></p>
+            </div>
+
+            <?php
+            $cats = get_categories( array( 'hide_empty' => true ) );
+            if ( ! empty( $cats ) ) :
+                echo '<div class="news-filter-list" role="group" aria-label="' . esc_attr__( 'Categorie', 'theme-abcontact' ) . '">';
+                foreach ( $cats as $c ) {
+                    printf(
+                        '<button class="news-filter-chip" type="button" data-cat="%1$s">%2$s</button>',
+                        esc_attr( $c->term_id ),
+                        esc_html( $c->name )
+                    );
+                }
+                echo '</div>';
+            endif;
+            ?>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Grid container: initial load (page 1) -->
     <section class="news-archive">
