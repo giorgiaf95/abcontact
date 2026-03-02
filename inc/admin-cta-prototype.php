@@ -7,9 +7,9 @@ function abcontact_cta_prototype_defaults() {
     return array(
         'title'       => 'Pronto a risparmiare sulla tua bolletta?',
         'subtitle'    => "Contattaci per una consulenza gratuita e senza impegno. Analizziamo le tue utenze e troviamo la soluzione migliore per te.",
-        'phone'       => '+39 000 000 0000',
+        'phone'       => '3331441734',
         'email'       => 'info@abcontact.it',
-        'locations_url' => home_url( '/sedi/' ),
+        'locations_url' => 'https://www.abcontact.it/sedi-2/',
     );
 }
 

@@ -36,6 +36,7 @@ $apply_sent = false;
 
 $selected_job_id = '';
 $selected_job_title = '';
+$selected_job_location = '';
 
 if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['lc_apply_nonce'] ) ) {
 
@@ -52,7 +53,29 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['lc_apply_nonce'] ) 
         $about      = isset( $_POST['about'] ) ? sanitize_textarea_field( $_POST['about'] ) : '';
         $gdpr       = isset( $_POST['gdpr_confirm'] ) ? true : false;
 
-        if ( empty( $selected_job_id ) || empty( $selected_job_title ) ) {
+        // Resolve selected job from saved positions to ensure consistent title/location in email.
+        $job_is_valid = false;
+        if ( ! empty( $selected_job_id ) ) {
+            $positions_for_mail = get_post_meta( $post_id, ABCONTACT_LC_POSITIONS_META_V2, true );
+            $positions_for_mail = is_array( $positions_for_mail ) ? $positions_for_mail : array();
+
+            foreach ( $positions_for_mail as $pos_item ) {
+                if ( ! is_array( $pos_item ) ) {
+                    continue;
+                }
+                $id = isset( $pos_item['id'] ) ? sanitize_text_field( $pos_item['id'] ) : '';
+                if ( $id !== $selected_job_id ) {
+                    continue;
+                }
+
+                $job_is_valid = true;
+                $selected_job_title = isset( $pos_item['title'] ) ? sanitize_text_field( $pos_item['title'] ) : $selected_job_title;
+                $selected_job_location = isset( $pos_item['location'] ) ? sanitize_text_field( $pos_item['location'] ) : '';
+                break;
+            }
+        }
+
+        if ( ! $job_is_valid || empty( $selected_job_title ) ) {
             $apply_errors[] = __( 'Seleziona una posizione valida.', 'abcontact' );
         }
         if ( empty( $first_name ) ) {
@@ -111,6 +134,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['lc_apply_nonce'] ) 
 
             $body_lines = array();
             $body_lines[] = sprintf( __( 'Posizione: %s', 'abcontact' ), $selected_job_title );
+            $body_lines[] = sprintf( __( 'Luogo: %s', 'abcontact' ), $selected_job_location !== '' ? $selected_job_location : '—' );
             $body_lines[] = sprintf( __( 'Job ID: %s', 'abcontact' ), $selected_job_id );
             $body_lines[] = sprintf( __( 'Nome: %s', 'abcontact' ), $first_name );
             $body_lines[] = sprintf( __( 'Cognome: %s', 'abcontact' ), $last_name );
@@ -131,7 +155,7 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['lc_apply_nonce'] ) 
 
             $headers = array();
             $from_email = get_option( 'admin_email' );
-            $from_name  = get_bloginfo( 'name' );
+            $from_name  = html_entity_decode( (string) get_bloginfo( 'name' ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
             if ( is_email( $from_email ) ) {
                 $headers[] = 'From: ' . sanitize_text_field( $from_name ) . ' <' . $from_email . '>';
             }

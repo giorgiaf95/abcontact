@@ -26,7 +26,15 @@ $title = $opt['title'] ?? 'Pronto a risparmiare sulla tua bolletta?';
 $sub   = $opt['subtitle'] ?? '';
 $phone = $opt['phone'] ?? '';
 $email = $opt['email'] ?? '';
-$loc   = $opt['locations_url'] ?? home_url('/sedi/');
+$loc   = $opt['locations_url'] ?? 'https://www.abcontact.it/sedi-2/';
+
+// Backward-compatibility: replace old placeholder values with current contact data.
+if ( $phone === '+39 000 000 0000' ) {
+    $phone = '3331441734';
+}
+if ( $loc === home_url('/sedi/') ) {
+    $loc = 'https://www.abcontact.it/sedi-2/';
+}
 
 $phone_href = $phone ? 'tel:' . preg_replace('/\s+/', '', $phone) : '';
 $email_href = $email ? 'mailto:' . $email : '';
